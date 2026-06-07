@@ -57,7 +57,6 @@ export function ToolDrawer({
   history, onUndo, onRedo, onJumpToHistory,
   hideSplit,
 }: ToolDrawerProps) {
-  const [sections, setSections] = useState({ split: !!sourceFile, watermark: false, redact: false })
   const [wmText, setWmText] = useState('')
   const [wmFontSize, setWmFontSize] = useState(24)
   const [wmOpacity, setWmOpacity] = useState(0.3)
@@ -71,10 +70,6 @@ export function ToolDrawer({
   const totalPages = pages.filter(p => !p.deleted).length
   const currentPage = pages[currentPageIndex]
   const { stack, pointer } = history
-
-  const toggleSection = useCallback((key: 'split' | 'watermark' | 'redact') => {
-    setSections(prev => ({ ...prev, [key]: !prev[key] }))
-  }, [])
 
   const handleSearchInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => onSearch(e.target.value), [onSearch])
 
@@ -170,13 +165,10 @@ export function ToolDrawer({
         {/* === 切分与检索 === */}
         {!hideSplit && (
         <section className="border-b border-gray-800/50">
-          <button onClick={() => toggleSection('split')}
-            className="w-full px-3 py-2 flex items-center gap-2 hover:bg-gray-800/40 text-xs text-gray-400 cursor-pointer transition-colors">
-            <span className="text-xs">{sections.split ? '▼' : '▶'}</span>
+          <div className="px-3 py-2 flex items-center gap-2 text-xs text-gray-400">
             <span className="font-medium">切分与检索</span>
-          </button>
-          {sections.split && (
-            <div className="px-3 pb-3 space-y-3">
+          </div>
+          <div className="px-3 pb-3 space-y-3">
               <div>
                 <input type="text" value={searchQuery} onChange={handleSearchInput} placeholder="输入关键词检索..."
                   className="w-full px-2 py-1.5 rounded-md bg-gray-800 border border-gray-700 text-xs text-gray-200 placeholder-gray-600 focus:border-blue-500 focus:outline-none" />
@@ -215,20 +207,16 @@ export function ToolDrawer({
                 )}
                 <button onClick={onSplit} className="w-full mt-1.5 px-3 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-medium transition-colors cursor-pointer">导出切分 →</button>
               </div>
-            </div>
-          )}
+          </div>
         </section>
         )}
 
         {/* === 水印与脱壳 === */}
         <section className="border-b border-gray-800/50">
-          <button onClick={() => toggleSection('watermark')}
-            className="w-full px-3 py-2 flex items-center gap-2 hover:bg-gray-800/40 text-xs text-gray-400 cursor-pointer transition-colors">
-            <span className="text-xs">{sections.watermark ? '▼' : '▶'}</span>
+          <div className="px-3 py-2 flex items-center gap-2 text-xs text-gray-400">
             <span className="font-medium">水印与脱壳</span>
-          </button>
-          {sections.watermark && (
-            <div className="px-3 pb-3 space-y-3">
+          </div>
+          <div className="px-3 pb-3 space-y-3">
               <div>
                 <div className="text-sm text-gray-500 mb-1">权限脱壳</div>
                 <button onClick={onUnlock} disabled={!sourceFile}
@@ -297,19 +285,15 @@ export function ToolDrawer({
                 <button onClick={onExportSplit} className="w-full px-3 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-medium transition-colors cursor-pointer">切分导出</button>
                 )}
               </div>
-            </div>
-          )}
+          </div>
         </section>
 
         {/* === 遮罩 === */}
         <section className="border-b border-gray-800/50">
-          <button onClick={() => toggleSection('redact')}
-            className="w-full px-3 py-2 flex items-center gap-2 hover:bg-gray-800/40 text-xs text-gray-400 cursor-pointer transition-colors">
-            <span className="text-xs">{sections.redact ? '▼' : '▶'}</span>
+          <div className="px-3 py-2 flex items-center gap-2 text-xs text-gray-400">
             <span className="font-medium">遮罩</span>
-          </button>
-          {sections.redact && (
-            <div className="px-3 pb-3 space-y-2">
+          </div>
+          <div className="px-3 pb-3 space-y-2">
               <button onClick={onToggleRedact}
                 className={`w-full px-3 py-1.5 rounded-lg text-sm font-medium transition-colors cursor-pointer ${isRedacting ? 'bg-red-600 hover:bg-red-500 text-white' : 'bg-gray-800 hover:bg-gray-700 text-gray-300'}`}>
                 {isRedacting ? '🔒 完成遮蔽' : '🖌 进入遮蔽模式'}
@@ -329,8 +313,7 @@ export function ToolDrawer({
                     className="w-full mt-1.5 px-3 py-1 rounded-lg bg-red-900/50 hover:bg-red-800 text-red-300 text-sm font-medium transition-colors cursor-pointer">清除全部遮蔽</button>
                 </div>
               )}
-            </div>
-          )}
+          </div>
         </section>
       </div>
 
