@@ -65,7 +65,7 @@ export async function unlockOwnerPassword(binary: ArrayBuffer): Promise<Uint8Arr
  * Patch the raw PDF bytes to remove the /Encrypt entry from the trailer.
  * Works directly on the byte array to avoid encoding corruption.
  */
-function patchRemoveEncrypt(original: Uint8Array): Uint8Array | null {
+export function patchRemoveEncrypt(original: Uint8Array): Uint8Array | null {
   // Decode as latin1 for pattern searching (1:1 byte mapping)
   const text = new TextDecoder('latin1').decode(original)
 

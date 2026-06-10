@@ -3,6 +3,24 @@ import type { WorkerAction } from '../types'
 
 const sourceFileStore = new Map<string, ArrayBuffer>()
 
+function patchRemoveEncrypt(original: Uint8Array): Uint8Array | null {
+  const text = new TextDecoder('latin1').decode(original)
+  const encryptPattern = /\/Encrypt\s+\d+\s+\d+\s+R/g
+  const matches: { index: number; length: number }[] = []
+  let match: RegExpExecArray | null
+  while ((match = encryptPattern.exec(text)) !== null) {
+    matches.push({ index: match.index, length: match[0].length })
+  }
+  if (matches.length === 0) return null
+  const patched = new Uint8Array(original)
+  for (const m of matches) {
+    for (let i = m.index; i < m.index + m.length; i++) {
+      patched[i] = 0x20
+    }
+  }
+  return patched
+}
+
 function b64ToBytes(b64: string): Uint8Array {
   const bin = atob(b64.split(',')[1])
   const buf = new Uint8Array(bin.length)
@@ -50,9 +68,11 @@ self.onmessage = async (e: MessageEvent<WorkerAction>) => {
 
       case 'EXPORT_PDF': {
         const { pages, sourceId } = action.payload as { pages: any[]; sourceId: string }
-        const sourceBinary = sourceFileStore.get(sourceId)
-        if (!sourceBinary) throw new Error('Source file not found')
-        const srcDoc = await PDFDocument.load(sourceBinary, { ignoreEncryption: true })
+        let srcBin: ArrayBuffer | Uint8Array = sourceFileStore.get(sourceId)!
+        if (!srcBin) throw new Error('Source file not found')
+        const patched = patchRemoveEncrypt(new Uint8Array(srcBin))
+        if (patched) srcBin = patched
+        const srcDoc = await PDFDocument.load(srcBin)
         const outDoc = await PDFDocument.create()
         const activePages = pages.filter(p => !p.deleted)
 
@@ -113,9 +133,11 @@ self.onmessage = async (e: MessageEvent<WorkerAction>) => {
 
       case 'SPLIT_PDF': {
         const { pageIds, sourceId } = action.payload as { pageIds: string[]; sourceId: string }
-        const sourceBinary = sourceFileStore.get(sourceId)
-        if (!sourceBinary) throw new Error('Source file not found')
-        const srcDoc = await PDFDocument.load(sourceBinary, { ignoreEncryption: true })
+        let srcBin = sourceFileStore.get(sourceId)
+        if (!srcBin) throw new Error('Source file not found')
+        const patched = patchRemoveEncrypt(new Uint8Array(srcBin))
+        if (patched) srcBin = patched
+        const srcDoc = await PDFDocument.load(srcBin)
         const outDoc = await PDFDocument.create()
         const indices = pageIds.map(id => parseInt(id.split('-')[1] ?? id.split('-').pop()!))
         for (const idx of indices) {
