@@ -153,9 +153,14 @@ export function PageSplitter() {
     setExporting(true)
     try {
       const { PDFDocument } = await import('pdf-lib')
-      const { patchRemoveEncrypt } = await import('../utils/pdf-unlock')
-      const patched = patchRemoveEncrypt(new Uint8Array(state.sourceFile.binary))
-      const srcDoc = await PDFDocument.load(patched || state.sourceFile.binary)
+      let srcBin: ArrayBuffer | Uint8Array = state.sourceFile.binary
+      try {
+        const { unlockOwnerPassword } = await import('../utils/pdf-unlock')
+        srcBin = await unlockOwnerPassword(state.sourceFile.binary)
+      } catch {
+        // Not owner-only or unlock failed; fall back to original binary
+      }
+      const srcDoc = await PDFDocument.load(srcBin, { ignoreEncryption: true })
       const newDoc = await PDFDocument.create()
       let indices: number[] = []
       if (state.mode === 'range') {

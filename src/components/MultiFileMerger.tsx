@@ -1,6 +1,6 @@
 import { useCallback, useRef, useState } from 'react'
 import { PDFDocument } from 'pdf-lib'
-import { patchRemoveEncrypt } from '../utils/pdf-unlock'
+import { unlockOwnerPassword } from '../utils/pdf-unlock'
 import type { MergerFileItem } from '../types'
 
 function generateId(): string {
@@ -91,8 +91,9 @@ export function MultiFileMerger({ onSendToEditor }: MultiFileMergerProps) {
     const merged = await PDFDocument.create()
     for (const item of files) {
       if (item.type === 'pdf') {
-        const patched = patchRemoveEncrypt(new Uint8Array(item.binary))
-        const src = patched ? await PDFDocument.load(patched) : await PDFDocument.load(item.binary, { ignoreEncryption: true })
+        let srcBin: ArrayBuffer | Uint8Array = item.binary
+        try { srcBin = await unlockOwnerPassword(item.binary) } catch { }
+        const src = await PDFDocument.load(srcBin, { ignoreEncryption: true })
         const pages = await merged.copyPages(src, src.getPageIndices())
         pages.forEach(p => merged.addPage(p))
       } else {
