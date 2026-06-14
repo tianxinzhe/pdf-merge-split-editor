@@ -36,13 +36,6 @@ interface ToolDrawerProps {
   hideSplit?: boolean
 }
 
-const POSITIONS = [
-  { value: 'full', label: '铺满' }, { value: 'center', label: '居中' },
-  { value: 'tl', label: '左上' }, { value: 'tc', label: '上中' }, { value: 'tr', label: '右上' },
-  { value: 'ml', label: '左中' }, { value: 'mc', label: '正中' }, { value: 'mr', label: '右中' },
-  { value: 'bl', label: '左下' }, { value: 'bc', label: '下中' }, { value: 'br', label: '右下' },
-]
-
 export function ToolDrawer({
   collapsed, onToggleCollapse,
   pages, currentPageIndex, sourceFile,
@@ -63,13 +56,19 @@ export function ToolDrawer({
   const [wmAngle, setWmAngle] = useState(-45)
   const [wmPosition, setWmPosition] = useState<Watermark['position']>('full')
   const [wmTarget, setWmTarget] = useState<'current' | 'all'>('current')
+  const [wmTab, setWmTab] = useState<'text' | 'image'>('text')
   const [imgWmData, setImgWmData] = useState<string>('')
   const [imgWmName, setImgWmName] = useState('')
+  const [sections, setSections] = useState({ watermark: false, redact: false })
   const imgInputRef = useRef<HTMLInputElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const totalPages = pages.filter(p => !p.deleted).length
   const currentPage = pages[currentPageIndex]
   const { stack, pointer } = history
+
+  const toggleSection = useCallback((key: 'watermark' | 'redact') => {
+    setSections(prev => ({ ...prev, [key]: !prev[key] }))
+  }, [])
 
   const handleSearchInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => onSearch(e.target.value), [onSearch])
 
@@ -211,109 +210,218 @@ export function ToolDrawer({
         </section>
         )}
 
-        {/* === 水印与脱壳 === */}
+        {/* === 水印 === (默认折叠) */}
         <section className="border-b border-gray-800/50">
-          <div className="px-3 py-2 flex items-center gap-2 text-xs text-gray-400">
-            <span className="font-medium">水印与脱壳</span>
-          </div>
+          <button onClick={() => toggleSection('watermark')}
+            className="w-full px-3 py-2 flex items-center gap-2 hover:bg-gray-800/40 text-xs text-gray-400 cursor-pointer transition-colors">
+            <span className="text-xs">{sections.watermark ? '▼' : '▶'}</span>
+            <span className="font-medium">水印</span>
+          </button>
+          {sections.watermark && (
           <div className="px-3 pb-3 space-y-3">
-              <div>
-                <div className="text-sm text-gray-500 mb-1">权限脱壳</div>
-                <button onClick={onUnlock} disabled={!sourceFile}
-                  className="w-full px-3 py-1 rounded-lg bg-gray-800 hover:bg-gray-700 disabled:opacity-40 text-sm text-gray-300 font-medium transition-colors cursor-pointer">🔓 解锁所有者密码</button>
-              </div>
 
-              <div>
-                <div className="text-sm text-gray-500 mb-1">文字水印</div>
-                <input type="text" value={wmText} onChange={e => setWmText(e.target.value)} placeholder="水印文字"
-                  className="w-full px-2 py-1.5 rounded bg-gray-800 border border-gray-700 text-xs text-gray-200 placeholder-gray-600 focus:border-blue-500 focus:outline-none mb-1.5" />
-                <div className="grid grid-cols-2 gap-1.5 mb-1.5">
-                  <div><label className="text-xs text-gray-500 block">字号 {wmFontSize}</label><input type="range" min={8} max={72} value={wmFontSize} onChange={e => setWmFontSize(parseInt(e.target.value))} className="w-full accent-blue-500" /></div>
-                  <div><label className="text-xs text-gray-500 block">透明度 {Math.round(wmOpacity * 100)}%</label><input type="range" min={5} max={100} value={Math.round(wmOpacity * 100)} onChange={e => setWmOpacity(parseInt(e.target.value) / 100)} className="w-full accent-blue-500" /></div>
-                </div>
-                <div className="mb-1.5"><label className="text-xs text-gray-500 block">旋转 {wmAngle}°</label><input type="range" min={-180} max={180} value={wmAngle} onChange={e => setWmAngle(parseInt(e.target.value))} className="w-full accent-blue-500" /></div>
-                <div className="mb-1.5">
-                  <label className="text-xs text-gray-500 block mb-1">九宫格定位</label>
-                  <div className="grid grid-cols-4 gap-1">
-                    {POSITIONS.map(p => (
-                      <button key={p.value} onClick={() => setWmPosition(p.value as Watermark['position'])}
-                        className={`px-1 py-0.5 rounded text-xs font-medium transition-colors cursor-pointer ${wmPosition === p.value ? 'bg-blue-600 text-white' : 'bg-gray-800 text-gray-400 hover:text-white'}`}>{p.label}</button>
-                    ))}
+            {/* Tab: 文字 / 图片 */}
+            <div className="flex gap-1 bg-gray-800/60 rounded-lg p-0.5">
+              <button onClick={() => setWmTab('text')}
+                className={`flex-1 px-2 py-1 rounded-md text-xs font-medium transition-colors cursor-pointer ${
+                  wmTab === 'text' ? 'bg-blue-600 text-white shadow-sm' : 'text-gray-400 hover:text-white'
+                }`}>文字水印</button>
+              <button onClick={() => setWmTab('image')}
+                className={`flex-1 px-2 py-1 rounded-md text-xs font-medium transition-colors cursor-pointer ${
+                  wmTab === 'image' ? 'bg-blue-600 text-white shadow-sm' : 'text-gray-400 hover:text-white'
+                }`}>图片水印</button>
+            </div>
+
+            {/* ─── Live preview ─── */}
+            {wmTab === 'text' && wmText.trim() && (
+              <div className="rounded-lg overflow-hidden border border-gray-700/50 bg-gray-900 h-20 flex items-center justify-center">
+                <span
+                  className="select-none"
+                  style={{
+                    fontSize: Math.min(wmFontSize, 36),
+                    opacity: wmOpacity,
+                    color: '#fff',
+                    transform: `rotate(${wmAngle}deg)`,
+                  }}
+                >{wmText}</span>
+              </div>
+            )}
+
+            {wmTab === 'image' && imgWmData && (
+              <div className="rounded-lg overflow-hidden border border-gray-700/50 bg-gray-900 h-20 flex items-center justify-center">
+                <img src={imgWmData} alt="watermark preview" className="max-h-full max-w-full object-contain"
+                  style={{ opacity: wmOpacity, transform: `rotate(${wmAngle}deg)` }} />
+              </div>
+            )}
+
+            {/* ─── Text watermark ─── */}
+            {wmTab === 'text' && (
+              <div className="space-y-2.5">
+                <input type="text" value={wmText} onChange={e => setWmText(e.target.value)}
+                  placeholder="输入水印文字..."
+                  className="w-full px-2.5 py-2 rounded-lg bg-gray-800 border border-gray-700 text-xs text-gray-200 placeholder-gray-600 focus:border-blue-500 focus:outline-none" />
+
+                <div className="grid grid-cols-2 gap-2.5">
+                  <div>
+                    <label className="text-xs text-gray-500 block mb-1">字号 <span className="text-gray-300">{wmFontSize}</span></label>
+                    <input type="range" min={8} max={72} value={wmFontSize}
+                      onChange={e => setWmFontSize(parseInt(e.target.value))}
+                      className="w-full accent-blue-500" />
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-500 block mb-1">不透明度 <span className="text-gray-300">{Math.round(wmOpacity * 100)}%</span></label>
+                    <input type="range" min={5} max={100} value={Math.round(wmOpacity * 100)}
+                      onChange={e => setWmOpacity(parseInt(e.target.value) / 100)}
+                      className="w-full accent-blue-500" />
                   </div>
                 </div>
-                <div className="flex gap-1 mb-1.5">
-                  <button onClick={() => setWmTarget('current')} className={`flex-1 px-2 py-1 rounded text-sm font-medium transition-colors cursor-pointer ${wmTarget === 'current' ? 'bg-gray-700 text-white' : 'bg-gray-800 text-gray-400 hover:text-white'}`}>当前页</button>
-                  <button onClick={() => setWmTarget('all')} className={`flex-1 px-2 py-1 rounded text-sm font-medium transition-colors cursor-pointer ${wmTarget === 'all' ? 'bg-gray-700 text-white' : 'bg-gray-800 text-gray-400 hover:text-white'}`}>全部页</button>
-                </div>
-                <button onClick={handleAddTextWatermark} disabled={!wmText.trim()}
-                  className="w-full px-3 py-1 rounded-lg bg-purple-600 hover:bg-purple-500 disabled:opacity-40 text-white text-sm font-medium transition-colors cursor-pointer">添加文字水印</button>
-              </div>
 
-              <div>
-                <div className="text-sm text-gray-500 mb-1">图片水印</div>
+                <div>
+                  <label className="text-xs text-gray-500 block mb-1">旋转 <span className="text-gray-300">{wmAngle}°</span></label>
+                  <input type="range" min={-180} max={180} value={wmAngle}
+                    onChange={e => setWmAngle(parseInt(e.target.value))}
+                    className="w-full accent-blue-500" />
+                </div>
+              </div>
+            )}
+
+            {/* ─── Image watermark ─── */}
+            {wmTab === 'image' && (
+              <div className="space-y-2.5">
                 <button onClick={() => imgInputRef.current?.click()}
-                  className="w-full px-3 py-1.5 rounded border-2 border-dashed border-gray-700 hover:border-gray-500 text-sm text-gray-400 hover:text-white transition-colors cursor-pointer">
-                  {imgWmData ? `已选: ${imgWmName}` : '点击上传水印图片'}
+                  className="w-full py-3 rounded-lg border-2 border-dashed border-gray-700 hover:border-gray-500 text-xs text-gray-400 hover:text-white transition-colors cursor-pointer">
+                  {imgWmData ? `📎 ${imgWmName}` : '📤 点击上传水印图片'}
                 </button>
                 <input ref={imgInputRef} type="file" accept="image/*" onChange={handleImageSelect} className="hidden" />
-                {imgWmData && (
-                  <div className="mt-1.5">
-                    <img src={imgWmData} alt="水印预览" className="w-full max-h-20 object-contain rounded bg-gray-800" />
-                    <button onClick={handleAddImageWatermark}
-                      className="w-full mt-1.5 px-3 py-1 rounded-lg bg-purple-600 hover:bg-purple-500 text-white text-sm font-medium transition-colors cursor-pointer">添加图片水印</button>
-                  </div>
-                )}
-              </div>
 
-              {currentPage && currentPage.watermarks.length > 0 && (
-                <div>
-                  <div className="text-sm text-gray-500 mb-1">当前页水印</div>
-                  <div className="space-y-0.5">
-                    {currentPage.watermarks.map(w => (
-                      <div key={w.id} className="flex items-center justify-between px-2 py-1 rounded bg-gray-800 text-sm">
-                        <span className="text-gray-300 truncate">{w.text}</span>
-                        <button onClick={() => onRemoveWatermark(currentPageIndex, w.id)} className="text-gray-500 hover:text-red-400 ml-2 cursor-pointer">✕</button>
-                      </div>
-                    ))}
+                <div className="grid grid-cols-2 gap-2.5">
+                  <div>
+                    <label className="text-xs text-gray-500 block mb-1">不透明度 <span className="text-gray-300">{Math.round(wmOpacity * 100)}%</span></label>
+                    <input type="range" min={5} max={100} value={Math.round(wmOpacity * 100)}
+                      onChange={e => setWmOpacity(parseInt(e.target.value) / 100)}
+                      className="w-full accent-blue-500" />
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-500 block mb-1">旋转 <span className="text-gray-300">{wmAngle}°</span></label>
+                    <input type="range" min={-180} max={180} value={wmAngle}
+                      onChange={e => setWmAngle(parseInt(e.target.value))}
+                      className="w-full accent-blue-500" />
                   </div>
                 </div>
-              )}
-
-              <div className="pt-1 space-y-1">
-                <button onClick={onExport} className="w-full px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold transition-colors cursor-pointer">导出最终 PDF</button>
-                {!hideSplit && (
-                <button onClick={onExportSplit} className="w-full px-3 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-medium transition-colors cursor-pointer">切分导出</button>
-                )}
               </div>
+            )}
+
+            {/* ─── Position grid ─── */}
+            <div>
+              <label className="text-xs text-gray-500 block mb-1.5">位置</label>
+              <div className="grid grid-cols-3 gap-1">
+                {[
+                  { v: 'tl', l: '↖' }, { v: 'tc', l: '↑' }, { v: 'tr', l: '↗' },
+                  { v: 'ml', l: '←' }, { v: 'mc', l: '⊙' }, { v: 'mr', l: '→' },
+                  { v: 'bl', l: '↙' }, { v: 'bc', l: '↓' }, { v: 'br', l: '↘' },
+                ].map(p => (
+                  <button key={p.v} onClick={() => setWmPosition(p.v as Watermark['position'])}
+                    className={`py-1 rounded-md text-xs font-medium transition-colors cursor-pointer ${
+                      wmPosition === p.v
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-white'
+                    }`}>{p.l}</button>
+                ))}
+              </div>
+              <div className="flex gap-1 mt-1.5">
+                <button onClick={() => setWmPosition('full')}
+                  className={`flex-1 py-1 rounded-md text-xs font-medium transition-colors cursor-pointer ${
+                    wmPosition === 'full' ? 'bg-blue-600 text-white' : 'bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-white'
+                  }`}>铺满</button>
+                <button onClick={() => setWmPosition('center')}
+                  className={`flex-1 py-1 rounded-md text-xs font-medium transition-colors cursor-pointer ${
+                    wmPosition === 'center' ? 'bg-blue-600 text-white' : 'bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-white'
+                  }`}>居中</button>
+              </div>
+            </div>
+
+            {/* ─── Apply scope ─── */}
+            <div className="flex gap-1">
+              <button onClick={() => setWmTarget('current')}
+                className={`flex-1 py-1.5 rounded-md text-xs font-medium transition-colors cursor-pointer ${
+                  wmTarget === 'current' ? 'bg-gray-700 text-white' : 'bg-gray-800 text-gray-400 hover:text-white'
+                }`}>当前页</button>
+              <button onClick={() => setWmTarget('all')}
+                className={`flex-1 py-1.5 rounded-md text-xs font-medium transition-colors cursor-pointer ${
+                  wmTarget === 'all' ? 'bg-gray-700 text-white' : 'bg-gray-800 text-gray-400 hover:text-white'
+                }`}>全部页</button>
+            </div>
+
+            {/* ─── Action button ─── */}
+            <button onClick={wmTab === 'text' ? handleAddTextWatermark : handleAddImageWatermark}
+              disabled={wmTab === 'text' ? !wmText.trim() : !imgWmData}
+              className="w-full py-2 rounded-lg bg-purple-600 hover:bg-purple-500 disabled:opacity-40 text-white text-sm font-medium transition-colors cursor-pointer shadow-sm shadow-purple-600/20">
+              + 添加{wmTab === 'text' ? '文字' : '图片'}水印
+            </button>
+
+            {/* ─── Existing watermarks ─── */}
+            {currentPage && currentPage.watermarks.length > 0 && (
+              <div>
+                <div className="text-xs text-gray-500 mb-1">已添加的水印 ({currentPage.watermarks.length})</div>
+                <div className="space-y-0.5">
+                  {currentPage.watermarks.map(w => (
+                    <div key={w.id} className="flex items-center justify-between px-2 py-1 rounded bg-gray-800/60 text-xs">
+                      <span className="text-gray-300 truncate">{w.text || '图片水印'}</span>
+                      <button onClick={() => onRemoveWatermark(currentPageIndex, w.id)}
+                        className="text-gray-500 hover:text-red-400 ml-2 cursor-pointer shrink-0">✕</button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+          </div>
+          )}
+        </section>
+
+        {/* === 导出 === */}
+        <section className="border-b border-gray-800/50">
+          <div className="px-3 pb-3 pt-2 space-y-1.5">
+            <button onClick={onExport} className="w-full px-3 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold transition-colors cursor-pointer shadow-sm shadow-blue-600/20">导出最终 PDF</button>
+            {!hideSplit && (
+            <button onClick={onExportSplit} className="w-full px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-medium transition-colors cursor-pointer">切分导出</button>
+            )}
           </div>
         </section>
 
-        {/* === 遮罩 === */}
+        {/* === 遮罩 === (默认折叠) */}
         <section className="border-b border-gray-800/50">
-          <div className="px-3 py-2 flex items-center gap-2 text-xs text-gray-400">
+          <button onClick={() => toggleSection('redact')}
+            className="w-full px-3 py-2 flex items-center gap-2 hover:bg-gray-800/40 text-xs text-gray-400 cursor-pointer transition-colors">
+            <span className="text-xs">{sections.redact ? '▼' : '▶'}</span>
             <span className="font-medium">遮罩</span>
-          </div>
+          </button>
+          {sections.redact && (
           <div className="px-3 pb-3 space-y-2">
-              <button onClick={onToggleRedact}
-                className={`w-full px-3 py-1.5 rounded-lg text-sm font-medium transition-colors cursor-pointer ${isRedacting ? 'bg-red-600 hover:bg-red-500 text-white' : 'bg-gray-800 hover:bg-gray-700 text-gray-300'}`}>
-                {isRedacting ? '🔒 完成遮蔽' : '🖌 进入遮蔽模式'}
-              </button>
-              {currentPage && currentPage.redactions.length > 0 && (
-                <div>
-                  <div className="text-sm text-gray-500 mb-1">当前页遮蔽块</div>
-                  <div className="space-y-0.5">
-                    {currentPage.redactions.map(r => (
-                      <div key={r.id} className="flex items-center justify-between px-2 py-1 rounded bg-gray-800 text-sm">
-                        <span className="text-gray-400 truncate">遮蔽块 {r.id.slice(-4)}</span>
-                        <button onClick={() => onRemoveRedaction(currentPageIndex, r.id)} className="text-gray-500 hover:text-red-400 ml-2 cursor-pointer">✕</button>
-                      </div>
-                    ))}
-                  </div>
-                  <button onClick={onClearRedactions}
-                    className="w-full mt-1.5 px-3 py-1 rounded-lg bg-red-900/50 hover:bg-red-800 text-red-300 text-sm font-medium transition-colors cursor-pointer">清除全部遮蔽</button>
+            <button onClick={onToggleRedact}
+              className={`w-full px-3 py-2 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
+                isRedacting ? 'bg-red-600 hover:bg-red-500 text-white' : 'bg-gray-800 hover:bg-gray-700 text-gray-300'
+              }`}>
+              {isRedacting ? '🔒 完成遮蔽' : '🖌 进入遮蔽模式'}
+            </button>
+            {currentPage && currentPage.redactions.length > 0 && (
+              <div>
+                <div className="text-xs text-gray-500 mb-1">当前页遮蔽块 ({currentPage.redactions.length})</div>
+                <div className="space-y-0.5">
+                  {currentPage.redactions.map(r => (
+                    <div key={r.id} className="flex items-center justify-between px-2 py-1 rounded bg-gray-800/60 text-xs">
+                      <span className="text-gray-400">遮蔽 {r.id.slice(-4)}</span>
+                      <button onClick={() => onRemoveRedaction(currentPageIndex, r.id)}
+                        className="text-gray-500 hover:text-red-400 ml-2 cursor-pointer">✕</button>
+                    </div>
+                  ))}
                 </div>
-              )}
+                <button onClick={onClearRedactions}
+                  className="w-full mt-1.5 py-1.5 rounded-lg bg-red-900/50 hover:bg-red-800 text-red-300 text-xs font-medium transition-colors cursor-pointer">清除全部遮蔽</button>
+              </div>
+            )}
           </div>
+          )}
         </section>
       </div>
 
