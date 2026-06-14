@@ -1,17 +1,16 @@
 /**
- * Remove owner-password restrictions from a PDF at the binary level.
+ * Remove owner-password restrictions from a PDF.
  *
  * Owner-lock PDFs have an empty user password but restrict copy/print/edit
  * via the /P permissions flag in the /Encrypt dictionary.
  *
- * Strategy: Strip the /Encrypt reference from the trailer/XRef stream
- * so readers no longer see the file as encrypted. Since the user password
- * is empty, the content streams are decryptable — but most readers will
- * simply render them fine once the /Encrypt entry is gone, because they
- * attempt the empty-string password automatically.
+ * Strategy: Use pdfjs to decrypt and render every page to canvas, then
+ * rebuild the PDF from those images. This is the only reliable approach
+ * because the content streams are genuinely encrypted; simply stripping
+ * the /Encrypt marker produces a PDF with garbled/blank content.
  *
- * For cases where binary patching doesn't work (e.g. AES-256 encryption
- * where streams are truly encrypted), we fall back to re-rendering.
+ * Binary patching (patchRemoveEncrypt) is still used in the export worker
+ * where pdf-lib needs to load the file structure without encryption errors.
  */
 
 import * as pdfjsLib from 'pdfjs-dist'
@@ -19,18 +18,11 @@ import { PDFDocument } from 'pdf-lib'
 import { pdfLoadingOptions } from './pdfjs-config'
 
 /**
- * Try to remove owner lock by copying pages through pdfjs → pdf-lib pipeline
- * using pdfjs decryption + pdf-lib structural copy (no re-rendering).
- *
- * pdfjs-dist decrypts everything internally. We then use pdf-lib to load
- * the SAME bytes but with ignoreEncryption, copy pages to a clean doc.
- * The key insight: for owner-only encrypted files, pdf-lib CAN read the
- * streams if we first verify pdfjs can open it with empty password (confirming
- * it's truly owner-only), then we do a raw binary patch to neutralize encryption.
+ * Remove owner lock by rendering every page via pdfjs (which properly
+ * decrypts the streams) and rebuilding a clean, unrestricted PDF from
+ * the rendered images.
  */
 export async function unlockOwnerPassword(binary: ArrayBuffer): Promise<Uint8Array> {
-  const bytes = new Uint8Array(binary)
-
   // First, verify this is an owner-only lock (empty user password)
   try {
     await pdfjsLib.getDocument({
@@ -42,22 +34,9 @@ export async function unlockOwnerPassword(binary: ArrayBuffer): Promise<Uint8Arr
     throw new Error('NOT_OWNER_ONLY')
   }
 
-  // Attempt binary patch: remove /Encrypt from trailer
-  const patched = patchRemoveEncrypt(bytes)
-  if (patched) {
-    // Verify the patched file loads correctly
-    try {
-      const doc = await PDFDocument.load(patched.buffer as ArrayBuffer)
-      // Quick sanity: check page count > 0
-      if (doc.getPageCount() > 0) {
-        return await doc.save()
-      }
-    } catch {
-      // Patching didn't produce a valid PDF, fall through to fallback
-    }
-  }
-
-  // Fallback: re-render at 1.5x scale (smaller than 2.5x, still readable)
+  // Skip raw binary patching — it only strips the /Encrypt marker without
+  // decrypting the content streams, producing blank pages for most real PDFs.
+  // Always go through pdfjs rendering to properly decrypt content.
   return await fallbackRerender(binary)
 }
 
