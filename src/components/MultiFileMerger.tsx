@@ -82,7 +82,7 @@ export function MultiFileMerger({ onSendToEditor }: MultiFileMergerProps) {
     for (const item of files) {
       if (item.type === 'pdf') {
         let srcBin: ArrayBuffer | Uint8Array = item.binary
-        try { srcBin = await unlockOwnerPassword(item.binary) } catch { }
+        try { srcBin = await unlockOwnerPassword(item.binary) } catch { /* noop */ }
         const src = await PDFDocument.load(srcBin, { ignoreEncryption: true })
         const pages = await merged.copyPages(src, src.getPageIndices())
         pages.forEach(p => merged.addPage(p))

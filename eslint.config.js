@@ -13,6 +13,14 @@ export default defineConfig([
       js.configs.recommended,
       tseslint.configs.recommended,
       reactHooks.configs.flat.recommended,
+      // Override: disable React Compiler rules (not using compiler)
+      {
+        rules: {
+          'react-hooks/immutability': 'off',
+          'react-hooks/preserve-manual-memoization': 'off',
+          'react-hooks/refs': 'off',
+        },
+      },
       reactRefresh.configs.vite,
     ],
     languageOptions: {

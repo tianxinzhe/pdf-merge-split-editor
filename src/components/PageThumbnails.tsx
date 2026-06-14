@@ -44,6 +44,11 @@ export function PageThumbnails({
     const idx = parseInt(target.getAttribute('data-page-idx') ?? '')
     if (!isNaN(idx)) onSetCurrentPage(idx)
   }
+  const onLoadThumbRef = useRef(onLoadThumb)
+  const thumbUrlsRef = useRef(thumbUrls)
+  onLoadThumbRef.current = onLoadThumb
+  thumbUrlsRef.current = thumbUrls
+
   // Lazy-load thumbnails via IntersectionObserver
   useEffect(() => {
     const el = thumbContainerRef.current
@@ -51,20 +56,20 @@ export function PageThumbnails({
     const pending = new Set<number>()
     el.querySelectorAll('[data-page-idx]').forEach(item => {
       const idx = parseInt(item.getAttribute('data-page-idx') ?? '')
-      if (!isNaN(idx) && !thumbUrls[idx]) pending.add(idx)
+      if (!isNaN(idx) && !thumbUrlsRef.current[idx]) pending.add(idx)
     })
     if (pending.size === 0) return
     const observer = new IntersectionObserver((entries) => {
       for (const entry of entries) {
         if (!entry.isIntersecting) continue
         const idx = parseInt(entry.target.getAttribute('data-page-idx') ?? '')
-        if (!isNaN(idx) && !thumbUrls[idx]) onLoadThumb(idx)
+        if (!isNaN(idx) && !thumbUrlsRef.current[idx]) onLoadThumbRef.current(idx)
         observer.unobserve(entry.target)
       }
     }, { root: el, rootMargin: '200px' })
     el.querySelectorAll('[data-page-idx]').forEach(item => {
       const idx = parseInt(item.getAttribute('data-page-idx') ?? '')
-      if (!isNaN(idx) && !thumbUrls[idx]) observer.observe(item)
+      if (!isNaN(idx) && !thumbUrlsRef.current[idx]) observer.observe(item)
     })
     return () => observer.disconnect()
   }, [pages.length])

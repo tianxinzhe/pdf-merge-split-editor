@@ -12,7 +12,10 @@ export function useIntersectionObserver(
   { onVisible, onHidden, rootMargin = '200px 0px 200px 0px' }: UseVisibilityOptions,
 ) {
   const callbacksRef = useRef({ onVisible, onHidden })
-  callbacksRef.current = { onVisible, onHidden }
+
+  useEffect(() => {
+    callbacksRef.current = { onVisible, onHidden }
+  }, [onVisible, onHidden])
 
   useEffect(() => {
     const container = containerRef.current
@@ -41,5 +44,5 @@ export function useIntersectionObserver(
     cards.forEach(el => observer.observe(el))
 
     return () => observer.disconnect()
-  }, [containerRef, pageIds.join(',')])
+  }, [containerRef, pageIds.length, rootMargin])
 }

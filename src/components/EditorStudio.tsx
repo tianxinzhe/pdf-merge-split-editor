@@ -7,7 +7,7 @@ import { usePDFState } from '../hooks/usePDFState'
 import { renderPagePreview } from '../utils/pdf-render'
 import { searchPdfText } from '../utils/pdf-search'
 import { pdfLoadingOptions } from '../utils/pdfjs-config'
-import type { WorkerResponse, SourceFile, Watermark } from '../types'
+import type { WorkerAction, WorkerResponse, SourceFile, Watermark } from '../types'
 import * as pdfjsLib from 'pdfjs-dist'
 
 function generateId(): string {
@@ -57,18 +57,6 @@ export function EditorStudio({ injectedFile, onInjectedFileConsumed }: EditorStu
   }, [undo, redo])
 
   const workerRef = useRef<Worker | null>(null)
-  const getWorker = useCallback(() => {
-    if (!workerRef.current) {
-      workerRef.current = new Worker(new URL('../workers/pdf.worker.ts', import.meta.url), { type: 'module' })
-      workerRef.current.onmessage = (e: MessageEvent<WorkerResponse>) => handleWorkerMessage(e.data)
-    }
-    return workerRef.current
-  }, [])
-
-  const postAction = useCallback((action: any) => getWorker().postMessage(action), [getWorker])
-  const registerSource = useCallback((id: string, binary: ArrayBuffer) => {
-    getWorker().postMessage({ type: 'REGISTER_SOURCE', payload: { id, binary } }, [binary])
-  }, [getWorker])
 
   const handleWorkerMessage = useCallback((response: WorkerResponse) => {
     switch (response.type) {
@@ -97,6 +85,19 @@ export function EditorStudio({ injectedFile, onInjectedFileConsumed }: EditorStu
       }
     }
   }, [loadFileInner])
+
+  const getWorker = useCallback(() => {
+    if (!workerRef.current) {
+      workerRef.current = new Worker(new URL('../workers/pdf.worker.ts', import.meta.url), { type: 'module' })
+      workerRef.current.onmessage = (e: MessageEvent<WorkerResponse>) => handleWorkerMessage(e.data)
+    }
+    return workerRef.current
+  }, [handleWorkerMessage])
+
+  const postAction = useCallback((action: WorkerAction) => getWorker().postMessage(action), [getWorker])
+  const registerSource = useCallback((id: string, binary: ArrayBuffer) => {
+    getWorker().postMessage({ type: 'REGISTER_SOURCE', payload: { id, binary } }, [binary])
+  }, [getWorker])
 
   const lastPdfFileRef = useRef<SourceFile | null>(null)
 
@@ -166,7 +167,7 @@ export function EditorStudio({ injectedFile, onInjectedFileConsumed }: EditorStu
     try {
       const url = await renderPagePreview(sf.binary, page.originalPageIndex)
       setPreviewUrl(pageIndex, url)
-    } catch { } finally { renderQueue.current.delete(pageIndex) }
+    } catch { /* noop */ } finally { renderQueue.current.delete(pageIndex) }
   }, [state.pages, sourceFile, setPreviewUrl])
 
   const handleClearPreview = useCallback((pageIndex: number) => {

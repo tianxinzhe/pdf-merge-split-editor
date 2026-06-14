@@ -13,23 +13,6 @@ export function FilePanel({ hasSource, onDrop }: FilePanelProps) {
   const [images, setImages] = useState<{ file: File; dataUrl: string }[]>([])
   const [merging, setMerging] = useState(false)
 
-  const handleDragOver = useCallback((e: React.DragEvent) => { e.preventDefault(); setIsDragging(true) }, [])
-  const handleDragLeave = useCallback(() => setIsDragging(false), [])
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault(); setIsDragging(false)
-    const files = Array.from(e.dataTransfer.files).filter(f => f.type === 'application/pdf' || f.type.startsWith('image/'))
-    const pdfs = files.filter(f => f.type === 'application/pdf')
-    if (pdfs.length > 0) onDrop(pdfs)
-    const imgs = files.filter(f => f.type.startsWith('image/'))
-    if (imgs.length > 0) addImages(imgs)
-  }, [onDrop])
-
-  const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || [])
-    if (files.length > 0) onDrop(files)
-    e.target.value = ''
-  }, [onDrop])
-
   const addImages = useCallback(async (files: File[]) => {
     const entries: { file: File; dataUrl: string }[] = []
     for (const f of files) {
@@ -42,6 +25,23 @@ export function FilePanel({ hasSource, onDrop }: FilePanelProps) {
     }
     setImages(prev => [...prev, ...entries])
   }, [])
+
+  const handleDragOver = useCallback((e: React.DragEvent) => { e.preventDefault(); setIsDragging(true) }, [])
+  const handleDragLeave = useCallback(() => setIsDragging(false), [])
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault(); setIsDragging(false)
+    const files = Array.from(e.dataTransfer.files).filter(f => f.type === 'application/pdf' || f.type.startsWith('image/'))
+    const pdfs = files.filter(f => f.type === 'application/pdf')
+    if (pdfs.length > 0) onDrop(pdfs)
+    const imgs = files.filter(f => f.type.startsWith('image/'))
+    if (imgs.length > 0) addImages(imgs)
+  }, [onDrop, addImages])
+
+  const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || [])
+    if (files.length > 0) onDrop(files)
+    e.target.value = ''
+  }, [onDrop])
 
   const handleImageSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || [])

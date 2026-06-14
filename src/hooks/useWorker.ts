@@ -1,32 +1,31 @@
-import { useCallback } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import type { WorkerAction, WorkerResponse } from '../types'
 
 type MessageHandler = (response: WorkerResponse) => void
 
 export function useWorker(onMessage: MessageHandler) {
-  const workerRef = useCallback(() => {
+  const onMessageRef = useRef(onMessage)
+  const workerRef = useRef<Worker | null>(null)
+
+  useEffect(() => { onMessageRef.current = onMessage })
+
+  useEffect(() => {
     const w = new Worker(
       new URL('../workers/pdf.worker.ts', import.meta.url),
       { type: 'module' },
     )
-    w.onmessage = (e: MessageEvent<WorkerResponse>) => onMessage(e.data)
-    w.onerror = (e) => onMessage({ type: 'ERROR', payload: { message: e.message } })
-    return w
-  }, [onMessage])
-
-  let worker: Worker | null = null
-
-  const getWorker = () => {
-    if (!worker) worker = workerRef()
-    return worker
-  }
+    w.onmessage = (e: MessageEvent<WorkerResponse>) => onMessageRef.current(e.data)
+    w.onerror = (e) => onMessageRef.current({ type: 'ERROR', payload: { message: e.message } })
+    workerRef.current = w
+    return () => w.terminate()
+  }, [])
 
   const postAction = useCallback((action: WorkerAction) => {
-    getWorker().postMessage(action)
+    workerRef.current?.postMessage(action)
   }, [])
 
   const registerSource = useCallback((id: string, binary: ArrayBuffer) => {
-    getWorker().postMessage(
+    workerRef.current?.postMessage(
       { type: 'REGISTER_SOURCE', payload: { id, binary } },
       { transfer: [binary] },
     )

@@ -1,5 +1,5 @@
 import { PDFDocument, degrees, rgb } from 'pdf-lib'
-import type { WorkerAction } from '../types'
+import type { PageItem, WorkerAction } from '../types'
 
 const sourceFileStore = new Map<string, ArrayBuffer>()
 
@@ -67,7 +67,7 @@ self.onmessage = async (e: MessageEvent<WorkerAction>) => {
       }
 
       case 'EXPORT_PDF': {
-        const { pages, sourceId } = action.payload as { pages: any[]; sourceId: string }
+        const { pages, sourceId } = action.payload as { pages: PageItem[]; sourceId: string }
         let srcBin: ArrayBuffer | Uint8Array = sourceFileStore.get(sourceId)!
         if (!srcBin) throw new Error('Source file not found')
         const patched = patchRemoveEncrypt(new Uint8Array(srcBin))

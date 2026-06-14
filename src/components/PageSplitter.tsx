@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState, type Dispatch, type SetStateAction } from 'react'
 import * as pdfjsLib from 'pdfjs-dist'
+import type { PDFDocumentProxy } from 'pdfjs-dist'
 import { pdfLoadingOptions } from '../utils/pdfjs-config'
 import type { SourceFile } from '../types'
 
@@ -68,15 +69,15 @@ export function PageSplitter() {
   const [isDragging, setIsDragging] = useState(false)
   const [exporting, setExporting] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const pdfDocRef = useRef<any>(null)
+  const pdfDocRef = useRef<PDFDocumentProxy | null>(null)
   const loadedThumbsRef = useRef<Set<number>>(new Set())
 
-  const renderThumbnail = useCallback(async (pdf: any, pageNum: number): Promise<string> => {
+  const renderThumbnail = useCallback(async (pdf: PDFDocumentProxy, pageNum: number): Promise<string> => {
     const page = await pdf.getPage(pageNum)
     const vp = page.getViewport({ scale: 0.3 })
     const canvas = document.createElement('canvas')
     canvas.width = vp.width; canvas.height = vp.height
-    await page.render({ canvasContext: canvas.getContext('2d')!, viewport: vp }).promise
+    await page.render({ canvas, canvasContext: canvas.getContext('2d')!, viewport: vp }).promise
     return canvas.toDataURL('image/jpeg', 0.6)
   }, [])
 
@@ -87,7 +88,7 @@ export function PageSplitter() {
     const vp = page.getViewport({ scale: 1.5 })
     const canvas = document.createElement('canvas')
     canvas.width = vp.width; canvas.height = vp.height
-    await page.render({ canvasContext: canvas.getContext('2d')!, viewport: vp }).promise
+    await page.render({ canvas, canvasContext: canvas.getContext('2d')!, viewport: vp }).promise
     return canvas.toDataURL('image/jpeg', 0.85)
   }, [])
 
@@ -174,7 +175,7 @@ export function PageSplitter() {
       const a = document.createElement('a')
       a.href = url; a.download = `split_${state.sourceFile.name}`; a.click()
       URL.revokeObjectURL(url)
-    } catch (e) {
+    } catch {
       // Encrypted PDF — fall back to pdfjs rasterization
       try {
         const pdf = pdfDocRef.current
@@ -194,7 +195,7 @@ export function PageSplitter() {
           const vp = page.getViewport({ scale: 2 })
           const canvas = document.createElement('canvas')
           canvas.width = vp.width; canvas.height = vp.height
-          await page.render({ canvasContext: canvas.getContext('2d')!, viewport: vp }).promise
+          await page.render({ canvas, canvasContext: canvas.getContext('2d')!, viewport: vp }).promise
           const blob = await new Promise<Blob>(resolve => canvas.toBlob(b => resolve(b!), 'image/jpeg', 0.92))
           const imgBytes = new Uint8Array(await blob.arrayBuffer())
           const img = await outDoc.embedJpg(imgBytes)
