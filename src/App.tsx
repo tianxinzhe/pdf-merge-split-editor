@@ -3,7 +3,7 @@ import { TopBar } from './components/TopBar'
 import { PageSplitter } from './components/PageSplitter'
 import { EditorStudio } from './components/EditorStudio'
 import { MultiFileMerger } from './components/MultiFileMerger'
-import { PasswordHub } from './components/PasswordHub'
+import { Toolbox } from './components/Toolbox'
 import type { TabId } from './types'
 import './utils/pdfjs-config' // Initialize pdfjs worker + wasm globally
 
@@ -58,9 +58,9 @@ export default function App() {
             <MultiFileMerger onSendToEditor={handleSendToEditor} />
           </div>
         )}
-        {mountedTabs.has('password') && (
-          <div className={`absolute inset-0 flex ${activeTab === 'password' ? '' : 'invisible pointer-events-none'}`}>
-            <PasswordHub />
+        {mountedTabs.has('toolbox') && (
+          <div className={`absolute inset-0 flex ${activeTab === 'toolbox' ? '' : 'invisible pointer-events-none'}`}>
+            <Toolbox />
           </div>
         )}
       </div>

@@ -1,4 +1,4 @@
-export type TabId = 'splitter' | 'editor' | 'merger' | 'password'
+export type TabId = 'splitter' | 'editor' | 'merger' | 'toolbox'
 
 export interface TabDef {
   id: TabId
@@ -10,7 +10,7 @@ export const TABS: TabDef[] = [
   { id: 'splitter', label: '页面拆分', icon: '✂️' },
   { id: 'editor', label: '编辑精修', icon: '✍️' },
   { id: 'merger', label: '多文件合并', icon: '📂' },
-  { id: 'password', label: '闪电密码箱', icon: '⚡' },
+  { id: 'toolbox', label: '工具箱', icon: '🧰' },
 ]
 
 export interface SourceFile {
