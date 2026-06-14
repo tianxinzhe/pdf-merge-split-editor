@@ -152,7 +152,7 @@ export function PageSplitter() {
     if (!state.sourceFile || !pdfDocRef.current) return
     setExporting(true)
     try {
-      const pdf = pdfDocRef.current
+      const { PDFDocument } = await import('pdf-lib')
       let indices: number[] = []
       if (state.mode === 'range') {
         for (let i = state.rangeStart - 1; i < state.rangeEnd; i++) indices.push(i)
@@ -163,29 +163,54 @@ export function PageSplitter() {
       }
       if (indices.length === 0) { setExporting(false); return }
 
-      const { PDFDocument } = await import('pdf-lib')
-      const outDoc = await PDFDocument.create()
-      for (const idx of indices) {
-        const page = await pdf.getPage(idx + 1)
-        const vp = page.getViewport({ scale: 1.5 })
-        const canvas = document.createElement('canvas')
-        canvas.width = vp.width; canvas.height = vp.height
-        await page.render({ canvasContext: canvas.getContext('2d')!, viewport: vp }).promise
-        const blob = await new Promise<Blob>(resolve => canvas.toBlob(b => resolve(b!), 'image/jpeg', 0.85))
-        const imgBytes = new Uint8Array(await blob.arrayBuffer())
-        const img = await outDoc.embedJpg(imgBytes)
-        const origVp = page.getViewport({ scale: 1 })
-        const p = outDoc.addPage([origVp.width, origVp.height])
-        p.drawImage(img, { x: 0, y: 0, width: origVp.width, height: origVp.height })
-      }
-      const bytes = await outDoc.save()
+      // Unencrypted → fast path (copyPages, preserves text)
+      const srcDoc = await PDFDocument.load(state.sourceFile.binary)
+      const newDoc = await PDFDocument.create()
+      const copied = await newDoc.copyPages(srcDoc, indices)
+      copied.forEach(p => newDoc.addPage(p))
+      const bytes = await newDoc.save()
       const blob = new Blob([bytes], { type: 'application/pdf' })
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url; a.download = `split_${state.sourceFile.name}`; a.click()
       URL.revokeObjectURL(url)
     } catch (e) {
-      alert('导出失败: ' + (e instanceof Error ? e.message : String(e)))
+      // Encrypted PDF — fall back to pdfjs rasterization
+      try {
+        const pdf = pdfDocRef.current
+        const { PDFDocument } = await import('pdf-lib')
+        let indices: number[] = []
+        if (state.mode === 'range') {
+          for (let i = state.rangeStart - 1; i < state.rangeEnd; i++) indices.push(i)
+        } else {
+          indices = state.scatterInput.split(/[,，\s]+/)
+            .map(s => parseInt(s.trim()) - 1)
+            .filter(n => !isNaN(n) && n >= 0 && n < state.totalPages)
+        }
+        if (indices.length === 0) { setExporting(false); return }
+        const outDoc = await PDFDocument.create()
+        for (const idx of indices) {
+          const page = await pdf.getPage(idx + 1)
+          const vp = page.getViewport({ scale: 2 })
+          const canvas = document.createElement('canvas')
+          canvas.width = vp.width; canvas.height = vp.height
+          await page.render({ canvasContext: canvas.getContext('2d')!, viewport: vp }).promise
+          const blob = await new Promise<Blob>(resolve => canvas.toBlob(b => resolve(b!), 'image/jpeg', 0.92))
+          const imgBytes = new Uint8Array(await blob.arrayBuffer())
+          const img = await outDoc.embedJpg(imgBytes)
+          const origVp = page.getViewport({ scale: 1 })
+          const p = outDoc.addPage([origVp.width, origVp.height])
+          p.drawImage(img, { x: 0, y: 0, width: origVp.width, height: origVp.height })
+        }
+        const bytes = await outDoc.save()
+        const blob = new Blob([bytes], { type: 'application/pdf' })
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url; a.download = `split_${state.sourceFile.name}`; a.click()
+        URL.revokeObjectURL(url)
+      } catch (e2) {
+        alert('导出失败: ' + (e2 instanceof Error ? e2.message : String(e2)))
+      }
     } finally { setExporting(false) }
   }, [state])
 
