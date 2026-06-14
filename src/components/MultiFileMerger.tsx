@@ -51,16 +51,6 @@ export function MultiFileMerger({ onSendToEditor }: MultiFileMergerProps) {
     setFiles(prev => prev.filter(f => f.id !== id))
   }, [])
 
-  const moveFile = useCallback((index: number, direction: 'up' | 'down') => {
-    setFiles(prev => {
-      const next = [...prev]
-      const target = direction === 'up' ? index - 1 : index + 1
-      if (target < 0 || target >= next.length) return prev;
-      [next[index], next[target]] = [next[target], next[index]]
-      return next
-    })
-  }, [])
-
   const handleDragStart = useCallback((idx: number) => {
     setDragIndex(idx)
   }, [])
@@ -116,7 +106,7 @@ export function MultiFileMerger({ onSendToEditor }: MultiFileMergerProps) {
     setMerging(true)
     try {
       const bytes = await doMerge()
-      const blob = new Blob([bytes], { type: 'application/pdf' })
+      const blob = new Blob([bytes as BlobPart], { type: 'application/pdf' })
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url; a.download = 'merged.pdf'; a.click()

@@ -20,7 +20,6 @@ interface ToolDrawerProps {
   onScatterPagesChange: (v: string) => void
   onSearch: (q: string) => void
   onSplit: () => void
-  onUnlock: () => void
   onAddWatermark: (pageIndex: number, w: Watermark) => void
   onRemoveWatermark: (pageIndex: number, id: string) => void
   onToggleRedact: () => void
@@ -43,7 +42,7 @@ export function ToolDrawer({
   splitMode, splitRangeStart, splitRangeEnd, scatterPages,
   searchQuery, searchResults,
   onSplitModeChange, onSplitRangeChange, onScatterPagesChange,
-  onSearch, onSplit, onUnlock, onAddWatermark, onRemoveWatermark,
+  onSearch, onSplit, onAddWatermark, onRemoveWatermark,
   onToggleRedact, onClearRedactions, onRemoveRedaction,
   onExport, onExportSplit,
   onFileDrop,

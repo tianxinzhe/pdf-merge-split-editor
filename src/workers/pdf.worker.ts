@@ -133,11 +133,11 @@ self.onmessage = async (e: MessageEvent<WorkerAction>) => {
 
       case 'SPLIT_PDF': {
         const { pageIds, sourceId } = action.payload as { pageIds: string[]; sourceId: string }
-        let srcBin = sourceFileStore.get(sourceId)
+        const srcBin = sourceFileStore.get(sourceId)
         if (!srcBin) throw new Error('Source file not found')
         const patched = patchRemoveEncrypt(new Uint8Array(srcBin))
-        if (patched) srcBin = patched
-        const srcDoc = await PDFDocument.load(srcBin)
+        const loadBin: ArrayBuffer | Uint8Array = patched || srcBin
+        const srcDoc = await PDFDocument.load(loadBin)
         const outDoc = await PDFDocument.create()
         const indices = pageIds.map(id => parseInt(id.split('-')[1] ?? id.split('-').pop()!))
         for (const idx of indices) {

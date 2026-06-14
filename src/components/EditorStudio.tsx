@@ -7,9 +7,7 @@ import { usePDFState } from '../hooks/usePDFState'
 import { renderPagePreview } from '../utils/pdf-render'
 import { searchPdfText } from '../utils/pdf-search'
 import { pdfLoadingOptions } from '../utils/pdfjs-config'
-import { unlockOwnerPassword } from '../utils/pdf-unlock'
 import type { WorkerResponse, SourceFile, Watermark } from '../types'
-import { PDFDocument } from 'pdf-lib'
 import * as pdfjsLib from 'pdfjs-dist'
 
 function generateId(): string {
@@ -178,20 +176,6 @@ export function EditorStudio({ injectedFile, onInjectedFileConsumed }: EditorStu
     setPreviewUrl(pageIndex, undefined)
   }, [state.pages, setPreviewUrl])
 
-  const handleManualUnlock = useCallback(async () => {
-    const sf = sourceFile
-    if (!sf || sf.type !== 'pdf') return
-    try {
-      const bytes = await unlockOwnerPassword(sf.binary)
-      const blob = new Blob([bytes as BlobPart], { type: 'application/pdf' })
-      const url = URL.createObjectURL(blob); const a = document.createElement('a')
-      a.href = url; a.download = `unlocked_${sf.name}`; a.click()
-      URL.revokeObjectURL(url)
-    } catch {
-      setPasswordDialog({ fileId: sf.id, fileName: sf.name })
-    }
-  }, [sourceFile])
-
   const handleExport = useCallback(() => {
     if (!sourceFile) return
     const activePages = state.pages.filter(p => !p.deleted)
@@ -285,7 +269,6 @@ export function EditorStudio({ injectedFile, onInjectedFileConsumed }: EditorStu
         onScatterPagesChange={() => {}}
         onSearch={handleSearch}
         onSplit={() => {}}
-        onUnlock={handleManualUnlock}
         onAddWatermark={handleAddWatermark}
         onRemoveWatermark={removeWatermark}
         onToggleRedact={() => setIsRedacting(!isRedacting)}

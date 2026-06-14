@@ -62,7 +62,7 @@ export function Toolbox() {
   const removeOwnerLock = useCallback(async (file: PasswordFile) => {
     try {
       const bytes = await unlockOwnerPassword(file.binary)
-      const blob = new Blob([bytes], { type: 'application/pdf' })
+      const blob = new Blob([bytes as BlobPart], { type: 'application/pdf' })
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url; a.download = `unlocked_${file.name}`; a.click()
@@ -98,7 +98,7 @@ export function Toolbox() {
         const vp = page.getViewport({ scale: 2.5 })
         const canvas = document.createElement('canvas')
         canvas.width = vp.width; canvas.height = vp.height
-        await page.render({ canvasContext: canvas.getContext('2d')!, viewport: vp }).promise
+        await page.render({ canvas, canvasContext: canvas.getContext('2d')!, viewport: vp }).promise
         const blob = await new Promise<Blob>(resolve => canvas.toBlob(b => resolve(b!), 'image/jpeg', 0.92))
         const imgBytes = new Uint8Array(await blob.arrayBuffer())
         const img = await newDoc.embedJpg(imgBytes)
@@ -106,7 +106,7 @@ export function Toolbox() {
         p.drawImage(img, { x: 0, y: 0, width: vp.width, height: vp.height })
       }
       const bytes = await newDoc.save()
-      const downloadBlob = new Blob([bytes], { type: 'application/pdf' })
+      const downloadBlob = new Blob([bytes as BlobPart], { type: 'application/pdf' })
       const url = URL.createObjectURL(downloadBlob)
       const a = document.createElement('a')
       a.href = url; a.download = `decrypted_${file.name}`; a.click()
@@ -145,7 +145,7 @@ export function Toolbox() {
     const vp = page.getViewport({ scale })
     const canvas = document.createElement('canvas')
     canvas.width = vp.width; canvas.height = vp.height
-    await page.render({ canvasContext: canvas.getContext('2d')!, viewport: vp }).promise
+    await page.render({ canvas, canvasContext: canvas.getContext('2d')!, viewport: vp }).promise
     return new Promise(resolve => canvas.toBlob(b => resolve(b!), `image/${format === 'jpeg' ? 'jpeg' : 'png'}`, 0.95))
   }, [])
 
@@ -162,7 +162,7 @@ export function Toolbox() {
           zip.file(`${imgPdfFile.name}_第${i}页.${imgFormat}`, blob)
         }
         const zipBytes = await zip.generateAsync({ type: 'uint8array' })
-        const blob = new Blob([zipBytes], { type: 'application/zip' })
+        const blob = new Blob([zipBytes as BlobPart], { type: 'application/zip' })
         const url = URL.createObjectURL(blob)
         const a = document.createElement('a')
         a.href = url; a.download = `${imgPdfFile.name}_图片.zip`; a.click()

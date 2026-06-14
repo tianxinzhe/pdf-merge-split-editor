@@ -169,7 +169,7 @@ export function PageSplitter() {
       const copied = await newDoc.copyPages(srcDoc, indices)
       copied.forEach(p => newDoc.addPage(p))
       const bytes = await newDoc.save()
-      const blob = new Blob([bytes], { type: 'application/pdf' })
+      const blob = new Blob([bytes as BlobPart], { type: 'application/pdf' })
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url; a.download = `split_${state.sourceFile.name}`; a.click()
@@ -203,7 +203,7 @@ export function PageSplitter() {
           p.drawImage(img, { x: 0, y: 0, width: origVp.width, height: origVp.height })
         }
         const bytes = await outDoc.save()
-        const blob = new Blob([bytes], { type: 'application/pdf' })
+        const blob = new Blob([bytes as BlobPart], { type: 'application/pdf' })
         const url = URL.createObjectURL(blob)
         const a = document.createElement('a')
         a.href = url; a.download = `split_${state.sourceFile.name}`; a.click()
@@ -315,7 +315,7 @@ export function PageSplitter() {
 }
 
 /* Right panel extracted to keep main component readable */
-function RightPanel({ state, setState, exporting, updateRangePreview, handleExport, loadThumbnail }: {
+function RightPanel({ state, setState, exporting, updateRangePreview, handleExport }: {
   state: SplitterState
   setState: Dispatch<SetStateAction<SplitterState>>
   exporting: boolean

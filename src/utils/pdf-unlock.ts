@@ -47,7 +47,7 @@ export async function unlockOwnerPassword(binary: ArrayBuffer): Promise<Uint8Arr
   if (patched) {
     // Verify the patched file loads correctly
     try {
-      const doc = await PDFDocument.load(patched.buffer)
+      const doc = await PDFDocument.load(patched.buffer as ArrayBuffer)
       // Quick sanity: check page count > 0
       if (doc.getPageCount() > 0) {
         return await doc.save()
@@ -108,7 +108,7 @@ async function fallbackRerender(binary: ArrayBuffer): Promise<Uint8Array> {
     const canvas = document.createElement('canvas')
     canvas.width = vp.width; canvas.height = vp.height
     const ctx = canvas.getContext('2d')!
-    await page.render({ canvasContext: ctx, viewport: vp }).promise
+    await page.render({ canvas, canvasContext: ctx, viewport: vp }).promise
     const blob = await new Promise<Blob>(resolve =>
       canvas.toBlob(b => resolve(b!), 'image/jpeg', 0.82)
     )
