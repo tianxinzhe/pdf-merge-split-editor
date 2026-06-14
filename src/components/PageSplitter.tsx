@@ -152,16 +152,7 @@ export function PageSplitter() {
     if (!state.sourceFile || !pdfDocRef.current) return
     setExporting(true)
     try {
-      const { PDFDocument } = await import('pdf-lib')
-      let srcBin: ArrayBuffer | Uint8Array = state.sourceFile.binary
-      try {
-        const { unlockOwnerPassword } = await import('../utils/pdf-unlock')
-        srcBin = await unlockOwnerPassword(state.sourceFile.binary)
-      } catch {
-        // Not owner-only or unlock failed; fall back to original binary
-      }
-      const srcDoc = await PDFDocument.load(srcBin, { ignoreEncryption: true })
-      const newDoc = await PDFDocument.create()
+      const pdf = pdfDocRef.current
       let indices: number[] = []
       if (state.mode === 'range') {
         for (let i = state.rangeStart - 1; i < state.rangeEnd; i++) indices.push(i)
@@ -171,9 +162,23 @@ export function PageSplitter() {
           .filter(n => !isNaN(n) && n >= 0 && n < state.totalPages)
       }
       if (indices.length === 0) { setExporting(false); return }
-      const copied = await newDoc.copyPages(srcDoc, indices)
-      copied.forEach(p => newDoc.addPage(p))
-      const bytes = await newDoc.save()
+
+      const { PDFDocument } = await import('pdf-lib')
+      const outDoc = await PDFDocument.create()
+      for (const idx of indices) {
+        const page = await pdf.getPage(idx + 1)
+        const vp = page.getViewport({ scale: 1.5 })
+        const canvas = document.createElement('canvas')
+        canvas.width = vp.width; canvas.height = vp.height
+        await page.render({ canvasContext: canvas.getContext('2d')!, viewport: vp }).promise
+        const blob = await new Promise<Blob>(resolve => canvas.toBlob(b => resolve(b!), 'image/jpeg', 0.85))
+        const imgBytes = new Uint8Array(await blob.arrayBuffer())
+        const img = await outDoc.embedJpg(imgBytes)
+        const origVp = page.getViewport({ scale: 1 })
+        const p = outDoc.addPage([origVp.width, origVp.height])
+        p.drawImage(img, { x: 0, y: 0, width: origVp.width, height: origVp.height })
+      }
+      const bytes = await outDoc.save()
       const blob = new Blob([bytes], { type: 'application/pdf' })
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
