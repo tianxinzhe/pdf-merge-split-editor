@@ -35,7 +35,7 @@ export default function App() {
   }, [])
 
   return (
-    <div className="h-screen w-screen flex flex-col bg-gray-950 text-white overflow-hidden font-sans">
+    <div className="h-dvh w-full flex flex-col bg-gray-950 text-white overflow-hidden font-sans">
       <TopBar activeTab={activeTab} onTabChange={handleTabChange} />
 
       <div className="flex-1 flex overflow-hidden relative">
