@@ -72,22 +72,3 @@ export function renderSingleTextWatermark(
 
   return canvas.toDataURL('image/png')
 }
-
-export function dataUrlToUint8Array(dataUrl: string): Uint8Array {
-  const base64 = dataUrl.split(',')[1]
-  const binary = atob(base64)
-  const arr = new Uint8Array(binary.length)
-  for (let i = 0; i < binary.length; i++) {
-    arr[i] = binary.charCodeAt(i)
-  }
-  return arr
-}
-
-export function blobToDataUrl(blob: Blob): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader()
-    reader.onload = () => resolve(reader.result as string)
-    reader.onerror = reject
-    reader.readAsDataURL(blob)
-  })
-}

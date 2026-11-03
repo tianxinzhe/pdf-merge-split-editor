@@ -45,20 +45,3 @@ export async function searchPdfText(
 
   return results
 }
-
-export async function getPageText(
-  pdfBuffer: ArrayBuffer,
-  pageIndex: number,
-): Promise<string> {
-  const loadingTask = pdfjsLib.getDocument({
-    data: pdfBuffer.slice(0),
-    ...pdfLoadingOptions,
-  })
-
-  const pdf = await loadingTask.promise
-  const page = await pdf.getPage(pageIndex + 1)
-  const textContent = await page.getTextContent()
-  return textContent.items
-    .map(item => ('str' in item ? item.str : ''))
-    .join(' ')
-}

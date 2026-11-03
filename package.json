@@ -16,12 +16,10 @@
   },
   "dependencies": {
     "jszip": "^3.10.1",
-    "lightningcss-win32-x64-msvc": "^1.32.0",
     "pdf-lib": "^1.17.1",
     "pdfjs-dist": "^6.0.227",
     "react": "^19.2.6",
-    "react-dom": "^19.2.6",
-    "react-dropzone": "^15.0.0"
+    "react-dom": "^19.2.6"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
