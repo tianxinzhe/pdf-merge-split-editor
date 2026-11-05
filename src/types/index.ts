@@ -1,4 +1,4 @@
-export type TabId = 'splitter' | 'editor' | 'merger' | 'toolbox'
+export type TabId = 'home' | 'splitter' | 'editor' | 'merger' | 'toolbox'
 
 export interface TabDef {
   id: TabId
@@ -7,6 +7,7 @@ export interface TabDef {
 }
 
 export const TABS: TabDef[] = [
+  { id: 'home', label: '首页', icon: '🏠' },
   { id: 'splitter', label: '页面拆分', icon: '✂️' },
   { id: 'editor', label: '编辑精修', icon: '✍️' },
   { id: 'merger', label: '多文件合并', icon: '📂' },

@@ -4,15 +4,16 @@ import { PageSplitter } from './components/PageSplitter'
 import { EditorStudio } from './components/EditorStudio'
 import { MultiFileMerger } from './components/MultiFileMerger'
 import { Toolbox } from './components/Toolbox'
+import { HomePage } from './components/HomePage'
 import type { TabId } from './types'
 import './utils/pdfjs-config' // Initialize pdfjs worker + wasm globally
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<TabId>('splitter')
+  const [activeTab, setActiveTab] = useState<TabId>('home')
   const [injectedFile, setInjectedFile] = useState<{ name: string; binary: ArrayBuffer } | null>(null)
 
   // Track which tabs have been visited (lazy mount, then keep alive)
-  const [mountedTabs, setMountedTabs] = useState<Set<TabId>>(new Set(['splitter']))
+  const [mountedTabs, setMountedTabs] = useState<Set<TabId>>(new Set(['home']))
 
   const handleTabChange = useCallback((tab: TabId) => {
     setActiveTab(tab)
@@ -40,6 +41,11 @@ export default function App() {
 
       <div className="flex-1 flex overflow-hidden relative">
         {/* Keep-Alive: render each mounted tab, show/hide via CSS */}
+        {mountedTabs.has('home') && (
+          <div className={`absolute inset-0 ${activeTab === 'home' ? '' : 'invisible pointer-events-none'}`}>
+            <HomePage onNavigate={handleTabChange} />
+          </div>
+        )}
         {mountedTabs.has('splitter') && (
           <div className={`absolute inset-0 flex ${activeTab === 'splitter' ? '' : 'invisible pointer-events-none'}`}>
             <PageSplitter />

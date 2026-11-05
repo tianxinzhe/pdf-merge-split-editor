@@ -8,20 +8,24 @@ interface TopBarProps {
 
 export function TopBar({ activeTab, onTabChange }: TopBarProps) {
   return (
-    <div className="h-12 flex items-center justify-between px-4 border-b border-gray-800 bg-gray-900/80 backdrop-blur-sm shrink-0 z-50">
-      <div className="flex items-center gap-2 select-none">
+    <div className="h-12 flex items-center justify-between gap-3 px-4 border-b border-gray-800 bg-gray-900/80 backdrop-blur-sm shrink-0 z-50">
+      <button
+        onClick={() => onTabChange('home')}
+        title="返回首页"
+        className="flex items-center gap-2 select-none shrink-0 cursor-pointer"
+      >
         <span className="text-lg">🍋</span>
         <span className="text-base font-semibold text-white tracking-tight">Lemon PDF Studio</span>
-      </div>
+      </button>
 
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-1 overflow-x-auto">
         {TABS.map(tab => {
           const isActive = activeTab === tab.id
           return (
             <button
               key={tab.id}
               onClick={() => onTabChange(tab.id)}
-              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all cursor-pointer ${
+              className={`px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-all cursor-pointer ${
                 isActive
                   ? 'bg-blue-600 text-white shadow-sm shadow-blue-600/30'
                   : 'text-gray-400 hover:text-white hover:bg-gray-800'
