@@ -1,5 +1,6 @@
 import { useCallback, useRef, useEffect, useState } from 'react'
 import { isEditableTarget } from '../utils/keyboard'
+import { useI18n } from '../i18n'
 import type { PageItem, Redaction, Watermark, WatermarkDraft } from '../types'
 
 interface CenterPanelProps {
@@ -29,6 +30,7 @@ export function CenterPanel({
   onSetCurrentPage, onAddRedaction, onRemoveRedaction,
   onCloseFile,
 }: CenterPanelProps) {
+  const { t } = useI18n()
   const containerRef = useRef<HTMLDivElement>(null)
   const itemRefs = useRef<Map<number, HTMLDivElement>>(new Map())
   const [drawState, setDrawState] = useState<{ start: { x: number; y: number }; current: { x: number; y: number } } | null>(null)
@@ -138,25 +140,25 @@ export function CenterPanel({
           {fileName ? (
             <>
               <span className="text-xs text-gray-300 truncate" title={fileName}>{fileName}</span>
-              <span className="text-[11px] text-gray-400 shrink-0 tabular-nums">{totalActive} 页</span>
+              <span className="text-[11px] text-gray-400 shrink-0 tabular-nums">{t.editor.totalPages(totalActive)}</span>
             </>
           ) : (
-            <span className="text-xs text-gray-400">画布</span>
+            <span className="text-xs text-gray-400">{t.editor.canvas}</span>
           )}
           {onReselectFile && (
-            <button onClick={onReselectFile} title="重新选择文件"
+            <button onClick={onReselectFile} title={t.editor.reselectTitle}
               className="shrink-0 text-[11px] text-blue-400 hover:text-blue-300 transition-colors cursor-pointer">
-              重新选择
+              {t.editor.reselect}
             </button>
           )}
         </div>
         <div className="flex items-center gap-3 shrink-0">
           <span className="text-[11px] text-gray-400 tabular-nums">
-            画布 {currentPageIndex + 1}/{totalActive}
+            {t.editor.canvasPage(currentPageIndex + 1, totalActive)}
           </span>
           {onCloseFile && (
-            <button onClick={onCloseFile} title="关闭文件" className="text-xs text-gray-400 hover:text-white transition-colors cursor-pointer">
-              关闭
+            <button onClick={onCloseFile} title={t.editor.closeTitle} className="text-xs text-gray-400 hover:text-white transition-colors cursor-pointer">
+              {t.editor.close}
             </button>
           )}
         </div>
@@ -200,7 +202,7 @@ export function CenterPanel({
                     >
                       <img
                         src={page.previewUrl}
-                        alt={`Page ${idx + 1}`}
+                        alt={t.editor.pageAlt(idx + 1)}
                         className="block w-full h-auto"
                         draggable={false}
                       />
@@ -217,7 +219,7 @@ export function CenterPanel({
                         className="absolute bg-black cursor-pointer group"
                         style={{ left: r.x, top: r.y, width: r.w, height: r.h }}
                         onClick={e => { e.stopPropagation(); onRemoveRedaction(idx, r.id) }}
-                        title="点击移除遮蔽"
+                        title={t.editor.removeRedaction}
                       />
                     ))}
                     {drawState && (
@@ -245,11 +247,11 @@ export function CenterPanel({
                 {isActive && (
                   <div className="absolute top-2 right-2 flex gap-1" onClick={e => e.stopPropagation()}>
                     <button onClick={() => onRotatePage(idx)}
-                      className="w-6 h-6 rounded bg-black/60 hover:bg-black/80 text-sm flex items-center justify-center transition-colors" title="旋转">
+                      className="w-6 h-6 rounded bg-black/60 hover:bg-black/80 text-sm flex items-center justify-center transition-colors" title={t.editor.rotate}>
                       ↻
                     </button>
                     <button onClick={() => onDeletePage(idx)}
-                      className="w-6 h-6 rounded bg-black/60 hover:bg-red-600/80 text-sm flex items-center justify-center transition-colors" title="剔除">
+                      className="w-6 h-6 rounded bg-black/60 hover:bg-red-600/80 text-sm flex items-center justify-center transition-colors" title={t.editor.remove}>
                       ✕
                     </button>
                   </div>

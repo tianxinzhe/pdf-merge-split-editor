@@ -1,6 +1,7 @@
 import { useCallback, useRef, useState } from 'react'
 import { PDFDocument } from 'pdf-lib'
 import { unlockOwnerPassword } from '../utils/pdf-unlock'
+import { useI18n } from '../i18n'
 import type { MergerFileItem } from '../types'
 
 function generateId(): string {
@@ -12,6 +13,7 @@ interface MultiFileMergerProps {
 }
 
 export function MultiFileMerger({ onSendToEditor }: MultiFileMergerProps) {
+  const { t } = useI18n()
   const [files, setFiles] = useState<MergerFileItem[]>([])
   const [isDragging, setIsDragging] = useState(false)
   const [dragIndex, setDragIndex] = useState<number | null>(null)
@@ -112,9 +114,9 @@ export function MultiFileMerger({ onSendToEditor }: MultiFileMergerProps) {
       a.href = url; a.download = 'merged.pdf'; a.click()
       URL.revokeObjectURL(url)
     } catch (e) {
-      alert('合并失败: ' + (e instanceof Error ? e.message : String(e)))
+      alert(t.merger.mergeFailed(e instanceof Error ? e.message : String(e)))
     } finally { setMerging(false) }
-  }, [files, doMerge])
+  }, [files, doMerge, t])
 
   const handleSendToEditor = useCallback(async () => {
     if (files.length === 0) return
@@ -123,9 +125,9 @@ export function MultiFileMerger({ onSendToEditor }: MultiFileMergerProps) {
       const bytes = await doMerge()
       onSendToEditor('merged.pdf', bytes.buffer as ArrayBuffer)
     } catch (e) {
-      alert('合并失败: ' + (e instanceof Error ? e.message : String(e)))
+      alert(t.merger.mergeFailed(e instanceof Error ? e.message : String(e)))
     } finally { setMerging(false) }
-  }, [files, doMerge, onSendToEditor])
+  }, [files, doMerge, onSendToEditor, t])
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
@@ -143,8 +145,8 @@ export function MultiFileMerger({ onSendToEditor }: MultiFileMergerProps) {
           {files.length === 0 ? (
             <>
               <span className="text-4xl mb-3">📂</span>
-              <p className="text-sm text-gray-400">拖入多个 PDF 或图片文件</p>
-              <p className="text-xs text-gray-400 mt-1">支持混合格式，像叠乐高一样拼接</p>
+              <p className="text-sm text-gray-400">{t.merger.dropTitle}</p>
+              <p className="text-xs text-gray-400 mt-1">{t.merger.dropHint}</p>
             </>
           ) : (
             <div className="space-y-2">
@@ -170,7 +172,7 @@ export function MultiFileMerger({ onSendToEditor }: MultiFileMergerProps) {
                     <span className="text-lg shrink-0">{item.type === 'pdf' ? '📄' : '🖼️'}</span>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm text-gray-200 truncate">{item.name}</p>
-                      <p className="text-xs text-gray-400">{item.type === 'pdf' ? 'PDF' : '图片'} · {(item.binary.byteLength / 1024).toFixed(0)} KB</p>
+                      <p className="text-xs text-gray-400">{item.type === 'pdf' ? t.merger.pdf : t.merger.image} · {(item.binary.byteLength / 1024).toFixed(0)} KB</p>
                     </div>
                     <div className={dragIndex !== null || dragOverIndex !== null ? '' : 'opacity-0 group-hover:opacity-100 transition-opacity'}>
                       <button onClick={() => removeFile(item.id)}
@@ -181,7 +183,7 @@ export function MultiFileMerger({ onSendToEditor }: MultiFileMergerProps) {
               })}
               <button onClick={() => fileInputRef.current?.click()}
                 className="w-full py-2 border-2 border-dashed border-gray-700 hover:border-gray-500 rounded-xl text-xs text-gray-400 hover:text-gray-300 transition-colors cursor-pointer">
-                + 继续添加文件
+                {t.merger.addFiles}
               </button>
             </div>
           )}
@@ -194,15 +196,15 @@ export function MultiFileMerger({ onSendToEditor }: MultiFileMergerProps) {
         <div className="px-6 py-4 border-t border-gray-800 flex items-center gap-3 shrink-0">
           <button onClick={clearAll}
             className="px-3 py-2 rounded-lg bg-gray-800 hover:bg-red-900/50 text-xs text-gray-400 hover:text-red-300 transition-colors cursor-pointer shrink-0">
-            清空全部
+            {t.merger.clearAll}
           </button>
           <button onClick={handleDirectDownload} disabled={merging}
             className="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white text-sm font-semibold transition-colors cursor-pointer">
-            {merging ? '合并中...' : '💾 闪电合并并直接下载'}
+            {merging ? t.merger.merging : t.merger.download}
           </button>
           <button onClick={handleSendToEditor} disabled={merging}
             className="flex-1 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 disabled:opacity-50 text-white text-sm font-semibold transition-colors cursor-pointer">
-            ✍️ 合并并送入精修工作室 →
+            {t.merger.sendToEditor}
           </button>
         </div>
       )}

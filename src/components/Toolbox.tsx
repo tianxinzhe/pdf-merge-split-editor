@@ -4,6 +4,7 @@ import * as pdfjsLib from 'pdfjs-dist'
 import { pdfLoadingOptions } from '../utils/pdfjs-config'
 import { unlockOwnerPassword } from '../utils/pdf-unlock'
 import JSZip from 'jszip'
+import { useI18n } from '../i18n'
 
 /* ───── Password unlock (kept from PasswordHub) ───── */
 interface PasswordFile {
@@ -17,6 +18,7 @@ type ImageFormat = 'png' | 'jpeg'
 type ExportMode = 'single' | 'stitch'
 
 export function Toolbox() {
+  const { t } = useI18n()
   /* password unlock state */
   const [pwFiles, setPwFiles] = useState<PasswordFile[]>([])
   const [pwMode, setPwMode] = useState<'owner' | 'user'>('owner')
@@ -114,9 +116,9 @@ export function Toolbox() {
       setPwFiles(prev => prev.map(f => f.id === file.id ? { ...f, status: 'done' as const } : f))
       setPwPrompt(null); setPwInput('')
     } catch {
-      setPwError('密码错误或文件无法解密')
+      setPwError(t.toolbox.wrongPassword)
     }
-  }, [pwPrompt, pwInput, pwFiles])
+  }, [pwPrompt, pwInput, pwFiles, t])
 
   /* ───── PDF → Image handlers ───── */
   const loadImgPdf = useCallback(async (f: File) => {
@@ -159,13 +161,13 @@ export function Toolbox() {
         const zip = new JSZip()
         for (let i = 1; i <= pdf.numPages; i++) {
           const blob = await renderPageToBlob(pdf, i, dpi, imgFormat)
-          zip.file(`${imgPdfFile.name}_第${i}页.${imgFormat}`, blob)
+          zip.file(t.toolbox.pageFileName(imgPdfFile.name, i, imgFormat), blob)
         }
         const zipBytes = await zip.generateAsync({ type: 'uint8array' })
         const blob = new Blob([zipBytes as BlobPart], { type: 'application/zip' })
         const url = URL.createObjectURL(blob)
         const a = document.createElement('a')
-        a.href = url; a.download = `${imgPdfFile.name}_图片.zip`; a.click()
+        a.href = url; a.download = t.toolbox.imagesZipName(imgPdfFile.name); a.click()
         URL.revokeObjectURL(url)
       } else {
         const pages: { blob: Blob; width: number; height: number }[] = []
@@ -194,14 +196,14 @@ export function Toolbox() {
           if (!b) return
           const url = URL.createObjectURL(b)
           const a = document.createElement('a')
-          a.href = url; a.download = `${imgPdfFile.name}_长图.${imgFormat}`; a.click()
+          a.href = url; a.download = t.toolbox.longImageName(imgPdfFile.name, imgFormat); a.click()
           URL.revokeObjectURL(url)
         }, `image/${imgFormat === 'jpeg' ? 'jpeg' : 'png'}`, 0.95)
       }
     } catch (e) {
-      alert('导出失败: ' + (e instanceof Error ? e.message : String(e)))
+      alert(t.toolbox.exportFailed(e instanceof Error ? e.message : String(e)))
     } finally { setExporting(false) }
-  }, [imgPdfFile, exportMode, dpi, imgFormat, renderPageToBlob])
+  }, [imgPdfFile, exportMode, dpi, imgFormat, renderPageToBlob, t])
 
   return (
     <div className="flex-1 flex flex-col items-center overflow-y-auto p-6">
@@ -209,7 +211,7 @@ export function Toolbox() {
 
         {/* ════════ PDF → Image ════════ */}
         <div className="bg-gray-900/60 rounded-2xl p-5 border border-gray-800">
-          <h2 className="text-sm font-semibold text-gray-200 mb-4">🖼 PDF 转图片</h2>
+          <h2 className="text-sm font-semibold text-gray-200 mb-4">{t.toolbox.convertTitle}</h2>
 
           {/* Drop zone */}
           <div
@@ -225,14 +227,14 @@ export function Toolbox() {
               <div>
                 <span className="text-2xl">📄</span>
                 <p className="text-sm text-gray-200 mt-1">{imgPdfFile.name}.pdf</p>
-                <p className="text-xs text-gray-400">{imgPdfFile.pageCount} 页</p>
+                <p className="text-xs text-gray-400">{t.toolbox.pageCount(imgPdfFile.pageCount)}</p>
                 <button onClick={() => setImgPdfFile(null)}
-                  className="mt-2 text-xs text-gray-400 hover:text-red-400 cursor-pointer">更换文件</button>
+                  className="mt-2 text-xs text-gray-400 hover:text-red-400 cursor-pointer">{t.toolbox.changeFile}</button>
               </div>
             ) : (
               <div>
                 <span className="text-3xl">🖼</span>
-                <p className="text-sm text-gray-400 mt-2">拖入 PDF 文件</p>
+                <p className="text-sm text-gray-400 mt-2">{t.toolbox.dropPdf}</p>
               </div>
             )}
           </div>
@@ -242,7 +244,7 @@ export function Toolbox() {
             <div className="mt-4 space-y-4">
               {/* DPI */}
               <div>
-                <label className="text-xs text-gray-400 block mb-1.5">分辨率 (DPI)</label>
+                <label className="text-xs text-gray-400 block mb-1.5">{t.toolbox.dpi}</label>
                 <div className="flex gap-1.5">
                   {([72, 150, 200, 300, 600] as DpiOption[]).map(d => (
                     <button key={d} onClick={() => setDpi(d)}
@@ -252,18 +254,14 @@ export function Toolbox() {
                   ))}
                 </div>
                 <p className="text-xs text-gray-400 mt-1">
-                  {dpi === 72 && '屏幕分辨率（小字可能模糊）'}
-                  {dpi === 150 && '中等清晰度'}
-                  {dpi === 200 && '较好的清晰度'}
-                  {dpi === 300 && '超清（印刷级，推荐）'}
-                  {dpi === 600 && '极清（文件体积大）'}
+                  {t.toolbox.dpiHints[([72, 150, 200, 300, 600] as DpiOption[]).indexOf(dpi)]}
                 </p>
               </div>
 
               {/* Format + Export mode */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs text-gray-400 block mb-1.5">图片格式</label>
+                  <label className="text-xs text-gray-400 block mb-1.5">{t.toolbox.format}</label>
                   <div className="flex gap-1.5">
                     {(['png', 'jpeg'] as ImageFormat[]).map(f => (
                       <button key={f} onClick={() => setImgFormat(f)}
@@ -274,16 +272,16 @@ export function Toolbox() {
                   </div>
                 </div>
                 <div>
-                  <label className="text-xs text-gray-400 block mb-1.5">导出方式</label>
+                  <label className="text-xs text-gray-400 block mb-1.5">{t.toolbox.exportMode}</label>
                   <div className="flex gap-1.5">
                     <button onClick={() => setExportMode('single')}
                       className={`flex-1 px-2 py-1 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
                         exportMode === 'single' ? 'bg-gray-700 text-white' : 'bg-gray-800 text-gray-400 hover:text-white'
-                      }`}>单张图片</button>
+                      }`}>{t.toolbox.single}</button>
                     <button onClick={() => setExportMode('stitch')}
                       className={`flex-1 px-2 py-1 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
                         exportMode === 'stitch' ? 'bg-gray-700 text-white' : 'bg-gray-800 text-gray-400 hover:text-white'
-                      }`}>拼接长图</button>
+                      }`}>{t.toolbox.longImage}</button>
                   </div>
                 </div>
               </div>
@@ -291,9 +289,9 @@ export function Toolbox() {
               {/* Export button */}
               <button onClick={handleExportImages} disabled={exporting}
                 className="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 disabled:opacity-40 text-white text-sm font-semibold transition-colors cursor-pointer shadow-lg shadow-blue-600/20">
-                {exporting ? '导出中...' : exportMode === 'single'
-                  ? `📥 导出 ${imgPdfFile.pageCount} 张图片 (${dpi} DPI, ${imgFormat.toUpperCase()})`
-                  : `📥 导出拼接长图 (${dpi} DPI, ${imgFormat.toUpperCase()})`}
+                {exporting ? t.toolbox.exporting : exportMode === 'single'
+                  ? t.toolbox.exportImages(imgPdfFile.pageCount, dpi, imgFormat.toUpperCase())
+                  : t.toolbox.exportLong(dpi, imgFormat.toUpperCase())}
               </button>
             </div>
           )}
@@ -301,7 +299,7 @@ export function Toolbox() {
 
         {/* ════════ Password unlock (unchanged) ════════ */}
         <div className="bg-gray-900/60 rounded-2xl p-5 border border-gray-800">
-          <h2 className="text-sm font-semibold text-gray-200 mb-4">🔐 密码脱壳</h2>
+          <h2 className="text-sm font-semibold text-gray-200 mb-4">{t.toolbox.unlockTitle}</h2>
 
           <div className="space-y-2 mb-4">
             <label className={`flex items-start gap-3 p-3 rounded-xl cursor-pointer transition-all ${
@@ -310,8 +308,8 @@ export function Toolbox() {
               <input type="radio" name="pwMode" checked={pwMode === 'owner'}
                 onChange={() => setPwMode('owner')} className="accent-blue-500 mt-0.5" />
               <div>
-                <p className="text-xs font-medium text-gray-200">🚫 复制/打印权限解放</p>
-                <p className="text-sm text-gray-400 mt-0.5">解除 Owner Lock：文件能打开，但限制了复制/打印/编辑</p>
+                <p className="text-xs font-medium text-gray-200">{t.toolbox.ownerTitle}</p>
+                <p className="text-sm text-gray-400 mt-0.5">{t.toolbox.ownerDesc}</p>
               </div>
             </label>
             <label className={`flex items-start gap-3 p-3 rounded-xl cursor-pointer transition-all ${
@@ -320,8 +318,8 @@ export function Toolbox() {
               <input type="radio" name="pwMode" checked={pwMode === 'user'}
                 onChange={() => setPwMode('user')} className="accent-blue-500 mt-0.5" />
               <div>
-                <p className="text-xs font-medium text-gray-200">🔓 打开密码彻底消灭</p>
-                <p className="text-sm text-gray-400 mt-0.5">移除 User Lock：每次打开都要输密码的文件</p>
+                <p className="text-xs font-medium text-gray-200">{t.toolbox.userTitle}</p>
+                <p className="text-sm text-gray-400 mt-0.5">{t.toolbox.userDesc}</p>
               </div>
             </label>
           </div>
@@ -336,7 +334,7 @@ export function Toolbox() {
             } ${pwFiles.length === 0 ? 'cursor-pointer' : ''}`}
           >
             {pwFiles.length === 0 ? (
-              <p className="text-sm text-gray-400">拖入加密 PDF 文件</p>
+              <p className="text-sm text-gray-400">{t.toolbox.dropEncrypted}</p>
             ) : (
               <div className="space-y-1.5 text-left">
                 {pwFiles.map(f => (
@@ -349,7 +347,7 @@ export function Toolbox() {
                   </div>
                 ))}
                 <button onClick={() => pwInputRef.current?.click()}
-                  className="w-full py-1.5 text-xs text-gray-400 hover:text-gray-300 cursor-pointer">+ 添加更多</button>
+                  className="w-full py-1.5 text-xs text-gray-400 hover:text-gray-300 cursor-pointer">{t.toolbox.addMore}</button>
               </div>
             )}
           </div>
@@ -358,7 +356,7 @@ export function Toolbox() {
           {pwFiles.length > 0 && (
             <button onClick={handlePwProcess} disabled={pwProcessing || pwFiles.every(f => f.status === 'done')}
               className="w-full mt-3 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 text-white text-sm font-semibold transition-colors cursor-pointer shadow-lg shadow-emerald-600/20">
-              {pwProcessing ? '处理中...' : pwMode === 'owner' ? '⚡ 一键解放权限' : '🔓 开始脱壳'}
+              {pwProcessing ? t.toolbox.processing : pwMode === 'owner' ? t.toolbox.unlockOwner : t.toolbox.unlockUser}
             </button>
           )}
         </div>
@@ -368,18 +366,18 @@ export function Toolbox() {
       {pwPrompt && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
           <div className="bg-gray-900 border border-gray-700 rounded-2xl p-6 w-80 space-y-4">
-            <p className="text-sm text-gray-200">🔒 检测到 <strong className="text-white">{pwPrompt.fileName}</strong> 有打开锁</p>
-            <p className="text-xs text-gray-400">请输入原密码以完成脱壳</p>
+            <p className="text-sm text-gray-200">{t.toolbox.detected(pwPrompt.fileName)}</p>
+            <p className="text-xs text-gray-400">{t.toolbox.enterPassword}</p>
             <input type="password" value={pwInput} onChange={e => setPwInput(e.target.value)}
-              placeholder="输入文件密码"
+              placeholder={t.toolbox.passwordPlaceholder}
               className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-sm text-gray-200 placeholder-gray-500 focus:border-blue-500 focus:outline-none"
               onKeyDown={e => e.key === 'Enter' && handlePwConfirm()} autoFocus />
             {pwError && <p className="text-xs text-red-400">{pwError}</p>}
             <div className="flex gap-2">
               <button onClick={() => { setPwPrompt(null); setPwInput(''); setPwError('') }}
-                className="flex-1 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-xs text-gray-300 cursor-pointer">取消</button>
+                className="flex-1 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-xs text-gray-300 cursor-pointer">{t.toolbox.cancel}</button>
               <button onClick={handlePwConfirm}
-                className="flex-1 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-xs text-white font-medium cursor-pointer">确认脱壳</button>
+                className="flex-1 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-xs text-white font-medium cursor-pointer">{t.toolbox.confirm}</button>
             </div>
           </div>
         </div>

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState, type Dispatch, type SetStateA
 import * as pdfjsLib from 'pdfjs-dist'
 import type { PDFDocumentProxy } from 'pdfjs-dist'
 import { pdfLoadingOptions } from '../utils/pdfjs-config'
+import { useI18n } from '../i18n'
 import type { SourceFile } from '../types'
 
 interface SplitterState {
@@ -24,6 +25,7 @@ function ThumbnailCell({ pageNum, thumbnail, onLoad, selected, onClick }: {
   selected: boolean
   onClick: () => void
 }) {
+  const { t } = useI18n()
   const ref = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -47,7 +49,7 @@ function ThumbnailCell({ pageNum, thumbnail, onLoad, selected, onClick }: {
       onClick={onClick}
     >
       {thumbnail ? (
-        <img src={thumbnail} alt={`Page ${pageNum}`} className="w-full h-auto" draggable={false} />
+        <img src={thumbnail} alt={t.splitter.pageAlt(pageNum)} className="w-full h-auto" draggable={false} />
       ) : (
         <div className="aspect-[3/4] flex items-center justify-center bg-gray-800/50">
           <span className="text-xs text-gray-400">{pageNum}</span>
@@ -61,6 +63,7 @@ function ThumbnailCell({ pageNum, thumbnail, onLoad, selected, onClick }: {
 }
 
 export function PageSplitter() {
+  const { t } = useI18n()
   const [state, setState] = useState<SplitterState>({
     sourceFile: null, thumbnails: [], totalPages: 0,
     mode: 'range', rangeStart: 1, rangeEnd: 1,
@@ -126,10 +129,10 @@ export function PageSplitter() {
         scatterInput: '', previewStart: startPreview, previewEnd: endPreview, loading: false,
       })
     } catch (e) {
-      alert('无法加载 PDF: ' + (e instanceof Error ? e.message : String(e)))
+      alert(t.splitter.loadFailed(e instanceof Error ? e.message : String(e)))
       setState(s => ({ ...s, loading: false }))
     }
-  }, [renderThumbnail, renderHighRes])
+  }, [renderThumbnail, renderHighRes, t])
 
   const updateRangePreview = useCallback(async (start: number, end: number) => {
     const startImg = await renderHighRes(start)
@@ -210,10 +213,10 @@ export function PageSplitter() {
         a.href = url; a.download = `split_${state.sourceFile.name}`; a.click()
         URL.revokeObjectURL(url)
       } catch (e2) {
-        alert('导出失败: ' + (e2 instanceof Error ? e2.message : String(e2)))
+        alert(t.splitter.exportFailed(e2 instanceof Error ? e2.message : String(e2)))
       }
     } finally { setExporting(false) }
-  }, [state])
+  }, [state, t])
 
   const clearFile = useCallback(() => {
     pdfDocRef.current = null
@@ -254,8 +257,8 @@ export function PageSplitter() {
           ) : (
             <>
               <span className="text-4xl mb-3">✂️</span>
-              <p className="text-sm text-gray-400">拖入 PDF 开始拆分</p>
-              <p className="text-xs text-gray-400 mt-1">或点击选择文件</p>
+              <p className="text-sm text-gray-400">{t.splitter.dropTitle}</p>
+              <p className="text-xs text-gray-400 mt-1">{t.splitter.dropHint}</p>
             </>
           )}
         </div>
@@ -270,12 +273,12 @@ export function PageSplitter() {
       {/* 左半舱 - 源文件全景缩略图网格 */}
       <div className="w-1/2 border-r border-gray-800 flex flex-col overflow-hidden">
         <div className="px-4 py-2.5 border-b border-gray-800 flex items-center justify-between shrink-0">
-          <span className="text-xs font-medium text-gray-300">源文件全景 · {state.totalPages} 页</span>
+          <span className="text-xs font-medium text-gray-300">{t.splitter.sourceOverview(state.totalPages)}</span>
           <div className="flex items-center gap-2">
             <button onClick={() => fileInputRef.current?.click()}
-              className="text-sm text-blue-400 hover:text-blue-300 cursor-pointer">更换文件</button>
+              className="text-sm text-blue-400 hover:text-blue-300 cursor-pointer">{t.splitter.changeFile}</button>
             <button onClick={clearFile}
-              className="text-sm text-gray-400 hover:text-white transition-colors cursor-pointer">关闭</button>
+              className="text-sm text-gray-400 hover:text-white transition-colors cursor-pointer">{t.splitter.close}</button>
           </div>
           <input ref={fileInputRef} type="file" accept=".pdf" onChange={handleFileSelect} className="hidden" />
         </div>
@@ -324,6 +327,7 @@ function RightPanel({ state, setState, exporting, updateRangePreview, handleExpo
   handleExport: () => void
   loadThumbnail: (pageNum: number) => void
 }) {
+  const { t } = useI18n()
   const scatterPages = state.scatterInput.split(/[,，\s]+/)
     .map(s => parseInt(s.trim()))
     .filter(n => !isNaN(n) && n >= 1 && n <= state.totalPages)
@@ -336,13 +340,13 @@ function RightPanel({ state, setState, exporting, updateRangePreview, handleExpo
             <input type="radio" name="splitMode" checked={state.mode === 'range'}
               onChange={() => setState(s => ({ ...s, mode: 'range' }))}
               className="accent-blue-500" />
-            <span className="text-xs text-gray-300">范围区间</span>
+            <span className="text-xs text-gray-300">{t.splitter.rangeMode}</span>
           </label>
           <label className="flex items-center gap-1.5 cursor-pointer">
             <input type="radio" name="splitMode" checked={state.mode === 'scatter'}
               onChange={() => setState(s => ({ ...s, mode: 'scatter' }))}
               className="accent-blue-500" />
-            <span className="text-xs text-gray-300">离散多选</span>
+            <span className="text-xs text-gray-300">{t.splitter.scatterMode}</span>
           </label>
         </div>
         <div className="mt-2">
@@ -355,7 +359,7 @@ function RightPanel({ state, setState, exporting, updateRangePreview, handleExpo
                   updateRangePreview(v, state.rangeEnd)
                 }}
                 className="w-16 px-2 py-1 rounded-md bg-gray-800 border border-gray-700 text-xs text-center text-gray-200 focus:border-blue-500 focus:outline-none" />
-              <span className="text-xs text-gray-400">至</span>
+              <span className="text-xs text-gray-400">{t.splitter.to}</span>
               <input type="number" min={1} max={state.totalPages} value={state.rangeEnd}
                 onChange={e => {
                   const v = Math.min(state.totalPages, parseInt(e.target.value) || state.totalPages)
@@ -363,12 +367,12 @@ function RightPanel({ state, setState, exporting, updateRangePreview, handleExpo
                   updateRangePreview(state.rangeStart, v)
                 }}
                 className="w-16 px-2 py-1 rounded-md bg-gray-800 border border-gray-700 text-xs text-center text-gray-200 focus:border-blue-500 focus:outline-none" />
-              <span className="text-xs text-gray-400">共 {Math.max(0, state.rangeEnd - state.rangeStart + 1)} 页</span>
+              <span className="text-xs text-gray-400">{t.splitter.selectedCount(Math.max(0, state.rangeEnd - state.rangeStart + 1))}</span>
             </div>
           ) : (
             <input type="text" value={state.scatterInput}
               onChange={e => setState(s => ({ ...s, scatterInput: e.target.value }))}
-              placeholder="点击左侧缩略图选择，或输入页码如: 3, 15, 88"
+              placeholder={t.splitter.scatterPlaceholder}
               className="w-full px-2 py-1.5 rounded-md bg-gray-800 border border-gray-700 text-xs text-gray-200 placeholder-gray-500 focus:border-blue-500 focus:outline-none" />
           )}
         </div>
@@ -380,22 +384,22 @@ function RightPanel({ state, setState, exporting, updateRangePreview, handleExpo
           <div className="flex flex-col items-center gap-3">
             {state.previewStart && (
               <div className="relative max-w-xs">
-                <img src={state.previewStart} alt="起始页" className="w-full rounded-lg ring-1 ring-gray-700" />
+                <img src={state.previewStart} alt={t.splitter.startAlt} className="w-full rounded-lg ring-1 ring-gray-700" />
                 <span className="absolute top-1 left-2 text-xs bg-blue-600 text-white px-1.5 rounded">
-                  第 {state.rangeStart} 页（起）
+                  {t.splitter.startPage(state.rangeStart)}
                 </span>
               </div>
             )}
             {state.rangeEnd - state.rangeStart > 1 && (
               <div className="border-l-2 border-dashed border-gray-600 h-8 flex items-center pl-3">
-                <span className="text-xs text-gray-400">... 中间 {state.rangeEnd - state.rangeStart - 1} 页略过 ...</span>
+                <span className="text-xs text-gray-400">{t.splitter.skipped(state.rangeEnd - state.rangeStart - 1)}</span>
               </div>
             )}
             {state.rangeEnd > state.rangeStart && state.previewEnd && (
               <div className="relative max-w-xs">
-                <img src={state.previewEnd} alt="终止页" className="w-full rounded-lg ring-1 ring-gray-700" />
+                <img src={state.previewEnd} alt={t.splitter.endAlt} className="w-full rounded-lg ring-1 ring-gray-700" />
                 <span className="absolute top-1 left-2 text-xs bg-emerald-600 text-white px-1.5 rounded">
-                  第 {state.rangeEnd} 页（止）
+                  {t.splitter.endPage(state.rangeEnd)}
                 </span>
               </div>
             )}
@@ -405,23 +409,23 @@ function RightPanel({ state, setState, exporting, updateRangePreview, handleExpo
             {scatterPages.map(p => (
               <div key={p} className="relative">
                 {state.thumbnails[p - 1] ? (
-                  <img src={state.thumbnails[p - 1]!} alt={`第 ${p} 页`}
+                  <img src={state.thumbnails[p - 1]!} alt={t.splitter.selectedThumbAlt(p)}
                     className="w-full rounded-lg ring-1 ring-gray-700" />
                 ) : (
                   <div className="aspect-[3/4] rounded-lg ring-1 ring-gray-700 bg-gray-800/50 flex items-center justify-center">
-                    <span className="text-xs text-gray-400">加载中...</span>
+                    <span className="text-xs text-gray-400">{t.splitter.loading}</span>
                   </div>
                 )}
                 <span className="absolute top-1 left-2 text-xs bg-blue-600 text-white px-1.5 rounded">
-                  第 {p} 页
+                  {t.splitter.pageLabel(p)}
                 </span>
               </div>
             ))}
           </div>
         ) : (
           <div className="h-full flex flex-col items-center justify-center text-center text-gray-500 text-xs">
-            <p>离散抽页模式</p>
-            <p className="mt-1">点击左侧缩略图选择要拆分的页面</p>
+            <p>{t.splitter.scatterEmptyTitle}</p>
+            <p className="mt-1">{t.splitter.scatterEmptyHint}</p>
           </div>
         )}
       </div>
@@ -430,7 +434,7 @@ function RightPanel({ state, setState, exporting, updateRangePreview, handleExpo
       <div className="px-4 py-3 border-t border-gray-800 shrink-0">
         <button onClick={handleExport} disabled={exporting}
           className="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white text-sm font-semibold transition-colors cursor-pointer shadow-lg shadow-blue-600/20">
-          {exporting ? '导出中...' : '🚀 确认无误，闪电导出新 PDF'}
+          {exporting ? t.splitter.exporting : t.splitter.exportButton}
         </button>
       </div>
     </div>

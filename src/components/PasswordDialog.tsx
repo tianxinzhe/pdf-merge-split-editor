@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from 'react'
+import { useI18n } from '../i18n'
 
 interface PasswordDialogProps {
   fileName: string
@@ -8,6 +9,7 @@ interface PasswordDialogProps {
 }
 
 export function PasswordDialog({ fileName, error, onSubmit, onCancel }: PasswordDialogProps) {
+  const { t } = useI18n()
   const [password, setPassword] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -27,7 +29,7 @@ export function PasswordDialog({ fileName, error, onSubmit, onCancel }: Password
         onClick={e => e.stopPropagation()}>
         <div className="text-center mb-5">
           <div className="text-3xl mb-2">🔐</div>
-          <h3 className="text-sm font-semibold text-white mb-1">PDF 已加密</h3>
+          <h3 className="text-sm font-semibold text-white mb-1">{t.password.title}</h3>
           <p className="text-sm text-gray-400 truncate">{fileName}</p>
         </div>
 
@@ -37,7 +39,7 @@ export function PasswordDialog({ fileName, error, onSubmit, onCancel }: Password
             type="password"
             value={password}
             onChange={e => setPassword(e.target.value)}
-            placeholder="输入密码..."
+            placeholder={t.password.placeholder}
             className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-600 text-sm text-white placeholder-gray-500 focus:border-blue-500 focus:outline-none mb-3"
           />
           {error && (
@@ -46,11 +48,11 @@ export function PasswordDialog({ fileName, error, onSubmit, onCancel }: Password
           <div className="flex gap-2">
             <button type="button" onClick={onCancel}
               className="flex-1 px-3 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-[12px] text-gray-300 transition-colors">
-              取消
+              {t.password.cancel}
             </button>
             <button type="submit" disabled={!password.trim()}
               className="flex-1 px-3 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 disabled:opacity-40 text-[12px] text-white font-medium transition-colors">
-              解锁
+              {t.password.unlock}
             </button>
           </div>
         </form>

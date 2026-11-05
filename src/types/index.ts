@@ -91,9 +91,17 @@ export interface PDFStudioState {
   searchResults: number[]
 }
 
+export type HistoryAction =
+  | { type: 'rotate'; page: number }
+  | { type: 'remove'; page: number }
+  | { type: 'move'; page: number }
+  | { type: 'addRedaction' }
+  | { type: 'removeRedaction' }
+  | { type: 'clearRedactions' }
+
 export interface HistoryCommand {
   id: string
-  description: string
+  action: HistoryAction
   execute: () => void
   undo: () => void
 }
@@ -106,4 +114,4 @@ export type WorkerAction =
 export type WorkerResponse =
   | { type: 'PDF_LOADED'; payload: { sourceFileId: string; pages: Array<{ index: number }> } }
   | { type: 'EXPORT_RESULT'; payload: { bytes: Uint8Array; name: string } }
-  | { type: 'ERROR'; payload: { message: string } }
+  | { type: 'ERROR'; payload: { message: string; code?: string } }

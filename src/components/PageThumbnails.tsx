@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import type { PageItem } from '../types'
+import { useI18n } from '../i18n'
 
 interface PageThumbnailsProps {
   pages: PageItem[]
@@ -16,6 +17,7 @@ export function PageThumbnails({
   pages, currentPageIndex, collapsed, onToggleCollapse,
   onSetCurrentPage, onMovePage, thumbUrls, onLoadThumb,
 }: PageThumbnailsProps) {
+  const { t } = useI18n()
   const [dragIndex, setDragIndex] = useState<number | null>(null)
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null)
   const thumbContainerRef = useRef<HTMLDivElement>(null)
@@ -78,7 +80,7 @@ export function PageThumbnails({
     return (
       <button onClick={onToggleCollapse}
         className="w-6 shrink-0 bg-gray-900 border-r border-gray-800 hover:bg-gray-800 flex items-center justify-center text-gray-500 hover:text-white transition-colors cursor-pointer"
-        title="展开缩略图"
+        title={t.thumbnails.expandTitle}
       >
         <span className="text-xs">◀</span>
       </button>
@@ -90,7 +92,7 @@ export function PageThumbnails({
   return (
     <aside className="w-48 shrink-0 border-r border-gray-800 bg-gray-900/30 flex flex-col overflow-hidden">
       <div className="flex items-center justify-between px-3 py-2 border-b border-gray-800 shrink-0">
-        <span className="text-xs font-semibold text-gray-300">页面</span>
+        <span className="text-xs font-semibold text-gray-300">{t.thumbnails.pages}</span>
         <button onClick={onToggleCollapse} className="text-gray-500 hover:text-white text-xs cursor-pointer">▶</button>
       </div>
       <div ref={thumbContainerRef} onClick={handleContainerClick} className="flex-1 overflow-y-auto p-2 space-y-1.5">
@@ -118,14 +120,14 @@ export function PageThumbnails({
             >
               <span className="text-xs text-gray-500 cursor-grab active:cursor-grabbing select-none">⠿</span>
               {thumbUrls[idx] ? (
-                <img src={thumbUrls[idx]} alt={`Page ${idx + 1}`}
+                <img src={thumbUrls[idx]} alt={t.thumbnails.pageAlt(idx + 1)}
                   className="w-14 h-20 object-cover rounded shrink-0" />
               ) : (
                 <div className="w-14 h-20 rounded bg-gray-800 shrink-0 flex items-center justify-center">
                   <span className="text-[11px] text-gray-400">{idx + 1}</span>
                 </div>
               )}
-              <span className="text-[11px] text-gray-400 truncate">第 {idx + 1} 页</span>
+              <span className="text-[11px] text-gray-400 truncate">{t.thumbnails.pageLabel(idx + 1)}</span>
             </div>
           )
         })}

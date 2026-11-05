@@ -8,6 +8,7 @@ import { renderPagePreview } from '../utils/pdf-render'
 import { searchPdfText } from '../utils/pdf-search'
 import { pdfLoadingOptions } from '../utils/pdfjs-config'
 import { isEditableTarget } from '../utils/keyboard'
+import { useI18n } from '../i18n'
 import type { WorkerAction, WorkerResponse, SourceFile, WatermarkDraft } from '../types'
 import * as pdfjsLib from 'pdfjs-dist'
 
@@ -22,6 +23,7 @@ interface EditorStudioProps {
 }
 
 export function EditorStudio({ injectedFile, onInjectedFileConsumed }: EditorStudioProps) {
+  const { t } = useI18n()
   const { state, sourceFile, loadFileInner, clearFile, rotatePage, deletePage, movePage, setPreviewUrl,
     addRedaction, removeRedaction, clearRedactions, removeWatermark,
     setCurrentPage,
@@ -107,16 +109,19 @@ export function EditorStudio({ injectedFile, onInjectedFileConsumed }: EditorStu
       }
       case 'ERROR': {
         const msg = response.payload.message as string
+        const code = response.payload.code
         if (msg.toLowerCase().includes('encrypt') || msg.toLowerCase().includes('password')) {
           const sf = lastPdfFileRef.current
           if (sf) setPasswordDialog({ fileId: sf.id, fileName: sf.name })
+        } else if (code === 'WATERMARK_EMBED_FAILED') {
+          alert(t.worker.watermarkEmbedFailed(msg))
         } else {
-          alert('操作失败: ' + msg)
+          alert(t.editor.operationFailed(msg))
         }
         break
       }
     }
-  }, [loadFileInner])
+  }, [loadFileInner, t])
 
   const getWorker = useCallback(() => {
     if (!workerRef.current) {
@@ -185,9 +190,9 @@ export function EditorStudio({ injectedFile, onInjectedFileConsumed }: EditorStu
       loadFileInner(sf, Array.from({ length: totalPages }, (_, i) => ({ index: i })))
       setPasswordDialog(null)
     } catch {
-      setPasswordDialog((prev) => prev ? { ...prev, error: '密码错误，请重试' } : null)
+      setPasswordDialog((prev) => prev ? { ...prev, error: t.editor.wrongPassword } : null)
     }
-  }, [passwordDialog, loadFileInner])
+  }, [passwordDialog, loadFileInner, t])
 
   const handleRenderPreview = useCallback(async (pageIndex: number) => {
     if (renderQueue.current.has(pageIndex)) return
@@ -258,8 +263,8 @@ export function EditorStudio({ injectedFile, onInjectedFileConsumed }: EditorStu
           }`}
         >
           <span className="text-4xl mb-3">✍️</span>
-          <p className="text-sm text-gray-400">拖入 PDF 开始编辑</p>
-          <p className="text-xs text-gray-400 mt-1">或点击选择文件</p>
+          <p className="text-sm text-gray-400">{t.editor.dropTitle}</p>
+          <p className="text-xs text-gray-400 mt-1">{t.editor.dropHint}</p>
         </div>
         <input ref={fileInputRef} type="file" accept=".pdf,image/*" onChange={e => { const f = e.target.files?.[0]; if (f) { handleFileDrop([f]); e.target.value = '' } }} className="hidden" />
       </div>

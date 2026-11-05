@@ -139,7 +139,7 @@ self.onmessage = async (e: MessageEvent<WorkerAction>) => {
                   }
                 }
               } catch (e) {
-                self.postMessage({ type: 'ERROR', payload: { message: `水印嵌入失败: ${e}` } })
+                self.postMessage({ type: 'ERROR', payload: { code: 'WATERMARK_EMBED_FAILED', message: String(e) } })
               }
             }
           }

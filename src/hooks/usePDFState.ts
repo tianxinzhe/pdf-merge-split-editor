@@ -85,7 +85,7 @@ export function usePDFState() {
   const rotatePage = useCallback((pageIndex: number) => {
     const cmd: HistoryCommand = {
       id: generateId(),
-      description: `旋转第 ${pageIndex + 1} 页`,
+      action: { type: 'rotate', page: pageIndex + 1 },
       execute: () => {
         setState(prev => ({
           ...prev,
@@ -106,7 +106,7 @@ export function usePDFState() {
   const deletePage = useCallback((pageIndex: number) => {
     const cmd: HistoryCommand = {
       id: generateId(),
-      description: `剔除第 ${pageIndex + 1} 页`,
+      action: { type: 'remove', page: pageIndex + 1 },
       execute: () => {
         setState(prev => ({
           ...prev,
@@ -129,7 +129,7 @@ export function usePDFState() {
     if (fromIndex === toIndex) return
     const cmd: HistoryCommand = {
       id: generateId(),
-      description: `移动第 ${fromIndex + 1} 页`,
+      action: { type: 'move', page: fromIndex + 1 },
       execute: () => {
         setState(prev => {
           const pages = [...prev.pages]
@@ -162,7 +162,7 @@ export function usePDFState() {
   const addRedaction = useCallback((pageIndex: number, redaction: Redaction) => {
     const cmd: HistoryCommand = {
       id: generateId(),
-      description: `添加遮蔽块`,
+      action: { type: 'addRedaction' },
       execute: () => {
         setState(prev => ({
           ...prev,
@@ -191,7 +191,7 @@ export function usePDFState() {
       if (!target) return prev
       const cmd: HistoryCommand = {
         id: generateId(),
-        description: `删除遮蔽块`,
+        action: { type: 'removeRedaction' },
         execute: () => {
           setState(s => ({
             ...s,
@@ -273,7 +273,7 @@ export function usePDFState() {
     const snapshots = state.pages.map(p => ({ redactions: [...p.redactions] }))
     const cmd: HistoryCommand = {
       id: generateId(),
-      description: `清除全部遮蔽`,
+      action: { type: 'clearRedactions' },
       execute: () => {
         setState(s => ({ ...s, pages: s.pages.map(p => ({ ...p, redactions: [] })) }))
       },
