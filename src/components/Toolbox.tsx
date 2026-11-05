@@ -225,9 +225,9 @@ export function Toolbox() {
               <div>
                 <span className="text-2xl">📄</span>
                 <p className="text-sm text-gray-200 mt-1">{imgPdfFile.name}.pdf</p>
-                <p className="text-xs text-gray-500">{imgPdfFile.pageCount} 页</p>
+                <p className="text-xs text-gray-400">{imgPdfFile.pageCount} 页</p>
                 <button onClick={() => setImgPdfFile(null)}
-                  className="mt-2 text-xs text-gray-500 hover:text-red-400 cursor-pointer">更换文件</button>
+                  className="mt-2 text-xs text-gray-400 hover:text-red-400 cursor-pointer">更换文件</button>
               </div>
             ) : (
               <div>
@@ -251,7 +251,7 @@ export function Toolbox() {
                       }`}>{d}</button>
                   ))}
                 </div>
-                <p className="text-xs text-gray-600 mt-1">
+                <p className="text-xs text-gray-400 mt-1">
                   {dpi === 72 && '屏幕分辨率（小字可能模糊）'}
                   {dpi === 150 && '中等清晰度'}
                   {dpi === 200 && '较好的清晰度'}
@@ -311,7 +311,7 @@ export function Toolbox() {
                 onChange={() => setPwMode('owner')} className="accent-blue-500 mt-0.5" />
               <div>
                 <p className="text-xs font-medium text-gray-200">🚫 复制/打印权限解放</p>
-                <p className="text-sm text-gray-500 mt-0.5">解除 Owner Lock：文件能打开，但限制了复制/打印/编辑</p>
+                <p className="text-sm text-gray-400 mt-0.5">解除 Owner Lock：文件能打开，但限制了复制/打印/编辑</p>
               </div>
             </label>
             <label className={`flex items-start gap-3 p-3 rounded-xl cursor-pointer transition-all ${
@@ -321,7 +321,7 @@ export function Toolbox() {
                 onChange={() => setPwMode('user')} className="accent-blue-500 mt-0.5" />
               <div>
                 <p className="text-xs font-medium text-gray-200">🔓 打开密码彻底消灭</p>
-                <p className="text-sm text-gray-500 mt-0.5">移除 User Lock：每次打开都要输密码的文件</p>
+                <p className="text-sm text-gray-400 mt-0.5">移除 User Lock：每次打开都要输密码的文件</p>
               </div>
             </label>
           </div>
@@ -345,11 +345,11 @@ export function Toolbox() {
                     <span className="text-xs text-gray-300 truncate flex-1">{f.name}</span>
                     {f.status === 'error' && <span className="text-xs text-red-400">{f.error}</span>}
                     <button onClick={() => setPwFiles(prev => prev.filter(x => x.id !== f.id))}
-                      className="text-gray-600 hover:text-red-400 text-xs cursor-pointer">✕</button>
+                      className="text-gray-400 hover:text-red-400 text-xs cursor-pointer">✕</button>
                   </div>
                 ))}
                 <button onClick={() => pwInputRef.current?.click()}
-                  className="w-full py-1.5 text-xs text-gray-500 hover:text-gray-300 cursor-pointer">+ 添加更多</button>
+                  className="w-full py-1.5 text-xs text-gray-400 hover:text-gray-300 cursor-pointer">+ 添加更多</button>
               </div>
             )}
           </div>
@@ -369,10 +369,10 @@ export function Toolbox() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
           <div className="bg-gray-900 border border-gray-700 rounded-2xl p-6 w-80 space-y-4">
             <p className="text-sm text-gray-200">🔒 检测到 <strong className="text-white">{pwPrompt.fileName}</strong> 有打开锁</p>
-            <p className="text-xs text-gray-500">请输入原密码以完成脱壳</p>
+            <p className="text-xs text-gray-400">请输入原密码以完成脱壳</p>
             <input type="password" value={pwInput} onChange={e => setPwInput(e.target.value)}
               placeholder="输入文件密码"
-              className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-sm text-gray-200 placeholder-gray-600 focus:border-blue-500 focus:outline-none"
+              className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-sm text-gray-200 placeholder-gray-500 focus:border-blue-500 focus:outline-none"
               onKeyDown={e => e.key === 'Enter' && handlePwConfirm()} autoFocus />
             {pwError && <p className="text-xs text-red-400">{pwError}</p>}
             <div className="flex gap-2">

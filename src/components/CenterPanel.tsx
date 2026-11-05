@@ -1,11 +1,17 @@
 import { useCallback, useRef, useEffect, useState } from 'react'
-import type { PageItem, Redaction, Watermark } from '../types'
+import { isEditableTarget } from '../utils/keyboard'
+import type { PageItem, Redaction, Watermark, WatermarkDraft } from '../types'
 
 interface CenterPanelProps {
   pages: PageItem[]
   currentPageIndex: number
   isRedacting: boolean
   searchResults: number[]
+  /** Pending watermark rendered live on the target pages before it is committed. */
+  watermarkDraft?: WatermarkDraft | null
+  /** Source file shown above the canvas. */
+  fileName?: string
+  onReselectFile?: () => void
   onRenderPreview: (pageIndex: number) => void
   onClearPreview: (pageIndex: number) => void
   onRotatePage: (pageIndex: number) => void
@@ -18,6 +24,7 @@ interface CenterPanelProps {
 
 export function CenterPanel({
   pages, currentPageIndex, isRedacting,
+  watermarkDraft, fileName, onReselectFile,
   onRenderPreview, onClearPreview, onRotatePage, onDeletePage,
   onSetCurrentPage, onAddRedaction, onRemoveRedaction,
   onCloseFile,
@@ -32,6 +39,7 @@ export function CenterPanel({
 
   const activePages = pages.filter(p => !p.deleted)
   const totalActive = activePages.length
+  const draftPageIds = watermarkDraft ? new Set(watermarkDraft.pageIds) : null
 
   const getVisibleRange = useCallback(() => {
     const prev = Math.max(0, currentPageIndex - 1)
@@ -73,6 +81,7 @@ export function CenterPanel({
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
+      if (isEditableTarget(e.target)) return
       if (e.key === 'ArrowDown' || e.key === 'j') {
         e.preventDefault()
         onSetCurrentPage(Math.min(totalActive - 1, currentPageIndex + 1))
@@ -122,18 +131,35 @@ export function CenterPanel({
   }, [drawState, onAddRedaction])
 
   return (
-    <div className="flex-1 flex flex-col overflow-hidden bg-gray-950 relative">
-      <div className="h-9 flex items-center justify-between px-3 border-b border-gray-800 bg-gray-900/60 shrink-0">
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-400">
-            画布 · {currentPageIndex + 1}/{totalActive}
-          </span>
+    <div className="flex-1 min-w-0 flex flex-col overflow-hidden bg-gray-950 relative">
+      <div className="h-10 flex items-center gap-3 px-3 border-b border-gray-800 bg-gray-900/60 shrink-0">
+        <div className="flex items-center gap-1.5 min-w-0 flex-1">
+          <span className="text-xs shrink-0" aria-hidden>📄</span>
+          {fileName ? (
+            <>
+              <span className="text-xs text-gray-300 truncate" title={fileName}>{fileName}</span>
+              <span className="text-[11px] text-gray-400 shrink-0 tabular-nums">{totalActive} 页</span>
+            </>
+          ) : (
+            <span className="text-xs text-gray-400">画布</span>
+          )}
+          {onReselectFile && (
+            <button onClick={onReselectFile} title="重新选择文件"
+              className="shrink-0 text-[11px] text-blue-400 hover:text-blue-300 transition-colors cursor-pointer">
+              重新选择
+            </button>
+          )}
         </div>
-        {onCloseFile && (
-          <button onClick={onCloseFile} title="关闭文件" className="text-xs text-gray-500 hover:text-white transition-colors cursor-pointer">
-            关闭
-          </button>
-        )}
+        <div className="flex items-center gap-3 shrink-0">
+          <span className="text-[11px] text-gray-400 tabular-nums">
+            画布 {currentPageIndex + 1}/{totalActive}
+          </span>
+          {onCloseFile && (
+            <button onClick={onCloseFile} title="关闭文件" className="text-xs text-gray-400 hover:text-white transition-colors cursor-pointer">
+              关闭
+            </button>
+          )}
+        </div>
       </div>
 
       <div ref={containerRef} className="flex-1 overflow-y-auto overflow-x-hidden">
@@ -161,18 +187,30 @@ export function CenterPanel({
                     onMouseMove={handleMouseMove}
                     onMouseUp={e => handleMouseUp(e, idx)}
                   >
-                    <img
-                      src={page.previewUrl}
-                      alt={`Page ${idx + 1}`}
-                      className="block"
+                    {/* Page surface: kept at the unrotated A4 ratio, then rotated as a whole.
+                        Its size is swapped for 90°/270° so the rotated page still fills and
+                        never gets clipped by the container. */}
+                    <div
+                      className="absolute top-1/2 left-1/2"
                       style={{
-                        transform: `rotate(${page.rotation}deg)`,
-                        ...(isLandscape
-                          ? { height: '100%', width: 'auto' }
-                          : { width: '100%', height: 'auto' }),
+                        ...(isLandscape ? { height: '141.42%' } : { width: '100%' }),
+                        aspectRatio: '595 / 842',
+                        transform: `translate(-50%, -50%) rotate(${page.rotation}deg)`,
                       }}
-                      draggable={false}
-                    />
+                    >
+                      <img
+                        src={page.previewUrl}
+                        alt={`Page ${idx + 1}`}
+                        className="block w-full h-auto"
+                        draggable={false}
+                      />
+                      {page.watermarks.map(wm => (
+                        <WatermarkOverlay key={wm.id} watermark={wm} />
+                      ))}
+                      {watermarkDraft && draftPageIds?.has(page.id) && (
+                        <WatermarkOverlay key={`draft-${page.id}`} watermark={watermarkDraft.watermark} />
+                      )}
+                    </div>
                     {page.redactions.map(r => (
                       <div
                         key={r.id}
@@ -181,9 +219,6 @@ export function CenterPanel({
                         onClick={e => { e.stopPropagation(); onRemoveRedaction(idx, r.id) }}
                         title="点击移除遮蔽"
                       />
-                    ))}
-                    {page.watermarks.map(wm => (
-                      <WatermarkOverlay key={wm.id} watermark={wm} />
                     ))}
                     {drawState && (
                       <div
@@ -229,6 +264,19 @@ export function CenterPanel({
 }
 
 function WatermarkOverlay({ watermark }: { watermark: Watermark }) {
+  const isFull = watermark.position === 'full'
+
+  // Pre-rendered layer: colour, opacity, rotation and tiling are already baked in.
+  if (watermark.pngData) {
+    return isFull ? (
+      <img src={watermark.pngData} alt="" className="absolute inset-0 w-full h-full pointer-events-none" />
+    ) : (
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+        <img src={watermark.pngData} alt="" style={{ maxWidth: '70%', maxHeight: '70%' }} />
+      </div>
+    )
+  }
+
   const posStyle: React.CSSProperties = { position: 'absolute', pointerEvents: 'none' }
 
   switch (watermark.position) {
@@ -244,19 +292,31 @@ function WatermarkOverlay({ watermark }: { watermark: Watermark }) {
     case 'center': Object.assign(posStyle, { top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }); break
     case 'full':
     default:
-      Object.assign(posStyle, { top: 0, left: 0, width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap', gap: '40px', padding: '40px', alignContent: 'center' })
+      Object.assign(posStyle, { top: 0, left: 0, width: '100%', height: '100%' })
   }
 
   if (watermark.imageData) {
+    if (isFull) {
+      return (
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            backgroundImage: `url(${watermark.imageData})`,
+            backgroundSize: `${Math.round((watermark.imageScale ?? 0.3) * 100)}% auto`,
+            backgroundRepeat: 'repeat',
+            opacity: watermark.opacity,
+          }}
+        />
+      )
+    }
     return (
       <div style={posStyle}>
-        {watermark.position === 'full' ? (
-          <img src={watermark.imageData} alt="" className="w-full h-full object-cover"
-            style={{ opacity: watermark.opacity } as React.CSSProperties} />
-        ) : (
-          <img src={watermark.imageData} alt="" className="max-w-[200px] max-h-[200px] object-contain"
-            style={{ opacity: watermark.opacity, transform: `rotate(${watermark.angle}deg)` } as React.CSSProperties} />
-        )}
+        <img src={watermark.imageData} alt=""
+          style={{
+            width: `${Math.round((watermark.imageScale ?? 0.3) * 100)}%`,
+            opacity: watermark.opacity,
+            transform: `rotate(${watermark.angle}deg)`,
+          }} />
       </div>
     )
   }
@@ -265,7 +325,7 @@ function WatermarkOverlay({ watermark }: { watermark: Watermark }) {
     fontSize: `${Math.max(10, watermark.fontSize * 0.5)}px`,
     opacity: watermark.opacity,
     transform: `rotate(${watermark.angle}deg)`,
-    color: '#000',
+    color: watermark.color || '#000',
     fontFamily: '"Microsoft YaHei", "PingFang SC", sans-serif',
     userSelect: 'none',
     whiteSpace: 'nowrap',
@@ -273,7 +333,7 @@ function WatermarkOverlay({ watermark }: { watermark: Watermark }) {
 
   return (
     <div style={posStyle}>
-      {watermark.position === 'full' ? (
+      {isFull ? (
         <>
           <span style={textStyle}>{watermark.text}</span>
           <span style={textStyle}>{watermark.text}</span>

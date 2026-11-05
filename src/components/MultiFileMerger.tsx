@@ -144,7 +144,7 @@ export function MultiFileMerger({ onSendToEditor }: MultiFileMergerProps) {
             <>
               <span className="text-4xl mb-3">📂</span>
               <p className="text-sm text-gray-400">拖入多个 PDF 或图片文件</p>
-              <p className="text-xs text-gray-600 mt-1">支持混合格式，像叠乐高一样拼接</p>
+              <p className="text-xs text-gray-400 mt-1">支持混合格式，像叠乐高一样拼接</p>
             </>
           ) : (
             <div className="space-y-2">
@@ -166,11 +166,11 @@ export function MultiFileMerger({ onSendToEditor }: MultiFileMergerProps) {
                           : 'bg-gray-800/60 border-gray-700/50 group hover:bg-gray-800'
                     }`}
                   >
-                    <span className="text-xs text-gray-600 cursor-grab active:cursor-grabbing">⠿</span>
+                    <span className="text-xs text-gray-500 cursor-grab active:cursor-grabbing">⠿</span>
                     <span className="text-lg shrink-0">{item.type === 'pdf' ? '📄' : '🖼️'}</span>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm text-gray-200 truncate">{item.name}</p>
-                      <p className="text-xs text-gray-500">{item.type === 'pdf' ? 'PDF' : '图片'} · {(item.binary.byteLength / 1024).toFixed(0)} KB</p>
+                      <p className="text-xs text-gray-400">{item.type === 'pdf' ? 'PDF' : '图片'} · {(item.binary.byteLength / 1024).toFixed(0)} KB</p>
                     </div>
                     <div className={dragIndex !== null || dragOverIndex !== null ? '' : 'opacity-0 group-hover:opacity-100 transition-opacity'}>
                       <button onClick={() => removeFile(item.id)}
@@ -180,7 +180,7 @@ export function MultiFileMerger({ onSendToEditor }: MultiFileMergerProps) {
                 )
               })}
               <button onClick={() => fileInputRef.current?.click()}
-                className="w-full py-2 border-2 border-dashed border-gray-700 hover:border-gray-500 rounded-xl text-xs text-gray-500 hover:text-gray-300 transition-colors cursor-pointer">
+                className="w-full py-2 border-2 border-dashed border-gray-700 hover:border-gray-500 rounded-xl text-xs text-gray-400 hover:text-gray-300 transition-colors cursor-pointer">
                 + 继续添加文件
               </button>
             </div>

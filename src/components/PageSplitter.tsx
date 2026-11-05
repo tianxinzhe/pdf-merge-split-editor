@@ -50,10 +50,10 @@ function ThumbnailCell({ pageNum, thumbnail, onLoad, selected, onClick }: {
         <img src={thumbnail} alt={`Page ${pageNum}`} className="w-full h-auto" draggable={false} />
       ) : (
         <div className="aspect-[3/4] flex items-center justify-center bg-gray-800/50">
-          <span className="text-xs text-gray-600">{pageNum}</span>
+          <span className="text-xs text-gray-400">{pageNum}</span>
         </div>
       )}
-      <span className="absolute bottom-0.5 right-1 text-[9px] text-white bg-black/60 px-1 rounded">
+      <span className="absolute bottom-0.5 right-1 text-[11px] text-white bg-black/60 px-1 rounded">
         {pageNum}
       </span>
     </div>
@@ -255,7 +255,7 @@ export function PageSplitter() {
             <>
               <span className="text-4xl mb-3">✂️</span>
               <p className="text-sm text-gray-400">拖入 PDF 开始拆分</p>
-              <p className="text-xs text-gray-600 mt-1">或点击选择文件</p>
+              <p className="text-xs text-gray-400 mt-1">或点击选择文件</p>
             </>
           )}
         </div>
@@ -275,7 +275,7 @@ export function PageSplitter() {
             <button onClick={() => fileInputRef.current?.click()}
               className="text-sm text-blue-400 hover:text-blue-300 cursor-pointer">更换文件</button>
             <button onClick={clearFile}
-              className="text-sm text-gray-500 hover:text-white transition-colors cursor-pointer">关闭</button>
+              className="text-sm text-gray-400 hover:text-white transition-colors cursor-pointer">关闭</button>
           </div>
           <input ref={fileInputRef} type="file" accept=".pdf" onChange={handleFileSelect} className="hidden" />
         </div>
@@ -355,7 +355,7 @@ function RightPanel({ state, setState, exporting, updateRangePreview, handleExpo
                   updateRangePreview(v, state.rangeEnd)
                 }}
                 className="w-16 px-2 py-1 rounded-md bg-gray-800 border border-gray-700 text-xs text-center text-gray-200 focus:border-blue-500 focus:outline-none" />
-              <span className="text-xs text-gray-500">至</span>
+              <span className="text-xs text-gray-400">至</span>
               <input type="number" min={1} max={state.totalPages} value={state.rangeEnd}
                 onChange={e => {
                   const v = Math.min(state.totalPages, parseInt(e.target.value) || state.totalPages)
@@ -363,13 +363,13 @@ function RightPanel({ state, setState, exporting, updateRangePreview, handleExpo
                   updateRangePreview(state.rangeStart, v)
                 }}
                 className="w-16 px-2 py-1 rounded-md bg-gray-800 border border-gray-700 text-xs text-center text-gray-200 focus:border-blue-500 focus:outline-none" />
-              <span className="text-xs text-gray-500">共 {Math.max(0, state.rangeEnd - state.rangeStart + 1)} 页</span>
+              <span className="text-xs text-gray-400">共 {Math.max(0, state.rangeEnd - state.rangeStart + 1)} 页</span>
             </div>
           ) : (
             <input type="text" value={state.scatterInput}
               onChange={e => setState(s => ({ ...s, scatterInput: e.target.value }))}
               placeholder="点击左侧缩略图选择，或输入页码如: 3, 15, 88"
-              className="w-full px-2 py-1.5 rounded-md bg-gray-800 border border-gray-700 text-xs text-gray-200 placeholder-gray-600 focus:border-blue-500 focus:outline-none" />
+              className="w-full px-2 py-1.5 rounded-md bg-gray-800 border border-gray-700 text-xs text-gray-200 placeholder-gray-500 focus:border-blue-500 focus:outline-none" />
           )}
         </div>
       </div>
@@ -388,7 +388,7 @@ function RightPanel({ state, setState, exporting, updateRangePreview, handleExpo
             )}
             {state.rangeEnd - state.rangeStart > 1 && (
               <div className="border-l-2 border-dashed border-gray-600 h-8 flex items-center pl-3">
-                <span className="text-xs text-gray-500">... 中间 {state.rangeEnd - state.rangeStart - 1} 页略过 ...</span>
+                <span className="text-xs text-gray-400">... 中间 {state.rangeEnd - state.rangeStart - 1} 页略过 ...</span>
               </div>
             )}
             {state.rangeEnd > state.rangeStart && state.previewEnd && (
@@ -409,7 +409,7 @@ function RightPanel({ state, setState, exporting, updateRangePreview, handleExpo
                     className="w-full rounded-lg ring-1 ring-gray-700" />
                 ) : (
                   <div className="aspect-[3/4] rounded-lg ring-1 ring-gray-700 bg-gray-800/50 flex items-center justify-center">
-                    <span className="text-xs text-gray-600">加载中...</span>
+                    <span className="text-xs text-gray-400">加载中...</span>
                   </div>
                 )}
                 <span className="absolute top-1 left-2 text-xs bg-blue-600 text-white px-1.5 rounded">

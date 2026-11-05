@@ -116,16 +116,16 @@ export function PageThumbnails({
                       : 'hover:bg-gray-800/60 border border-transparent'
               }`}
             >
-              <span className="text-xs text-gray-600 cursor-grab active:cursor-grabbing select-none">⠿</span>
+              <span className="text-xs text-gray-500 cursor-grab active:cursor-grabbing select-none">⠿</span>
               {thumbUrls[idx] ? (
                 <img src={thumbUrls[idx]} alt={`Page ${idx + 1}`}
-                  className="w-10 h-14 object-cover rounded shrink-0" />
+                  className="w-14 h-20 object-cover rounded shrink-0" />
               ) : (
-                <div className="w-10 h-14 rounded bg-gray-800 shrink-0 flex items-center justify-center">
-                  <span className="text-[9px] text-gray-600">{idx + 1}</span>
+                <div className="w-14 h-20 rounded bg-gray-800 shrink-0 flex items-center justify-center">
+                  <span className="text-[11px] text-gray-400">{idx + 1}</span>
                 </div>
               )}
-              <span className="text-[10px] text-gray-500 truncate">第 {idx + 1} 页</span>
+              <span className="text-[11px] text-gray-400 truncate">第 {idx + 1} 页</span>
             </div>
           )
         })}

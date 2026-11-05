@@ -7,7 +7,8 @@ import { usePDFState } from '../hooks/usePDFState'
 import { renderPagePreview } from '../utils/pdf-render'
 import { searchPdfText } from '../utils/pdf-search'
 import { pdfLoadingOptions } from '../utils/pdfjs-config'
-import type { WorkerAction, WorkerResponse, SourceFile, Watermark } from '../types'
+import { isEditableTarget } from '../utils/keyboard'
+import type { WorkerAction, WorkerResponse, SourceFile, WatermarkDraft } from '../types'
 import * as pdfjsLib from 'pdfjs-dist'
 
 function generateId(): string {
@@ -22,17 +23,47 @@ interface EditorStudioProps {
 
 export function EditorStudio({ injectedFile, onInjectedFileConsumed }: EditorStudioProps) {
   const { state, sourceFile, loadFileInner, clearFile, rotatePage, deletePage, movePage, setPreviewUrl,
-    addRedaction, removeRedaction, clearRedactions, addWatermark, removeWatermark,
+    addRedaction, removeRedaction, clearRedactions, removeWatermark,
     setCurrentPage,
     setSearchQuery, setSearchResults, undo, redo, jumpToHistory, getHistory } = usePDFState()
 
   const renderQueue = useRef<Set<number>>(new Set())
   const [passwordDialog, setPasswordDialog] = useState<{ fileId: string; fileName: string; error?: string } | null>(null)
   const [isRedacting, setIsRedacting] = useState(false)
-  const [panelCollapsed, setPanelCollapsed] = useState(false)
-  const [thumbnailsCollapsed, setThumbnailsCollapsed] = useState(false)
+  const [watermarkDraft, setWatermarkDraft] = useState<WatermarkDraft | null>(null)
   const [thumbUrls, setThumbUrls] = useState<(string | undefined)[]>([])
   const loadedThumbsRef = useRef<Set<number>>(new Set())
+
+  // Responsive side panels: collapse them before the canvas gets too narrow.
+  const [viewportWidth, setViewportWidth] = useState(() => window.innerWidth)
+  const [thumbnailsOverride, setThumbnailsOverride] = useState<boolean | null>(null)
+  const [panelOverride, setPanelOverride] = useState<boolean | null>(null)
+  const autoCollapseThumbnails = viewportWidth < 1024
+  const autoCollapsePanel = viewportWidth < 900
+  const thumbnailsCollapsed = thumbnailsOverride ?? autoCollapseThumbnails
+  const panelCollapsed = panelOverride ?? autoCollapsePanel
+
+  useEffect(() => {
+    const onResize = () => setViewportWidth(window.innerWidth)
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
+
+  // Forget manual toggles when a breakpoint is crossed so the auto state applies again.
+  const prevAutoThumbnails = useRef(autoCollapseThumbnails)
+  const prevAutoPanel = useRef(autoCollapsePanel)
+  useEffect(() => {
+    if (prevAutoThumbnails.current !== autoCollapseThumbnails) {
+      prevAutoThumbnails.current = autoCollapseThumbnails
+      setThumbnailsOverride(null)
+    }
+  }, [autoCollapseThumbnails])
+  useEffect(() => {
+    if (prevAutoPanel.current !== autoCollapsePanel) {
+      prevAutoPanel.current = autoCollapsePanel
+      setPanelOverride(null)
+    }
+  }, [autoCollapsePanel])
 
   // Load a low-res thumbnail for the left panel (separate from center preview)
   const loadThumbnail = useCallback(async (pageIndex: number) => {
@@ -49,6 +80,7 @@ export function EditorStudio({ injectedFile, onInjectedFileConsumed }: EditorStu
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
+      if (isEditableTarget(e.target)) return
       if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) { e.preventDefault(); undo() }
       else if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) { e.preventDefault(); redo() }
     }
@@ -179,13 +211,21 @@ export function EditorStudio({ injectedFile, onInjectedFileConsumed }: EditorStu
 
   const handleExport = useCallback(() => {
     if (!sourceFile) return
-    const activePages = state.pages.filter(p => !p.deleted)
+    let activePages = state.pages.filter(p => !p.deleted)
+    // What you see is what you get: include the live watermark preview even if it
+    // has not been pinned with "添加水印" yet.
+    if (watermarkDraft) {
+      const draftPageIds = new Set(watermarkDraft.pageIds)
+      activePages = activePages.map(p => draftPageIds.has(p.id)
+        ? { ...p, watermarks: [...p.watermarks, watermarkDraft.watermark] }
+        : p)
+    }
     postAction({ type: 'EXPORT_PDF', payload: { pages: activePages, sourceId: sourceFile.id } })
-  }, [postAction, state.pages, sourceFile])
+  }, [postAction, state.pages, sourceFile, watermarkDraft])
 
-  const handleAddWatermark = useCallback((pageIndex: number, w: Watermark) => {
-    addWatermark(pageIndex, w)
-  }, [addWatermark])
+  const handleWatermarkDraftChange = useCallback((draft: WatermarkDraft | null) => {
+    setWatermarkDraft(draft)
+  }, [])
 
   const handleSearch = useCallback(async (query: string) => {
     setSearchQuery(query)
@@ -219,7 +259,7 @@ export function EditorStudio({ injectedFile, onInjectedFileConsumed }: EditorStu
         >
           <span className="text-4xl mb-3">✍️</span>
           <p className="text-sm text-gray-400">拖入 PDF 开始编辑</p>
-          <p className="text-xs text-gray-600 mt-1">或点击选择文件</p>
+          <p className="text-xs text-gray-400 mt-1">或点击选择文件</p>
         </div>
         <input ref={fileInputRef} type="file" accept=".pdf,image/*" onChange={e => { const f = e.target.files?.[0]; if (f) { handleFileDrop([f]); e.target.value = '' } }} className="hidden" />
       </div>
@@ -232,7 +272,7 @@ export function EditorStudio({ injectedFile, onInjectedFileConsumed }: EditorStu
         pages={state.pages}
         currentPageIndex={state.currentPageIndex}
         collapsed={thumbnailsCollapsed}
-        onToggleCollapse={() => setThumbnailsCollapsed(!thumbnailsCollapsed)}
+        onToggleCollapse={() => setThumbnailsOverride(!thumbnailsCollapsed)}
         onSetCurrentPage={setCurrentPage}
         onMovePage={movePage}
         thumbUrls={thumbUrls}
@@ -243,6 +283,9 @@ export function EditorStudio({ injectedFile, onInjectedFileConsumed }: EditorStu
         currentPageIndex={state.currentPageIndex}
         isRedacting={isRedacting}
         searchResults={state.searchResults}
+        watermarkDraft={watermarkDraft}
+        fileName={sourceFile.name}
+        onReselectFile={() => fileInputRef.current?.click()}
         onRenderPreview={handleRenderPreview}
         onClearPreview={handleClearPreview}
         onRotatePage={rotatePage}
@@ -254,10 +297,9 @@ export function EditorStudio({ injectedFile, onInjectedFileConsumed }: EditorStu
       />
       <ToolDrawer
         collapsed={panelCollapsed}
-        onToggleCollapse={() => setPanelCollapsed(!panelCollapsed)}
+        onToggleCollapse={() => setPanelOverride(!panelCollapsed)}
         pages={state.pages}
         currentPageIndex={state.currentPageIndex}
-        sourceFile={sourceFile}
         isRedacting={isRedacting}
         splitMode={state.splitMode}
         splitRangeStart={state.splitRangeStart}
@@ -270,20 +312,23 @@ export function EditorStudio({ injectedFile, onInjectedFileConsumed }: EditorStu
         onScatterPagesChange={() => {}}
         onSearch={handleSearch}
         onSplit={() => {}}
-        onAddWatermark={handleAddWatermark}
         onRemoveWatermark={removeWatermark}
+        onWatermarkDraftChange={handleWatermarkDraftChange}
         onToggleRedact={() => setIsRedacting(!isRedacting)}
         onClearRedactions={clearRedactions}
         onRemoveRedaction={removeRedaction}
         onExport={handleExport}
         onExportSplit={() => {}}
-        onFileDrop={handleFileDrop}
         hideSplit
         history={getHistory()}
         onUndo={undo}
         onRedo={redo}
         onJumpToHistory={jumpToHistory}
       />
+
+      {/* Persistent picker for "重新选择" in the canvas header. */}
+      <input ref={fileInputRef} type="file" accept=".pdf,image/*" className="hidden"
+        onChange={e => { const f = e.target.files?.[0]; if (f) { handleFileDrop([f]); e.target.value = '' } }} />
 
       {passwordDialog && (
         <PasswordDialog

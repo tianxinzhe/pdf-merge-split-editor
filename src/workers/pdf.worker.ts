@@ -99,23 +99,44 @@ self.onmessage = async (e: MessageEvent<WorkerAction>) => {
           if (page.watermarks?.length > 0) {
             const { width, height } = copied.getSize()
             for (const wm of page.watermarks) {
-              const srcData = wm.imageData || wm.pngData
+              const srcData = wm.pngData || wm.imageData
               if (!srcData) continue
               try {
                 const imgBytes = b64ToBytes(srcData)
                 const wmImg = await outDoc.embedPng(imgBytes)
-                if (wm.position === 'full') {
-                  copied.drawImage(wmImg, {
-                    x: 0, y: 0,
-                    width: width,
-                    height: height,
-                  })
+                if (wm.pngData) {
+                  // Pre-rendered PNG: full-page canvases are stretched, single ones centred at 1:1.
+                  if (wm.position === 'full') {
+                    copied.drawImage(wmImg, { x: 0, y: 0, width, height })
+                  } else {
+                    const pos = getPos(wm.position || 'center', width, height, wmImg.width, wmImg.height)
+                    copied.drawImage(wmImg, {
+                      x: pos.x, y: pos.y,
+                      width: wmImg.width, height: wmImg.height,
+                    })
+                  }
                 } else {
-                  const pos = getPos(wm.position || 'center', width, height, wmImg.width, wmImg.height)
-                  copied.drawImage(wmImg, {
-                    x: pos.x, y: pos.y,
-                    width: wmImg.width, height: wmImg.height,
-                  })
+                  // Legacy raw image watermark without a pre-rendered layer.
+                  const targetWidth = Math.max(16, width * (wm.imageScale ?? 0.3))
+                  const targetHeight = targetWidth * (wmImg.height / wmImg.width)
+                  if (wm.position === 'full') {
+                    const stepX = targetWidth * 1.6
+                    const stepY = targetHeight * 1.6
+                    for (let y = targetHeight / 2; y < height + targetHeight; y += stepY) {
+                      for (let x = targetWidth / 2; x < width + targetWidth; x += stepX) {
+                        copied.drawImage(wmImg, {
+                          x: x - targetWidth / 2, y: y - targetHeight / 2,
+                          width: targetWidth, height: targetHeight,
+                        })
+                      }
+                    }
+                  } else {
+                    const pos = getPos(wm.position || 'center', width, height, targetWidth, targetHeight)
+                    copied.drawImage(wmImg, {
+                      x: pos.x, y: pos.y,
+                      width: targetWidth, height: targetHeight,
+                    })
+                  }
                 }
               } catch (e) {
                 self.postMessage({ type: 'ERROR', payload: { message: `水印嵌入失败: ${e}` } })

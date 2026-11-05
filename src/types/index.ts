@@ -58,9 +58,22 @@ export interface Watermark {
   opacity: number
   angle: number
   position: 'full' | 'center' | 'tl' | 'tc' | 'tr' | 'ml' | 'mc' | 'mr' | 'bl' | 'bc' | 'br'
+  /** Text colour as a hex string, defaults to black. */
+  color?: string
+  /** Gap between tiled watermark items in pixels (20-300). */
+  spacing?: number
+  /** Image watermark width as a fraction of the page width (0.1-1). */
+  imageScale?: number
   pngData?: string
   imageData?: string
   imageName?: string
+}
+
+/** Live watermark preview shown on the canvas before it is committed. */
+export interface WatermarkDraft {
+  /** Page ids (PageItem.id) the draft should appear on. */
+  pageIds: string[]
+  watermark: Watermark
 }
 
 export type SplitMode = 'range' | 'scatter'
