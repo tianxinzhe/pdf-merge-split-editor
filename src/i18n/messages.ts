@@ -1,5 +1,6 @@
 import type { HomeMessages, Locale, Messages } from './types'
 import { internalMessages } from './internal'
+import { guideMessages } from './guides'
 
 const zh: HomeMessages = {
   nav: {
@@ -560,9 +561,9 @@ const de: HomeMessages = {
 const baseMessages: Record<Locale, HomeMessages> = { zh, en, ko, ja, de }
 
 export const messages: Record<Locale, Messages> = {
-  zh: { ...baseMessages.zh, ...internalMessages.zh },
-  en: { ...baseMessages.en, ...internalMessages.en },
-  ko: { ...baseMessages.ko, ...internalMessages.ko },
-  ja: { ...baseMessages.ja, ...internalMessages.ja },
-  de: { ...baseMessages.de, ...internalMessages.de },
+  zh: { ...baseMessages.zh, ...internalMessages.zh, guides: guideMessages.zh },
+  en: { ...baseMessages.en, ...internalMessages.en, guides: guideMessages.en },
+  ko: { ...baseMessages.ko, ...internalMessages.ko, guides: guideMessages.ko },
+  ja: { ...baseMessages.ja, ...internalMessages.ja, guides: guideMessages.ja },
+  de: { ...baseMessages.de, ...internalMessages.de, guides: guideMessages.de },
 }

@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect, useRef, useMemo } from 'react'
 import type { PageItem, Watermark, WatermarkDraft, SplitMode, HistoryCommand } from '../types'
 import { parsePageRange, renderImageWatermarkPng, renderTextWatermarkPng } from '../utils/watermark-render'
 import { useI18n } from '../i18n'
+import { ToolGuide } from './ToolGuide'
 
 interface ToolDrawerProps {
   collapsed: boolean
@@ -460,6 +461,9 @@ export function ToolDrawer({
           </div>
           )}
         </section>
+        <div className="px-3">
+          <ToolGuide copy={t.guides.editor} />
+        </div>
       </div>
 
       {/* === 历史记录 (固定在底部) === */}

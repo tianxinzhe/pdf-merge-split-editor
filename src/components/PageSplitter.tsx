@@ -3,6 +3,7 @@ import * as pdfjsLib from 'pdfjs-dist'
 import type { PDFDocumentProxy } from 'pdfjs-dist'
 import { pdfLoadingOptions } from '../utils/pdfjs-config'
 import { useI18n } from '../i18n'
+import { ToolGuide } from './ToolGuide'
 import type { SourceFile } from '../types'
 
 interface SplitterState {
@@ -428,6 +429,7 @@ function RightPanel({ state, setState, exporting, updateRangePreview, handleExpo
             <p className="mt-1">{t.splitter.scatterEmptyHint}</p>
           </div>
         )}
+        <ToolGuide copy={t.guides.splitter} />
       </div>
 
       {/* 底部导出按钮 */}

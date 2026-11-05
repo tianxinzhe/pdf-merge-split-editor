@@ -5,6 +5,7 @@ import { pdfLoadingOptions } from '../utils/pdfjs-config'
 import { unlockOwnerPassword } from '../utils/pdf-unlock'
 import JSZip from 'jszip'
 import { useI18n } from '../i18n'
+import { ToolGuide } from './ToolGuide'
 
 /* ───── Password unlock (kept from PasswordHub) ───── */
 interface PasswordFile {
@@ -360,6 +361,7 @@ export function Toolbox() {
             </button>
           )}
         </div>
+        <ToolGuide copy={t.guides.toolbox} />
       </div>
 
       {/* Password prompt overlay */}

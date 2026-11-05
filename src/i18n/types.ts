@@ -217,6 +217,13 @@ export interface WorkerCopy {
   watermarkEmbedFailed: (message: string) => string
 }
 
+/** Long-form copy shown under each tool to give Auto ads real content to scan. */
+export interface GuideCopy {
+  title: string
+  intro: string
+  tips: string[]
+}
+
 /** Copy shared by every locale and used by the landing page and navigation. */
 export interface HomeMessages {
   nav: Record<TabId, string>
@@ -234,4 +241,5 @@ export interface Messages extends HomeMessages {
   drawer: DrawerCopy
   password: PasswordCopy
   worker: WorkerCopy
+  guides: Record<ModuleId, GuideCopy>
 }

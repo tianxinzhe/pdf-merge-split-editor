@@ -2,6 +2,7 @@ import { useCallback, useRef, useState } from 'react'
 import { PDFDocument } from 'pdf-lib'
 import { unlockOwnerPassword } from '../utils/pdf-unlock'
 import { useI18n } from '../i18n'
+import { ToolGuide } from './ToolGuide'
 import type { MergerFileItem } from '../types'
 
 function generateId(): string {
@@ -188,6 +189,7 @@ export function MultiFileMerger({ onSendToEditor }: MultiFileMergerProps) {
             </div>
           )}
         </div>
+        <ToolGuide copy={t.guides.merger} />
         <input ref={fileInputRef} type="file" accept=".pdf,image/*" multiple onChange={handleFileSelect} className="hidden" />
       </div>
 
