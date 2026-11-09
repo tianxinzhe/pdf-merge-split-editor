@@ -1,27 +1,39 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-page="home">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="color-scheme" content="dark" />
     <meta name="theme-color" content="#030712" />
-    <meta
-      name="description"
-      content="Lemon PDF Studio —— 纯本地运行的 PDF 工具箱：合并、拆分、编辑、签名、加水印、加密解密。所有文件仅在浏览器内存中处理，不上传任何服务器。"
-    />
-    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5015170324086200"
-      crossorigin="anonymous"></script>
+    <meta name="description" content="纯本地 PDF 工具箱：拆分、编辑、合并、图片转 PDF、PDF 转图片、加密与解密。文件只在浏览器中处理，不上传服务器。" />
+    <link rel="canonical" href="/" vite-ignore />
+    <meta name="robots" content="index,follow" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Lemon PDF Studio" />
+    <meta property="og:title" content="Lemon PDF Studio · 纯本地 PDF 工具箱" />
+    <meta property="og:description" content="纯本地 PDF 工具箱：拆分、编辑、合并、图片转 PDF、PDF 转图片、加密与解密。文件只在浏览器中处理，不上传服务器。" />
+    <meta property="og:locale" content="zh_CN" />
+    <meta name="twitter:card" content="summary" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() { dataLayer.push(arguments) }
+      gtag('consent', 'default', {
+        ad_storage: 'denied',
+        ad_user_data: 'denied',
+        ad_personalization: 'denied',
+        analytics_storage: 'denied',
+        wait_for_update: 500,
+      });
+    </script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5015170324086200" crossorigin="anonymous"></script>
     <meta name="google-adsense-account" content="ca-pub-5015170324086200" />
+    <script src="/consent.js" defer></script>
     <title>Lemon PDF Studio · 纯本地 PDF 工具箱</title>
   </head>
   <body class="m-0 p-0 overflow-hidden">
     <div id="root"></div>
-    <noscript>
-      <div style="padding: 2rem; color: #e5e7eb; background: #030712; font-family: system-ui, sans-serif">
-        本工具需要 JavaScript 才能在浏览器本地运行，请启用后刷新页面。
-      </div>
-    </noscript>
+    <noscript>本工具需要 JavaScript 才能在浏览器本地运行，请启用后刷新页面。</noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

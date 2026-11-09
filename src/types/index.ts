@@ -1,4 +1,4 @@
-export type TabId = 'home' | 'splitter' | 'editor' | 'merger' | 'toolbox'
+export type TabId = 'home' | 'splitter' | 'editor' | 'merger' | 'img2pdf' | 'toolbox' | 'unlock' | 'encrypt'
 
 export interface TabDef {
   id: TabId
@@ -11,7 +11,10 @@ export const TABS: TabDef[] = [
   { id: 'splitter', label: '页面拆分', icon: '✂️' },
   { id: 'editor', label: '编辑精修', icon: '✍️' },
   { id: 'merger', label: '多文件合并', icon: '📂' },
-  { id: 'toolbox', label: '工具箱', icon: '🧰' },
+  { id: 'img2pdf', label: '图片转 PDF', icon: '🖼️' },
+  { id: 'toolbox', label: 'PDF 转图片', icon: '🧰' },
+  { id: 'unlock', label: 'PDF 解密', icon: '🔐' },
+  { id: 'encrypt', label: 'PDF 加密', icon: '🔒' },
 ]
 
 export interface SourceFile {

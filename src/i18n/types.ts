@@ -4,6 +4,9 @@ export type Locale = 'zh' | 'en' | 'ko' | 'ja' | 'de'
 
 export type ModuleId = Exclude<TabId, 'home'>
 
+/** Every module has a short guide shown below the tool. */
+export type GuideModuleId = ModuleId
+
 export interface ModuleCopy {
   title: string
   tagline: string
@@ -36,6 +39,14 @@ export interface CommonCopy {
   switchLanguage: string
   backHome: string
   appTitle: string
+  loading: string
+  footer: {
+    about: string
+    contact: string
+    privacy: string
+    terms: string
+    help: string
+  }
 }
 
 export interface HistoryCopy {
@@ -118,8 +129,73 @@ export interface MergerCopy {
   sendToEditor: string
 }
 
-export interface ToolboxCopy {
+export interface ImageToPdfCopy {
+  mergeFailed: (message: string) => string
+  rejectPdf: string
+  dropTitle: string
+  dropHint: string
+  addFiles: string
+  clearAll: string
+  imageLabel: string
+  merging: string
+  download: string
+  sendToEditor: string
+}
+
+export interface UnlockCopy {
+  title: string
+  ownerTitle: string
+  ownerDesc: string
+  userTitle: string
+  userDesc: string
+  dropTitle: string
+  addMore: string
+  processing: string
+  unlockOwner: string
+  unlockUser: string
+  detected: (file: string) => string
+  enterPassword: string
+  passwordPlaceholder: string
   wrongPassword: string
+  cancel: string
+  confirm: string
+  reprocess: string
+  reprocessHint: string
+  needsPassword: string
+  disclaimer: string
+}
+
+export interface EncryptCopy {
+  title: string
+  subtitle: string
+  dropTitle: string
+  changeFile: string
+  userPassword: string
+  userPasswordHint: string
+  userPasswordPlaceholder: string
+  confirmPassword: string
+  confirmPasswordPlaceholder: string
+  ownerPassword: string
+  ownerPasswordHint: string
+  ownerPasswordPlaceholder: string
+  permissions: string
+  permissionPrint: string
+  permissionCopy: string
+  permissionModify: string
+  permissionAnnotate: string
+  permissionForms: string
+  permissionAssemble: string
+  encryptionNote: string
+  encrypting: string
+  encrypt: string
+  passwordRequired: string
+  passwordMismatch: string
+  alreadyEncrypted: string
+  encryptFailed: (message: string) => string
+  success: string
+}
+
+export interface ToolboxCopy {
   exportFailed: (message: string) => string
   pageFileName: (base: string, page: number, format: string) => string
   imagesZipName: (base: string) => string
@@ -137,21 +213,6 @@ export interface ToolboxCopy {
   exporting: string
   exportImages: (count: number, dpi: number, format: string) => string
   exportLong: (dpi: number, format: string) => string
-  unlockTitle: string
-  ownerTitle: string
-  ownerDesc: string
-  userTitle: string
-  userDesc: string
-  dropEncrypted: string
-  addMore: string
-  processing: string
-  unlockOwner: string
-  unlockUser: string
-  detected: (file: string) => string
-  enterPassword: string
-  passwordPlaceholder: string
-  cancel: string
-  confirm: string
 }
 
 export interface DrawerCopy {
@@ -237,9 +298,12 @@ export interface Messages extends HomeMessages {
   editor: EditorCopy
   thumbnails: ThumbnailsCopy
   merger: MergerCopy
+  img2pdf: ImageToPdfCopy
   toolbox: ToolboxCopy
+  unlock: UnlockCopy
+  encrypt: EncryptCopy
   drawer: DrawerCopy
   password: PasswordCopy
   worker: WorkerCopy
-  guides: Record<ModuleId, GuideCopy>
+  guides: Record<GuideModuleId, GuideCopy>
 }

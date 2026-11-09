@@ -1,43 +1,57 @@
 /**
- * Remove owner-password restrictions from a PDF.
+ * Remove password/permission protection from a PDF.
  *
- * Owner-lock PDFs have an empty user password but restrict copy/print/edit
- * via the /P permissions flag in the /Encrypt dictionary.
+ * Primary strategy: let @libpdf/core decrypt the document in place and save it
+ * without an /Encrypt dictionary. This preserves text, vectors and bookmarks.
  *
- * Strategy: Use pdfjs to decrypt and render every page to canvas, then
- * rebuild the PDF from those images. This is the only reliable approach
- * because the content streams are genuinely encrypted; simply stripping
- * the /Encrypt marker produces a PDF with garbled/blank content.
- *
- * Binary patching (patchRemoveEncrypt) is still used in the export worker
- * where pdf-lib needs to load the file structure without encryption errors.
+ * Fallback: if the library cannot parse the encryption, render every page via
+ * pdfjs and rebuild the PDF from images (loses the text layer).
  */
 
 import * as pdfjsLib from 'pdfjs-dist'
 import { PDFDocument } from 'pdf-lib'
 import { pdfLoadingOptions } from './pdfjs-config'
 
+async function losslessUnlock(binary: ArrayBuffer, password: string): Promise<Uint8Array> {
+  const { PDF } = await import('@libpdf/core')
+  const pdf = await PDF.load(new Uint8Array(binary), { credentials: password })
+  if (!pdf.isEncrypted) return new Uint8Array(binary)
+  // The library can load an encrypted file with a wrong password but leaves it
+  // unauthenticated. Removing protection then would produce undecryptable content.
+  if (!pdf.isAuthenticated) throw new Error('WRONG_PASSWORD')
+  pdf.removeProtection({ ignorePermissions: true })
+  return await pdf.save()
+}
+
 /**
- * Remove owner lock by rendering every page via pdfjs (which properly
- * decrypts the streams) and rebuilding a clean, unrestricted PDF from
- * the rendered images.
+ * Remove owner lock while keeping the original content streams.
+ * Falls back to the pdfjs raster path only for unsupported encryption.
  */
 export async function unlockOwnerPassword(binary: ArrayBuffer): Promise<Uint8Array> {
-  // First, verify this is an owner-only lock (empty user password)
   try {
-    await pdfjsLib.getDocument({
-      ...pdfLoadingOptions,
-      data: binary.slice(0),
-      password: '',
-    }).promise
+    return await losslessUnlock(binary, '')
   } catch {
-    throw new Error('NOT_OWNER_ONLY')
+    // Owner-only locks have an empty user password; if even that fails the
+    // file likely needs a real open password. The raster path distinguishes
+    // that case by throwing as well.
+    try {
+      return await fallbackRerender(binary, '')
+    } catch {
+      throw new Error('NOT_OWNER_ONLY')
+    }
   }
+}
 
-  // Skip raw binary patching — it only strips the /Encrypt marker without
-  // decrypting the content streams, producing blank pages for most real PDFs.
-  // Always go through pdfjs rendering to properly decrypt content.
-  return await fallbackRerender(binary)
+/**
+ * Remove a user (open) password while preserving the text layer.
+ * The caller must supply the current password.
+ */
+export async function unlockUserPassword(binary: ArrayBuffer, password: string): Promise<Uint8Array> {
+  try {
+    return await losslessUnlock(binary, password)
+  } catch {
+    return await fallbackRerender(binary, password)
+  }
 }
 
 /**
@@ -71,13 +85,14 @@ export function patchRemoveEncrypt(original: Uint8Array): Uint8Array | null {
 
 /**
  * Fallback: render via pdfjs-dist and rebuild as images.
- * Uses scale 1.5 and JPEG quality 0.85 for reasonable file size.
+ * Uses scale 1.5 and JPEG quality 0.82, and only when @libpdf/core cannot
+ * handle the encryption.
  */
-async function fallbackRerender(binary: ArrayBuffer): Promise<Uint8Array> {
+async function fallbackRerender(binary: ArrayBuffer, password: string): Promise<Uint8Array> {
   const pdf = await pdfjsLib.getDocument({
     ...pdfLoadingOptions,
     data: binary.slice(0),
-    password: '',
+    password,
   }).promise
 
   const cleanDoc = await PDFDocument.create()

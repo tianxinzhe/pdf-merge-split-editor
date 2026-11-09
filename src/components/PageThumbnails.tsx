@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import type { PageItem } from '../types'
 import { useI18n } from '../i18n'
 
@@ -9,13 +9,15 @@ interface PageThumbnailsProps {
   onToggleCollapse: () => void
   onSetCurrentPage: (index: number) => void
   onMovePage: (fromIndex: number, toIndex: number) => void
-  thumbUrls: (string | undefined)[]
-  onLoadThumb: (pageIndex: number) => void
+  /** True once the source PDF is available for thumbnail rendering. */
+  thumbsReady: boolean
+  thumbUrls: Record<string, string | undefined>
+  onLoadThumb: (pageId: string) => void
 }
 
 export function PageThumbnails({
   pages, currentPageIndex, collapsed, onToggleCollapse,
-  onSetCurrentPage, onMovePage, thumbUrls, onLoadThumb,
+  onSetCurrentPage, onMovePage, thumbsReady, thumbUrls, onLoadThumb,
 }: PageThumbnailsProps) {
   const { t } = useI18n()
   const [dragIndex, setDragIndex] = useState<number | null>(null)
@@ -47,34 +49,35 @@ export function PageThumbnails({
     if (!isNaN(idx)) onSetCurrentPage(idx)
   }
   const onLoadThumbRef = useRef(onLoadThumb)
-  const thumbUrlsRef = useRef(thumbUrls)
+  const thumbUrlsRef = useRef<Record<string, string | undefined>>({})
   onLoadThumbRef.current = onLoadThumb
   thumbUrlsRef.current = thumbUrls
 
-  // Lazy-load thumbnails via IntersectionObserver
-  useEffect(() => {
+  const activePages = pages.filter(p => !p.deleted)
+  const pageOrder = activePages.map(p => p.id).join('|')
+
+  // Load thumbnails near the visible part of the rail. A scroll listener is used
+  // instead of IntersectionObserver so it also works in background/headless tabs.
+  const loadVisibleThumbs = useCallback(() => {
     const el = thumbContainerRef.current
     if (!el) return
-    const pending = new Set<number>()
-    el.querySelectorAll('[data-page-idx]').forEach(item => {
-      const idx = parseInt(item.getAttribute('data-page-idx') ?? '')
-      if (!isNaN(idx) && !thumbUrlsRef.current[idx]) pending.add(idx)
+    const rootRect = el.getBoundingClientRect()
+    el.querySelectorAll('[data-page-id]').forEach(item => {
+      const rect = item.getBoundingClientRect()
+      if (rect.bottom < rootRect.top - 200 || rect.top > rootRect.bottom + 200) return
+      const pageId = item.getAttribute('data-page-id')
+      if (pageId && !thumbUrlsRef.current[pageId]) onLoadThumbRef.current(pageId)
     })
-    if (pending.size === 0) return
-    const observer = new IntersectionObserver((entries) => {
-      for (const entry of entries) {
-        if (!entry.isIntersecting) continue
-        const idx = parseInt(entry.target.getAttribute('data-page-idx') ?? '')
-        if (!isNaN(idx) && !thumbUrlsRef.current[idx]) onLoadThumbRef.current(idx)
-        observer.unobserve(entry.target)
-      }
-    }, { root: el, rootMargin: '200px' })
-    el.querySelectorAll('[data-page-idx]').forEach(item => {
-      const idx = parseInt(item.getAttribute('data-page-idx') ?? '')
-      if (!isNaN(idx) && !thumbUrlsRef.current[idx]) observer.observe(item)
-    })
-    return () => observer.disconnect()
-  }, [pages.length])
+  }, [])
+
+  useEffect(() => {
+    if (collapsed || !thumbsReady) return
+    loadVisibleThumbs()
+    const el = thumbContainerRef.current
+    if (!el) return
+    el.addEventListener('scroll', loadVisibleThumbs, { passive: true })
+    return () => el.removeEventListener('scroll', loadVisibleThumbs)
+  }, [collapsed, pageOrder, thumbsReady, loadVisibleThumbs])
 
   if (collapsed) {
     return (
@@ -86,8 +89,6 @@ export function PageThumbnails({
       </button>
     )
   }
-
-  const activePages = pages.filter(p => !p.deleted)
 
   return (
     <aside className="w-48 shrink-0 border-r border-gray-800 bg-gray-900/30 flex flex-col overflow-hidden">
@@ -101,6 +102,7 @@ export function PageThumbnails({
           return (
             <div key={page.id}
               data-page-idx={idx}
+              data-page-id={page.id}
               draggable
               onDragStart={() => handleDragStart(idx)}
               onDragOver={e => handleDragOver(e, idx)}
@@ -119,8 +121,8 @@ export function PageThumbnails({
               }`}
             >
               <span className="text-xs text-gray-500 cursor-grab active:cursor-grabbing select-none">⠿</span>
-              {thumbUrls[idx] ? (
-                <img src={thumbUrls[idx]} alt={t.thumbnails.pageAlt(idx + 1)}
+              {thumbUrls[page.id] ? (
+                <img src={thumbUrls[page.id]} alt={t.thumbnails.pageAlt(idx + 1)}
                   className="w-14 h-20 object-cover rounded shrink-0" />
               ) : (
                 <div className="w-14 h-20 rounded bg-gray-800 shrink-0 flex items-center justify-center">

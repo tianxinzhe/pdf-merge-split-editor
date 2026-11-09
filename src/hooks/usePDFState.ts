@@ -238,10 +238,10 @@ export function usePDFState() {
     }))
   }, [])
 
-  const setPreviewUrl = useCallback((pageIndex: number, url: string | undefined) => {
+  const setPreviewUrl = useCallback((pageId: string, url: string | undefined) => {
     setState(prev => ({
       ...prev,
-      pages: prev.pages.map((p, i) => i === pageIndex ? { ...p, previewUrl: url } : p),
+      pages: prev.pages.map(p => p.id === pageId ? { ...p, previewUrl: url } : p),
     }))
   }, [])
 

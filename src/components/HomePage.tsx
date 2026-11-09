@@ -1,6 +1,5 @@
 import type { TabId } from '../types'
-import { useI18n } from '../i18n'
-import type { ModuleId } from '../i18n/types'
+import { useI18n, type ModuleId } from '../i18n'
 
 interface HomePageProps {
   onNavigate: (tab: TabId) => void
@@ -20,28 +19,49 @@ const MODULE_META: ModuleMeta[] = [
     icon: '✂️',
     iconClass: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
     checkClass: 'text-blue-400',
-    linkClass: 'text-blue-400 hover:text-blue-300',
+    linkClass: 'text-blue-400 group-hover:text-blue-300',
   },
   {
     id: 'editor',
     icon: '✍️',
     iconClass: 'bg-violet-500/10 text-violet-400 border-violet-500/20',
     checkClass: 'text-violet-400',
-    linkClass: 'text-violet-400 hover:text-violet-300',
+    linkClass: 'text-violet-400 group-hover:text-violet-300',
   },
   {
     id: 'merger',
     icon: '📂',
     iconClass: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
     checkClass: 'text-emerald-400',
-    linkClass: 'text-emerald-400 hover:text-emerald-300',
+    linkClass: 'text-emerald-400 group-hover:text-emerald-300',
   },
   {
     id: 'toolbox',
     icon: '🧰',
     iconClass: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
     checkClass: 'text-amber-400',
-    linkClass: 'text-amber-400 hover:text-amber-300',
+    linkClass: 'text-amber-400 group-hover:text-amber-300',
+  },
+  {
+    id: 'img2pdf',
+    icon: '🖼️',
+    iconClass: 'bg-teal-500/10 text-teal-400 border-teal-500/20',
+    checkClass: 'text-teal-400',
+    linkClass: 'text-teal-400 group-hover:text-teal-300',
+  },
+  {
+    id: 'unlock',
+    icon: '🔐',
+    iconClass: 'bg-rose-500/10 text-rose-400 border-rose-500/20',
+    checkClass: 'text-rose-400',
+    linkClass: 'text-rose-400 group-hover:text-rose-300',
+  },
+  {
+    id: 'encrypt',
+    icon: '🔒',
+    iconClass: 'bg-sky-500/10 text-sky-400 border-sky-500/20',
+    checkClass: 'text-sky-400',
+    linkClass: 'text-sky-400 group-hover:text-sky-300',
   },
 ]
 
@@ -49,142 +69,162 @@ export function HomePage({ onNavigate }: HomePageProps) {
   const { t } = useI18n()
   const home = t.home
   const modules = MODULE_META.map(meta => ({ ...meta, ...home.modules[meta.id] }))
+  const [featured, ...rest] = modules
 
   const scrollToModules = () => {
     document.getElementById('modules')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
 
   return (
-    <div className="w-full h-full overflow-y-auto">
-      {/* Hero */}
-      <section className="relative overflow-hidden border-b border-gray-800">
-        <div className="absolute -top-24 -left-20 w-80 h-80 rounded-full bg-blue-600/20 blur-3xl pointer-events-none" />
-        <div className="absolute top-10 right-0 w-96 h-96 rounded-full bg-emerald-500/10 blur-3xl pointer-events-none" />
+    <div className="w-full h-full overflow-y-auto bg-gray-950">
+      <section className="relative overflow-hidden border-b border-gray-800/70">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -left-24 -top-24 h-72 w-72 rounded-full bg-blue-500/10 blur-3xl"
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -right-20 top-8 h-80 w-80 rounded-full bg-violet-500/10 blur-3xl"
+        />
 
-        <div className="relative max-w-5xl mx-auto px-6 py-14 md:py-20">
-          <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gray-900/80 border border-gray-700 text-xs text-gray-300">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+        <div className="relative mx-auto flex max-w-6xl flex-col items-center px-4 py-6 text-center md:px-8 md:py-8">
+          <span className="inline-flex w-fit items-center gap-2 rounded-full border border-blue-500/20 bg-blue-500/10 px-3 py-1 text-[11px] font-medium text-blue-300">
+            <span className="h-1.5 w-1.5 rounded-full bg-blue-400" />
             {home.badge}
           </span>
 
-          <h1 className="mt-5 text-3xl md:text-4xl font-bold tracking-tight text-white leading-tight">
+          <h1 className="mt-3 max-w-4xl text-3xl font-bold leading-[1.15] tracking-tight text-white md:text-4xl">
             {home.titleLead}
-            <span className="text-blue-400">{home.titleHighlight}</span>
+            <span className="bg-gradient-to-r from-blue-400 via-cyan-300 to-emerald-300 bg-clip-text text-transparent">
+              {home.titleHighlight}
+            </span>
           </h1>
-          <p className="mt-4 max-w-2xl text-base text-gray-400 leading-relaxed">{home.subtitle}</p>
 
-          <div className="mt-7 flex flex-wrap items-center gap-3">
+          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-gray-400 md:text-base">
+            {home.subtitle}
+          </p>
+
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
             <button
+              type="button"
               onClick={() => onNavigate('splitter')}
-              className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold transition-colors cursor-pointer shadow-lg shadow-blue-600/20"
+              className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-950/30 transition-colors hover:bg-blue-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 cursor-pointer"
             >
               {home.ctaPrimary}
+              <span aria-hidden>→</span>
             </button>
             <button
+              type="button"
               onClick={scrollToModules}
-              className="px-5 py-2.5 rounded-xl bg-gray-900 hover:bg-gray-800 border border-gray-700 text-gray-200 text-sm font-medium transition-colors cursor-pointer"
+              className="inline-flex items-center gap-2 rounded-xl border border-gray-700 bg-gray-900/60 px-5 py-2.5 text-sm font-medium text-gray-200 transition-colors hover:border-gray-500 hover:bg-gray-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 cursor-pointer"
             >
               {home.ctaSecondary}
             </button>
           </div>
 
-          <div className="mt-10 grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-2xl">
+          <dl className="mt-5 grid w-full max-w-2xl grid-cols-2 gap-x-8 gap-y-2 text-center sm:grid-cols-4">
             {home.stats.map(stat => (
-              <div key={stat.label} className="px-4 py-3 rounded-xl bg-gray-900/60 border border-gray-800">
-                <p className="text-sm font-semibold text-white">{stat.value}</p>
-                <p className="mt-0.5 text-xs text-gray-400">{stat.label}</p>
+              <div key={stat.label}>
+                <dt className="text-[11px] text-gray-500">{stat.label}</dt>
+                <dd className="mt-0.5 text-base font-semibold tracking-tight text-white">
+                  {stat.value}
+                </dd>
               </div>
             ))}
-          </div>
+          </dl>
         </div>
       </section>
 
-      {/* Modules */}
-      <section id="modules" className="max-w-5xl mx-auto px-6 py-12 scroll-mt-4">
-        <div className="flex items-end justify-between gap-4">
-          <div>
-            <h2 className="text-xl font-semibold text-white">{home.modulesTitle}</h2>
-            <p className="mt-1.5 text-sm text-gray-400">{home.modulesSubtitle}</p>
-          </div>
+      <section id="modules" className="mx-auto max-w-6xl px-4 py-6 md:px-8 md:py-8">
+        <div className="mb-5 md:mb-6">
+          <h2 className="text-xl font-semibold tracking-tight text-white md:text-2xl">
+            {home.modulesTitle}
+          </h2>
+          <p className="mt-1 text-xs text-gray-400 md:text-sm">{home.modulesSubtitle}</p>
         </div>
 
-        <div className="mt-6 grid gap-5 md:grid-cols-2">
-          {modules.map(m => (
-            <article
-              key={m.id}
-              className="flex flex-col p-6 rounded-2xl bg-gray-900/60 border border-gray-800 hover:border-gray-700 transition-colors"
-            >
-              <div className="flex items-start gap-4">
-                <div className={`w-11 h-11 shrink-0 rounded-xl border flex items-center justify-center text-xl ${m.iconClass}`}>
-                  {m.icon}
-                </div>
-                <div className="min-w-0">
-                  <h3 className="text-lg font-semibold text-white">{m.title}</h3>
-                  <p className="mt-1 text-sm text-gray-400">{m.tagline}</p>
-                </div>
-              </div>
+        <div className="home-modules-grid">
+          <button
+            key={featured.id}
+            type="button"
+            onClick={() => onNavigate(featured.id)}
+            className="group relative flex min-h-[210px] flex-col overflow-hidden rounded-2xl border border-blue-500/20 bg-gradient-to-br from-blue-500/10 via-gray-900/60 to-gray-900/40 p-5 text-left transition-all hover:-translate-y-1 hover:border-blue-400/40 hover:shadow-xl hover:shadow-blue-950/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 cursor-pointer sm:col-span-2"
+          >
+            <div
+              aria-hidden
+              className="pointer-events-none absolute right-0 top-0 h-40 w-40 rounded-full bg-blue-500/10 blur-2xl"
+            />
 
-              <p className="mt-4 text-sm text-gray-300 leading-relaxed">{m.description}</p>
-
-              <ul className="mt-4 space-y-2">
-                {m.features.map(feature => (
-                  <li key={feature} className="flex gap-2 text-sm text-gray-400 leading-relaxed">
-                    <span className={`mt-0.5 shrink-0 ${m.checkClass}`}>✓</span>
-                    <span>{feature}</span>
-                  </li>
-                ))}
-              </ul>
-
-              <button
-                onClick={() => onNavigate(m.id)}
-                className={`mt-auto pt-5 self-start text-sm font-medium transition-colors cursor-pointer ${m.linkClass}`}
+            <div className="relative flex items-start gap-4">
+              <span
+                aria-hidden
+                className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border text-3xl transition-transform group-hover:scale-105 md:h-16 md:w-16 md:text-4xl ${featured.iconClass}`}
               >
-                {m.cta}
-              </button>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      {/* Steps */}
-      <section className="max-w-5xl mx-auto px-6 pb-12">
-        <div className="grid gap-3 sm:grid-cols-3">
-          {home.steps.map(step => (
-            <div key={step.no} className="flex items-start gap-3 p-4 rounded-xl bg-gray-900/40 border border-gray-800">
-              <span className="text-lg font-bold text-gray-600 tabular-nums">{step.no}</span>
-              <div>
-                <p className="text-sm font-medium text-white">{step.title}</p>
-                <p className="mt-0.5 text-xs text-gray-400">{step.description}</p>
+                {featured.icon}
+              </span>
+              <div className="min-w-0 pt-0.5">
+                <h3 className="text-xl font-semibold text-white md:text-2xl">{featured.title}</h3>
+                <p className="mt-1 text-xs text-blue-200/80 line-clamp-1 md:text-sm">
+                  {featured.tagline}
+                </p>
               </div>
             </div>
+
+            <p className="relative mt-3 text-xs leading-relaxed text-gray-400 line-clamp-2 md:text-[13px]">
+              {featured.description}
+            </p>
+
+            <ul className="relative mt-2.5 space-y-1">
+              {featured.features.slice(0, 2).map(feature => (
+                <li key={feature} className="flex gap-2 text-[11px] text-gray-400">
+                  <span aria-hidden className="text-blue-400">•</span>
+                  <span className="line-clamp-1">{feature}</span>
+                </li>
+              ))}
+            </ul>
+
+            <span className={`relative mt-auto pt-4 text-xs font-medium ${featured.linkClass}`}>
+              {featured.cta}
+            </span>
+          </button>
+
+          {rest.map(module => (
+            <button
+              key={module.id}
+              type="button"
+              onClick={() => onNavigate(module.id)}
+              className="group flex min-h-[180px] flex-col rounded-2xl border border-gray-800 bg-gray-900/50 p-4 text-left transition-all hover:-translate-y-1 hover:border-gray-600 hover:bg-gray-900 hover:shadow-xl hover:shadow-black/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 cursor-pointer"
+            >
+              <span
+                aria-hidden
+                className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border text-xl transition-transform group-hover:scale-105 ${module.iconClass}`}
+              >
+                {module.icon}
+              </span>
+              <h3 className="mt-3 text-base font-semibold text-white">{module.title}</h3>
+              <p className="mt-0.5 text-[11px] text-gray-400 line-clamp-1">{module.tagline}</p>
+              <p className="mt-2 text-[11px] leading-relaxed text-gray-500 line-clamp-2">
+                {module.description}
+              </p>
+              <span className={`mt-auto pt-3 text-[11px] font-medium ${module.linkClass}`}>
+                {module.cta}
+              </span>
+            </button>
           ))}
         </div>
       </section>
 
-      {/* Privacy */}
-      <section className="border-t border-gray-800 bg-gray-900/30">
-        <div className="max-w-5xl mx-auto px-6 py-12">
-          <h2 className="text-xl font-semibold text-white">{home.privacyTitle}</h2>
-          <p className="mt-1.5 text-sm text-gray-400">{home.privacySubtitle}</p>
-
-          <div className="mt-6 grid gap-4 sm:grid-cols-3">
-            {home.privacy.map(item => (
-              <div key={item.title} className="p-4 rounded-xl bg-gray-900/60 border border-gray-800">
-                <div className="text-xl">{item.icon}</div>
-                <p className="mt-2 text-sm font-medium text-white">{item.title}</p>
-                <p className="mt-1 text-xs text-gray-400 leading-relaxed">{item.description}</p>
-              </div>
-            ))}
-          </div>
+      <section className="mx-auto max-w-6xl px-4 pb-6 md:px-8">
+        <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 border-t border-gray-800/70 pt-5 text-[11px] text-gray-500">
+          {home.privacy.map(item => (
+            <span key={item.title} className="inline-flex items-center gap-1.5">
+              <span aria-hidden>{item.icon}</span>
+              <span>{item.title}</span>
+            </span>
+          ))}
+          <span className="text-gray-600">{home.footerNote}</span>
         </div>
       </section>
-
-      <footer className="border-t border-gray-800">
-        <div className="max-w-5xl mx-auto px-6 py-5 flex flex-wrap items-center justify-between gap-2 text-xs text-gray-500">
-          <span>{home.footerBrand}</span>
-          <span>{home.footerNote}</span>
-        </div>
-      </footer>
     </div>
   )
 }

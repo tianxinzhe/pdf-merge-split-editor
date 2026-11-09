@@ -8,24 +8,35 @@ const zh: HomeMessages = {
     splitter: '页面拆分',
     editor: '编辑精修',
     merger: '多文件合并',
-    toolbox: '工具箱',
+    img2pdf: '图片转 PDF',
+    toolbox: 'PDF 转图片',
+    unlock: 'PDF 解密',
+    encrypt: 'PDF 加密',
   },
   common: {
     language: '语言',
     switchLanguage: '切换语言',
     backHome: '返回首页',
     appTitle: 'Lemon PDF Studio · 纯本地 PDF 工具箱',
+    loading: '加载中…',
+    footer: {
+      about: '关于我们',
+      contact: '联系我们',
+      privacy: '隐私政策',
+      terms: '服务条款',
+      help: '帮助中心',
+    },
   },
   home: {
     badge: '100% 本地处理 · 文件不上传服务器',
     titleLead: 'PDF 的琐事，',
     titleHighlight: '一次做完',
     subtitle:
-      '拆分、合并、加水印、遮挡敏感内容、转图片、解除密码限制——全部在浏览器里完成。文件不会离开你的设备，也不需要注册账号。',
+      '拆分、合并、加水印、遮挡敏感内容、PDF 与图片互转——全部在浏览器里完成。文件不会离开你的设备，也不需要注册账号。',
     ctaPrimary: '开始拆分 PDF',
     ctaSecondary: '浏览全部功能',
     stats: [
-      { value: '4 个', label: '功能模块' },
+      { value: '7 个', label: '功能模块' },
       { value: '0 次', label: '文件上传' },
       { value: 'PDF / PNG / JPG', label: '支持格式' },
       { value: '无需登录', label: '打开即用' },
@@ -71,16 +82,52 @@ const zh: HomeMessages = {
         cta: '进入多文件合并 →',
       },
       toolbox: {
-        title: '工具箱',
-        tagline: '转图片、解密码，零散需求一次解决',
+        title: 'PDF 转图片',
+        tagline: 'PDF 转图片，清晰度与格式随你选',
         description:
-          '把 PDF 按指定清晰度导出为图片，或移除 PDF 的权限锁和打开密码；所有操作都在本地完成。',
+          '把 PDF 按指定清晰度导出为图片：单页 PNG / JPEG，或把全部页面拼接成长图，所有操作都在本地完成。',
         features: [
           'PDF 转图片：72–600 DPI，PNG / JPEG',
           '单张导出，或将全部页面拼接成长图',
-          'Owner Lock 权限解放 / User Lock 打开密码移除',
+          '全部在浏览器本地完成，文件不上传',
         ],
-        cta: '进入工具箱 →',
+        cta: '进入 PDF 转图片 →',
+      },
+      img2pdf: {
+        title: '图片转 PDF',
+        tagline: '多张图片，合成一份 PDF',
+        description:
+          '拖入 JPG、PNG 等图片，调整顺序后一键合成为 PDF，适合扫描件和照片归档。',
+        features: [
+          '支持 JPG、PNG 等常见图片',
+          '拖拽排序，按顺序生成页面',
+          '本地处理，文件不上传',
+        ],
+        cta: '进入图片转 PDF →',
+      },
+      unlock: {
+        title: 'PDF 解密',
+        tagline: '移除权限限制或打开密码',
+        description:
+          '适用于你能正常打开但被限制复制、打印的 PDF，或你知道密码、不想每次输入的文件。仅处理你拥有或已获授权处理的文件，全程本地完成。',
+        features: [
+          '移除复制 / 打印 / 编辑限制',
+          '移除已知的打开密码',
+          '保留文本层，本地处理',
+        ],
+        cta: '进入 PDF 解密 →',
+      },
+      encrypt: {
+        title: 'PDF 加密',
+        tagline: '设置打开密码，限制打印、复制与编辑',
+        description:
+          '为 PDF 添加打开密码，或限制打印、复制、修改等操作；使用 AES-256 加密，所有处理都在本地完成。',
+        features: [
+          '打开密码：打开文件时必须输入',
+          '权限控制：打印、复制、修改、批注、表单、页面重组',
+          'AES-256 加密，文件不上传',
+        ],
+        cta: '进入 PDF 加密 →',
       },
     },
     steps: [
@@ -119,24 +166,35 @@ const en: HomeMessages = {
     splitter: 'Page Splitter',
     editor: 'Editor',
     merger: 'Merge Files',
-    toolbox: 'Toolbox',
+    img2pdf: 'Images to PDF',
+    toolbox: 'PDF to Images',
+    unlock: 'Unlock PDF',
+    encrypt: 'Encrypt PDF',
   },
   common: {
     language: 'Language',
     switchLanguage: 'Switch language',
     backHome: 'Back to home',
     appTitle: 'Lemon PDF Studio · Browser-only PDF toolbox',
+    loading: 'Loading…',
+    footer: {
+      about: 'About',
+      contact: 'Contact',
+      privacy: 'Privacy',
+      terms: 'Terms',
+      help: 'Help',
+    },
   },
   home: {
     badge: '100% local · files never leave your device',
     titleLead: 'Every PDF chore, ',
     titleHighlight: 'done in one place',
     subtitle:
-      'Split, merge, add watermarks, redact sensitive details, convert to images and remove password restrictions — all inside your browser. Files stay on your device, and no account is needed.',
+      'Split, merge, add watermarks, redact sensitive details, convert PDFs to images and images to PDF — all inside your browser. Files stay on your device, and no account is needed.',
     ctaPrimary: 'Start splitting PDFs',
     ctaSecondary: 'Explore all features',
     stats: [
-      { value: '4', label: 'modules' },
+      { value: '7', label: 'modules' },
       { value: '0', label: 'file uploads' },
       { value: 'PDF / PNG / JPG', label: 'formats' },
       { value: 'No sign-up', label: 'ready to use' },
@@ -182,16 +240,52 @@ const en: HomeMessages = {
         cta: 'Open Merge Files →',
       },
       toolbox: {
-        title: 'Toolbox',
-        tagline: 'Convert to images, unlock PDFs — small tasks, solved.',
+        title: 'PDF to Images',
+        tagline: 'PDF to images at the resolution and format you choose.',
         description:
-          'Export PDF pages as images at the resolution you choose, or remove owner restrictions and open passwords — all processed locally.',
+          'Export PDF pages as images at the resolution you choose: individual PNG / JPEG files, or stitch every page into one long image — all processed locally.',
         features: [
           'PDF to image: 72–600 DPI, PNG / JPEG',
           'Export individual pages or stitch all pages into one long image',
-          'Remove owner restrictions / remove open passwords',
+          'Everything runs locally in your browser, nothing is uploaded',
         ],
-        cta: 'Open Toolbox →',
+        cta: 'Open PDF to Images →',
+      },
+      img2pdf: {
+        title: 'Images to PDF',
+        tagline: 'Many images, one PDF',
+        description:
+          'Drop in JPG, PNG and other images, arrange the order and merge them into a single PDF — ideal for scans and photo archives.',
+        features: [
+          'Works with JPG, PNG and other common images',
+          'Drag to reorder and build pages in your chosen sequence',
+          'Processed locally, files are never uploaded',
+        ],
+        cta: 'Open Images to PDF →',
+      },
+      unlock: {
+        title: 'Unlock PDF',
+        tagline: 'Remove permission limits or an open password',
+        description:
+          'For PDFs you can open but that restrict copying or printing, or files whose password you already know. Only process files you own or are authorized to modify. Everything runs locally.',
+        features: [
+          'Remove copy / print / edit restrictions',
+          'Remove an open password you already know',
+          'Keeps the text layer; processed locally',
+        ],
+        cta: 'Open Unlock PDF →',
+      },
+      encrypt: {
+        title: 'Encrypt PDF',
+        tagline: 'Add an open password and restrict printing, copying and editing',
+        description:
+          'Protect a PDF with an open password or restrict printing, copying, editing and more. AES-256 encryption runs entirely in your browser.',
+        features: [
+          'Open password required to view the file',
+          'Control printing, copying, editing, annotations, forms and page assembly',
+          'AES-256 encryption, files never uploaded',
+        ],
+        cta: 'Open Encrypt PDF →',
       },
     },
     steps: [
@@ -230,24 +324,35 @@ const ko: HomeMessages = {
     splitter: '페이지 분할',
     editor: '편집',
     merger: '파일 병합',
-    toolbox: '도구 상자',
+    img2pdf: '이미지 → PDF',
+    toolbox: 'PDF → 이미지',
+    unlock: 'PDF 잠금 해제',
+    encrypt: 'PDF 암호화',
   },
   common: {
     language: '언어',
     switchLanguage: '언어 변경',
     backHome: '홈으로 돌아가기',
     appTitle: 'Lemon PDF Studio · 브라우저 전용 PDF 도구',
+    loading: '불러오는 중…',
+    footer: {
+      about: '소개',
+      contact: '문의',
+      privacy: '개인정보',
+      terms: '이용약관',
+      help: '도움말',
+    },
   },
   home: {
     badge: '100% 로컬 처리 · 파일을 서버에 업로드하지 않음',
     titleLead: 'PDF 잡무, ',
     titleHighlight: '한 번에 끝내기',
     subtitle:
-      '분할, 병합, 워터마크, 민감 정보 가리기, 이미지 변환, 암호 제한 해제까지 모두 브라우저에서 처리합니다. 파일은 기기를 떠나지 않으며 계정도 필요 없습니다.',
+      '분할, 병합, 워터마크, 민감 정보 가리기, PDF와 이미지 상호 변환까지 모두 브라우저에서 처리합니다. 파일은 기기를 떠나지 않으며 계정도 필요 없습니다.',
     ctaPrimary: 'PDF 분할 시작',
     ctaSecondary: '모든 기능 보기',
     stats: [
-      { value: '4개', label: '기능 모듈' },
+      { value: '7개', label: '기능 모듈' },
       { value: '0회', label: '파일 업로드' },
       { value: 'PDF / PNG / JPG', label: '지원 형식' },
       { value: '로그인 불필요', label: '바로 사용' },
@@ -293,16 +398,52 @@ const ko: HomeMessages = {
         cta: '파일 병합 열기 →',
       },
       toolbox: {
-        title: '도구 상자',
-        tagline: '이미지 변환, 잠금 해제까지 한 번에.',
+        title: 'PDF → 이미지',
+        tagline: 'PDF를 원하는 해상도와 형식의 이미지로.',
         description:
-          'PDF를 원하는 해상도의 이미지로 내보내거나, PDF의 권한 제한과 열기 암호를 제거하세요. 모든 작업은 로컬에서 처리됩니다.',
+          'PDF를 원하는 해상도의 이미지로 내보내세요. 개별 PNG / JPEG 파일 또는 모든 페이지를 하나의 긴 이미지로 연결할 수 있으며 모든 작업은 로컬에서 처리됩니다.',
         features: [
           'PDF → 이미지: 72–600 DPI, PNG / JPEG',
           '개별 페이지 내보내기 또는 모든 페이지를 하나의 긴 이미지로 연결',
-          'Owner Lock 권한 해제 / User Lock 열기 암호 제거',
+          '브라우저에서 로컬 처리, 파일 업로드 없음',
         ],
-        cta: '도구 상자 열기 →',
+        cta: 'PDF → 이미지 열기 →',
+      },
+      img2pdf: {
+        title: '이미지 → PDF',
+        tagline: '여러 이미지를 하나의 PDF로',
+        description:
+          'JPG, PNG 등 이미지를 끌어다 놓고 순서를 정해 하나의 PDF로 합치세요. 스캔 문서와 사진 보관에 적합합니다.',
+        features: [
+          'JPG, PNG 등 일반적인 이미지 지원',
+          '드래그로 순서를 바꿔 페이지 생성',
+          '로컬 처리, 파일 업로드 없음',
+        ],
+        cta: '이미지 → PDF 열기 →',
+      },
+      unlock: {
+        title: 'PDF 잠금 해제',
+        tagline: '권한 제한 또는 열기 비밀번호 제거',
+        description:
+          '열 수는 있지만 복사·인쇄가 제한된 PDF, 또는 비밀번호를 알고 있는 파일에 사용하세요. 소유하거나 처리 권한이 있는 파일에만 사용해야 하며, 모든 작업은 로컬에서 처리됩니다.',
+        features: [
+          '복사 / 인쇄 / 편집 제한 제거',
+          '알고 있는 열기 비밀번호 제거',
+          '텍스트 레이어 유지, 로컬 처리',
+        ],
+        cta: 'PDF 잠금 해제 열기 →',
+      },
+      encrypt: {
+        title: 'PDF 암호화',
+        tagline: '열기 암호를 설정하고 인쇄·복사·편집을 제한',
+        description:
+          'PDF에 열기 암호를 추가하거나 인쇄, 복사, 수정 등을 제한하세요. AES-256 암호화가 브라우저에서 전부 처리됩니다.',
+        features: [
+          '열기 암호: 파일을 열 때 반드시 입력',
+          '인쇄·복사·수정·주석·양식·페이지 재구성 제어',
+          'AES-256 암호화, 파일 업로드 없음',
+        ],
+        cta: 'PDF 암호화 열기 →',
       },
     },
     steps: [
@@ -341,24 +482,35 @@ const ja: HomeMessages = {
     splitter: 'ページ分割',
     editor: '編集',
     merger: 'ファイル結合',
-    toolbox: 'ツールボックス',
+    img2pdf: '画像 → PDF',
+    toolbox: 'PDF → 画像',
+    unlock: 'PDF ロック解除',
+    encrypt: 'PDF 暗号化',
   },
   common: {
     language: '言語',
     switchLanguage: '言語を切り替え',
     backHome: 'ホームに戻る',
     appTitle: 'Lemon PDF Studio · ブラウザだけで動く PDF ツール',
+    loading: '読み込み中…',
+    footer: {
+      about: '概要',
+      contact: 'お問い合わせ',
+      privacy: 'プライバシー',
+      terms: '利用規約',
+      help: 'ヘルプ',
+    },
   },
   home: {
     badge: '100% ローカル処理 · ファイルはサーバーに送信されません',
     titleLead: 'PDF の面倒ごとを、',
     titleHighlight: '一度に完了',
     subtitle:
-      '分割、結合、透かし、機密情報のマスキング、画像変換、パスワード制限の解除まで、すべてブラウザ内で完結。ファイルが端末から出ることはなく、アカウントも不要です。',
+      '分割、結合、透かし、機密情報のマスキング、PDF と画像の相互変換まで、すべてブラウザ内で完結。ファイルが端末から出ることはなく、アカウントも不要です。',
     ctaPrimary: 'PDF 分割をはじめる',
     ctaSecondary: 'すべての機能を見る',
     stats: [
-      { value: '4 つ', label: '機能モジュール' },
+      { value: '7 つ', label: '機能モジュール' },
       { value: '0 回', label: 'ファイル送信' },
       { value: 'PDF / PNG / JPG', label: '対応形式' },
       { value: 'ログイン不要', label: 'すぐ使える' },
@@ -404,16 +556,52 @@ const ja: HomeMessages = {
         cta: 'ファイル結合を開く →',
       },
       toolbox: {
-        title: 'ツールボックス',
-        tagline: '画像変換もロック解除も、これ一つで。',
+        title: 'PDF → 画像',
+        tagline: 'PDF を好みの解像度と形式の画像に。',
         description:
-          'PDF を指定した解像度の画像として書き出したり、PDF の権限ロックや開くためのパスワードを解除できます。すべてローカルで処理されます。',
+          'PDF を指定した解像度の画像として書き出します。1 ページずつの PNG / JPEG も、全ページをつなげた長い画像も作成でき、すべてローカルで処理されます。',
         features: [
           'PDF → 画像：72–600 DPI、PNG / JPEG',
           '1 ページずつ書き出すか、全ページを 1 枚の長い画像に結合',
-          'Owner Lock の権限解除 / User Lock の開くパスワード解除',
+          'ブラウザ内でローカル処理、ファイルはアップロードされません',
         ],
-        cta: 'ツールボックスを開く →',
+        cta: 'PDF → 画像を開く →',
+      },
+      img2pdf: {
+        title: '画像 → PDF',
+        tagline: '複数の画像を 1 つの PDF に',
+        description:
+          'JPG、PNG などの画像をドロップし、順番を整えて 1 つの PDF にまとめます。スキャン文書や写真の整理に適しています。',
+        features: [
+          'JPG、PNG などの一般的な画像に対応',
+          'ドラッグで並べ替え、順番どおりにページ化',
+          'ローカル処理でファイルはアップロードされません',
+        ],
+        cta: '画像 → PDF を開く →',
+      },
+      unlock: {
+        title: 'PDF ロック解除',
+        tagline: '権限制限または開くパスワードを解除',
+        description:
+          '開けるもののコピー・印刷が制限された PDF、またはパスワードを把握しているファイル向けです。所有している、または処理を許可されているファイルにのみ使用してください。すべて端末内で処理されます。',
+        features: [
+          'コピー / 印刷 / 編集の制限を解除',
+          '把握している開くパスワードを解除',
+          'テキスト層を保持、ローカル処理',
+        ],
+        cta: 'PDF ロック解除を開く →',
+      },
+      encrypt: {
+        title: 'PDF 暗号化',
+        tagline: '開くパスワードを設定し、印刷・コピー・編集を制限',
+        description:
+          'PDF に開くパスワードを追加したり、印刷・コピー・編集などを制限できます。AES-256 暗号化はすべてブラウザ内で処理されます。',
+        features: [
+          '開くパスワード：ファイルを開くたびに入力',
+          '印刷・コピー・編集・注釈・フォーム・ページ再構成を制御',
+          'AES-256 暗号化、ファイルはアップロードされません',
+        ],
+        cta: 'PDF 暗号化を開く →',
       },
     },
     steps: [
@@ -452,24 +640,35 @@ const de: HomeMessages = {
     splitter: 'Seiten aufteilen',
     editor: 'Editor',
     merger: 'Dateien zusammenführen',
-    toolbox: 'Werkzeugkasten',
+    img2pdf: 'Bilder zu PDF',
+    toolbox: 'PDF zu Bildern',
+    unlock: 'PDF entsperren',
+    encrypt: 'PDF verschlüsseln',
   },
   common: {
     language: 'Sprache',
     switchLanguage: 'Sprache wechseln',
     backHome: 'Zurück zur Startseite',
     appTitle: 'Lemon PDF Studio · PDF-Toolbox für den Browser',
+    loading: 'Wird geladen…',
+    footer: {
+      about: 'Über uns',
+      contact: 'Kontakt',
+      privacy: 'Datenschutz',
+      terms: 'Nutzungsbedingungen',
+      help: 'Hilfe',
+    },
   },
   home: {
     badge: '100 % lokal · Dateien werden nicht hochgeladen',
     titleLead: 'PDF-Kram, ',
     titleHighlight: 'alles an einem Ort',
     subtitle:
-      'Aufteilen, zusammenführen, Wasserzeichen setzen, sensible Inhalte schwärzen, in Bilder umwandeln und Passwortsperren entfernen — alles im Browser. Dateien bleiben auf deinem Gerät, ein Konto ist nicht nötig.',
+      'Aufteilen, zusammenführen, Wasserzeichen setzen, sensible Inhalte schwärzen, PDFs in Bilder und Bilder in PDFs umwandeln — alles im Browser. Dateien bleiben auf deinem Gerät, ein Konto ist nicht nötig.',
     ctaPrimary: 'PDF jetzt aufteilen',
     ctaSecondary: 'Alle Funktionen ansehen',
     stats: [
-      { value: '4', label: 'Module' },
+      { value: '7', label: 'Module' },
       { value: '0', label: 'Uploads' },
       { value: 'PDF / PNG / JPG', label: 'Formate' },
       { value: 'Ohne Anmeldung', label: 'sofort einsatzbereit' },
@@ -516,16 +715,52 @@ const de: HomeMessages = {
         cta: 'Dateien zusammenführen →',
       },
       toolbox: {
-        title: 'Werkzeugkasten',
-        tagline: 'Bilder erzeugen, Sperren lösen – alles an einem Ort.',
+        title: 'PDF zu Bildern',
+        tagline: 'PDFs als Bilder – Auflösung und Format nach Wahl.',
         description:
-          'Exportiere PDF-Seiten in der gewünschten Auflösung als Bilder oder entferne Eigentümerbeschränkungen und Öffnungspasswörter – alles lokal.',
+          'Exportiere PDF-Seiten in der gewünschten Auflösung als Bilder: einzelne PNG-/JPEG-Dateien oder alle Seiten als ein langes Bild zusammengefügt – alles lokal verarbeitet.',
         features: [
           'PDF zu Bild: 72–600 DPI, PNG / JPEG',
           'Einzelne Seiten exportieren oder alle Seiten zu einem langen Bild zusammenfügen',
-          'Owner-Lock-Beschränkungen entfernen / User-Lock-Passwort entfernen',
+          'Alles läuft lokal im Browser, nichts wird hochgeladen',
         ],
-        cta: 'Werkzeugkasten öffnen →',
+        cta: 'PDF zu Bildern öffnen →',
+      },
+      img2pdf: {
+        title: 'Bilder zu PDF',
+        tagline: 'Viele Bilder, eine PDF',
+        description:
+          'Ziehe JPG-, PNG- und weitere Bilder hinein, ordne sie und fasse sie zu einer PDF zusammen – ideal für Scans und Fotoarchive.',
+        features: [
+          'Unterstützt JPG, PNG und weitere gängige Bildformate',
+          'Per Drag-and-drop sortieren und Seiten in Reihenfolge erzeugen',
+          'Lokale Verarbeitung, keine Uploads',
+        ],
+        cta: 'Bilder zu PDF öffnen →',
+      },
+      unlock: {
+        title: 'PDF entsperren',
+        tagline: 'Berechtigungsbeschränkungen oder Öffnungspasswort entfernen',
+        description:
+          'Für PDFs, die sich öffnen lassen, aber Kopieren oder Drucken sperren, oder für Dateien, deren Passwort du kennst. Nur für Dateien verwenden, für die du berechtigt bist. Alles läuft lokal.',
+        features: [
+          'Kopier-, Druck- und Bearbeitungsbeschränkungen entfernen',
+          'Ein bekanntes Öffnungspasswort entfernen',
+          'Textebene bleibt erhalten, lokale Verarbeitung',
+        ],
+        cta: 'PDF entsperren →',
+      },
+      encrypt: {
+        title: 'PDF verschlüsseln',
+        tagline: 'Öffnungspasswort setzen und Drucken, Kopieren, Bearbeiten einschränken',
+        description:
+          'Schütze ein PDF mit einem Öffnungspasswort oder beschränke Drucken, Kopieren, Bearbeiten und mehr. AES-256-Verschlüsselung läuft vollständig im Browser.',
+        features: [
+          'Öffnungspasswort beim Öffnen erforderlich',
+          'Drucken, Kopieren, Bearbeiten, Kommentare, Formulare und Seitenanordnung steuern',
+          'AES-256-Verschlüsselung, keine Uploads',
+        ],
+        cta: 'PDF verschlüsseln öffnen →',
       },
     },
     steps: [

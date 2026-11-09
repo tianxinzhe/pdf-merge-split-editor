@@ -31,3 +31,21 @@ html, body, #root {
 ::-webkit-scrollbar-thumb:hover {
   background: #6b7280;
 }
+
+.home-modules-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .home-modules-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 900px) {
+  .home-modules-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}

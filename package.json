@@ -2,19 +2,21 @@
   "name": "lemon-pdf-studio-web",
   "private": true,
   "version": "1.0.0",
-  "description": "纯本地 PDF 工具箱（网页版）：合并、拆分、编辑、签名、加密解密，文件不上传服务器",
+  "description": "纯本地 PDF 工具箱（网页版）：合并、拆分、编辑、转换、加密解密，文件不上传服务器",
   "type": "module",
   "scripts": {
     "prepare:pdfjs": "node scripts/copy-pdfjs-assets.mjs",
     "predev": "npm run prepare:pdfjs",
     "dev": "vite",
-    "prebuild": "npm run prepare:pdfjs",
+    "prebuild": "npm run prepare:pdfjs && npm run sitemap",
     "build": "tsc -b && vite build",
+    "sitemap": "node scripts/generate-sitemap.mjs",
     "preview": "vite preview",
     "lint": "eslint .",
     "typecheck": "tsc -b"
   },
   "dependencies": {
+    "@libpdf/core": "^0.5.3",
     "jszip": "^3.10.1",
     "pdf-lib": "^1.17.1",
     "pdfjs-dist": "^6.0.227",

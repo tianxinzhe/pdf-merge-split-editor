@@ -29,12 +29,12 @@ export function EditorStudio({ injectedFile, onInjectedFileConsumed }: EditorStu
     setCurrentPage,
     setSearchQuery, setSearchResults, undo, redo, jumpToHistory, getHistory } = usePDFState()
 
-  const renderQueue = useRef<Set<number>>(new Set())
+  const renderQueue = useRef<Set<string>>(new Set())
   const [passwordDialog, setPasswordDialog] = useState<{ fileId: string; fileName: string; error?: string } | null>(null)
   const [isRedacting, setIsRedacting] = useState(false)
   const [watermarkDraft, setWatermarkDraft] = useState<WatermarkDraft | null>(null)
-  const [thumbUrls, setThumbUrls] = useState<(string | undefined)[]>([])
-  const loadedThumbsRef = useRef<Set<number>>(new Set())
+  const [thumbUrls, setThumbUrls] = useState<Record<string, string | undefined>>({})
+  const loadedThumbsRef = useRef<Set<string>>(new Set())
 
   // Responsive side panels: collapse them before the canvas gets too narrow.
   const [viewportWidth, setViewportWidth] = useState(() => window.innerWidth)
@@ -67,17 +67,24 @@ export function EditorStudio({ injectedFile, onInjectedFileConsumed }: EditorStu
     }
   }, [autoCollapsePanel])
 
-  // Load a low-res thumbnail for the left panel (separate from center preview)
-  const loadThumbnail = useCallback(async (pageIndex: number) => {
-    if (loadedThumbsRef.current.has(pageIndex)) return
-    const page = state.pages[pageIndex]
+  const thumbQueue = useRef<Promise<void>>(Promise.resolve())
+
+  // Load a low-res thumbnail for the left panel (separate from center preview).
+  // Render one at a time: several pdf.js documents in parallel can starve each other.
+  const loadThumbnail = useCallback((pageId: string) => {
+    if (loadedThumbsRef.current.has(pageId)) return
+    const page = state.pages.find(p => p.id === pageId)
     const sf = sourceFile
     if (!page || !sf || sf.type !== 'pdf') return
-    loadedThumbsRef.current.add(pageIndex)
-    try {
-      const url = await renderPagePreview(sf.binary, page.originalPageIndex, 0.4)
-      setThumbUrls(prev => { const n = [...prev]; n[pageIndex] = url; return n })
-    } catch { /* ignore */ }
+    loadedThumbsRef.current.add(pageId)
+    thumbQueue.current = thumbQueue.current.then(async () => {
+      try {
+        const url = await renderPagePreview(sf.binary, page.originalPageIndex, 0.4)
+        setThumbUrls(prev => ({ ...prev, [pageId]: url }))
+      } catch {
+        loadedThumbsRef.current.delete(pageId)
+      }
+    })
   }, [state.pages, sourceFile])
 
   useEffect(() => {
@@ -195,23 +202,23 @@ export function EditorStudio({ injectedFile, onInjectedFileConsumed }: EditorStu
   }, [passwordDialog, loadFileInner, t])
 
   const handleRenderPreview = useCallback(async (pageIndex: number) => {
-    if (renderQueue.current.has(pageIndex)) return
-    renderQueue.current.add(pageIndex)
     const page = state.pages[pageIndex]
-    if (!page || page.previewUrl) { renderQueue.current.delete(pageIndex); return }
+    if (!page || page.previewUrl) return
+    if (renderQueue.current.has(page.id)) return
+    renderQueue.current.add(page.id)
     const sf = sourceFile
-    if (!sf || sf.type !== 'pdf' || sf.renderedImages) { renderQueue.current.delete(pageIndex); return }
+    if (!sf || sf.type !== 'pdf' || sf.renderedImages) { renderQueue.current.delete(page.id); return }
     try {
       const url = await renderPagePreview(sf.binary, page.originalPageIndex)
-      setPreviewUrl(pageIndex, url)
-    } catch { /* noop */ } finally { renderQueue.current.delete(pageIndex) }
+      setPreviewUrl(page.id, url)
+    } catch { /* noop */ } finally { renderQueue.current.delete(page.id) }
   }, [state.pages, sourceFile, setPreviewUrl])
 
   const handleClearPreview = useCallback((pageIndex: number) => {
     const page = state.pages[pageIndex]
     if (!page?.previewUrl) return
     URL.revokeObjectURL(page.previewUrl)
-    setPreviewUrl(pageIndex, undefined)
+    setPreviewUrl(page.id, undefined)
   }, [state.pages, setPreviewUrl])
 
   const handleExport = useCallback(() => {
@@ -280,6 +287,7 @@ export function EditorStudio({ injectedFile, onInjectedFileConsumed }: EditorStu
         onToggleCollapse={() => setThumbnailsOverride(!thumbnailsCollapsed)}
         onSetCurrentPage={setCurrentPage}
         onMovePage={movePage}
+        thumbsReady={sourceFile.type === 'pdf'}
         thumbUrls={thumbUrls}
         onLoadThumb={loadThumbnail}
       />

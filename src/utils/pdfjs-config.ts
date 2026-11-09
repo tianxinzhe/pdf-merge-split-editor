@@ -6,7 +6,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorkerUrl
 
 // 资源目录：由 scripts/copy-pdfjs-assets.mjs 复制到 public/pdfjs/，
 // 构建后位于 dist/pdfjs/。用 document.baseURI 解析，天然支持部署在任意子路径。
-const assetBase = new URL('pdfjs/', document.baseURI).toString()
+const assetBase = `${import.meta.env.BASE_URL}pdfjs/`
 
 // Shared loading options for getDocument()
 export const pdfLoadingOptions = {

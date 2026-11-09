@@ -1,17 +1,9 @@
 import { useCallback, useRef, useState } from 'react'
-import { PDFDocument } from 'pdf-lib'
 import * as pdfjsLib from 'pdfjs-dist'
 import { pdfLoadingOptions } from '../utils/pdfjs-config'
-import { unlockOwnerPassword } from '../utils/pdf-unlock'
 import JSZip from 'jszip'
 import { useI18n } from '../i18n'
 import { ToolGuide } from './ToolGuide'
-
-/* ───── Password unlock (kept from PasswordHub) ───── */
-interface PasswordFile {
-  id: string; name: string; binary: ArrayBuffer
-  status: 'pending' | 'done' | 'error'; error?: string
-}
 
 /* ───── PDF → Image ───── */
 type DpiOption = 72 | 150 | 200 | 300 | 600
@@ -20,15 +12,6 @@ type ExportMode = 'single' | 'stitch'
 
 export function Toolbox() {
   const { t } = useI18n()
-  /* password unlock state */
-  const [pwFiles, setPwFiles] = useState<PasswordFile[]>([])
-  const [pwMode, setPwMode] = useState<'owner' | 'user'>('owner')
-  const [pwDragging, setPwDragging] = useState(false)
-  const [pwPrompt, setPwPrompt] = useState<{ fileId: string; fileName: string } | null>(null)
-  const [pwInput, setPwInput] = useState('')
-  const [pwError, setPwError] = useState('')
-  const [pwProcessing, setPwProcessing] = useState(false)
-  const pwInputRef = useRef<HTMLInputElement>(null)
 
   /* pdf→image state */
   const [imgPdfFile, setImgPdfFile] = useState<{ name: string; binary: ArrayBuffer; pageCount: number } | null>(null)
@@ -38,88 +21,6 @@ export function Toolbox() {
   const [exportMode, setExportMode] = useState<ExportMode>('single')
   const [exporting, setExporting] = useState(false)
   const imgFileRef = useRef<HTMLInputElement>(null)
-
-  /* ───── Password handlers (identical to before) ───── */
-  const addPwFiles = useCallback(async (inputFiles: File[]) => {
-    const items: PasswordFile[] = []
-    for (const f of inputFiles) {
-      if (f.type !== 'application/pdf') continue
-      const binary = await f.arrayBuffer()
-      items.push({ id: `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`, name: f.name, binary, status: 'pending' })
-    }
-    setPwFiles(prev => [...prev, ...items])
-  }, [])
-
-  const handlePwDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault(); setPwDragging(false)
-    const inputFiles = Array.from(e.dataTransfer.files).filter(f => f.type === 'application/pdf')
-    if (inputFiles.length > 0) addPwFiles(inputFiles)
-  }, [addPwFiles])
-
-  const handlePwFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const inputFiles = Array.from(e.target.files || [])
-    if (inputFiles.length > 0) addPwFiles(inputFiles)
-    e.target.value = ''
-  }, [addPwFiles])
-
-  const removeOwnerLock = useCallback(async (file: PasswordFile) => {
-    try {
-      const bytes = await unlockOwnerPassword(file.binary)
-      const blob = new Blob([bytes as BlobPart], { type: 'application/pdf' })
-      const url = URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.href = url; a.download = `unlocked_${file.name}`; a.click()
-      URL.revokeObjectURL(url)
-      setPwFiles(prev => prev.map(f => f.id === file.id ? { ...f, status: 'done' as const } : f))
-    } catch (e) {
-      setPwFiles(prev => prev.map(f => f.id === file.id ? { ...f, status: 'error' as const, error: (e instanceof Error ? e.message : String(e)) } : f))
-    }
-  }, [])
-
-  const handlePwProcess = useCallback(async () => {
-    if (pwFiles.length === 0) return
-    setPwProcessing(true)
-    if (pwMode === 'owner') {
-      for (const file of pwFiles.filter(f => f.status === 'pending')) await removeOwnerLock(file)
-    } else {
-      const pending = pwFiles.find(f => f.status === 'pending')
-      if (pending) setPwPrompt({ fileId: pending.id, fileName: pending.name })
-    }
-    setPwProcessing(false)
-  }, [pwFiles, pwMode, removeOwnerLock])
-
-  const handlePwConfirm = useCallback(async () => {
-    if (!pwPrompt || !pwInput) return
-    setPwError('')
-    const file = pwFiles.find(f => f.id === pwPrompt.fileId)
-    if (!file) return
-    try {
-      const pdf = await pdfjsLib.getDocument({ ...pdfLoadingOptions, data: file.binary.slice(0), password: pwInput }).promise
-      const newDoc = await PDFDocument.create()
-      for (let i = 1; i <= pdf.numPages; i++) {
-        const page = await pdf.getPage(i)
-        const vp = page.getViewport({ scale: 2.5 })
-        const canvas = document.createElement('canvas')
-        canvas.width = vp.width; canvas.height = vp.height
-        await page.render({ canvas, canvasContext: canvas.getContext('2d')!, viewport: vp }).promise
-        const blob = await new Promise<Blob>(resolve => canvas.toBlob(b => resolve(b!), 'image/jpeg', 0.92))
-        const imgBytes = new Uint8Array(await blob.arrayBuffer())
-        const img = await newDoc.embedJpg(imgBytes)
-        const p = newDoc.addPage([vp.width, vp.height])
-        p.drawImage(img, { x: 0, y: 0, width: vp.width, height: vp.height })
-      }
-      const bytes = await newDoc.save()
-      const downloadBlob = new Blob([bytes as BlobPart], { type: 'application/pdf' })
-      const url = URL.createObjectURL(downloadBlob)
-      const a = document.createElement('a')
-      a.href = url; a.download = `decrypted_${file.name}`; a.click()
-      URL.revokeObjectURL(url)
-      setPwFiles(prev => prev.map(f => f.id === file.id ? { ...f, status: 'done' as const } : f))
-      setPwPrompt(null); setPwInput('')
-    } catch {
-      setPwError(t.toolbox.wrongPassword)
-    }
-  }, [pwPrompt, pwInput, pwFiles, t])
 
   /* ───── PDF → Image handlers ───── */
   const loadImgPdf = useCallback(async (f: File) => {
@@ -298,92 +199,8 @@ export function Toolbox() {
           )}
         </div>
 
-        {/* ════════ Password unlock (unchanged) ════════ */}
-        <div className="bg-gray-900/60 rounded-2xl p-5 border border-gray-800">
-          <h2 className="text-sm font-semibold text-gray-200 mb-4">{t.toolbox.unlockTitle}</h2>
-
-          <div className="space-y-2 mb-4">
-            <label className={`flex items-start gap-3 p-3 rounded-xl cursor-pointer transition-all ${
-              pwMode === 'owner' ? 'bg-blue-600/10 border border-blue-500/40' : 'border border-gray-700/50 hover:bg-gray-800/50'
-            }`}>
-              <input type="radio" name="pwMode" checked={pwMode === 'owner'}
-                onChange={() => setPwMode('owner')} className="accent-blue-500 mt-0.5" />
-              <div>
-                <p className="text-xs font-medium text-gray-200">{t.toolbox.ownerTitle}</p>
-                <p className="text-sm text-gray-400 mt-0.5">{t.toolbox.ownerDesc}</p>
-              </div>
-            </label>
-            <label className={`flex items-start gap-3 p-3 rounded-xl cursor-pointer transition-all ${
-              pwMode === 'user' ? 'bg-blue-600/10 border border-blue-500/40' : 'border border-gray-700/50 hover:bg-gray-800/50'
-            }`}>
-              <input type="radio" name="pwMode" checked={pwMode === 'user'}
-                onChange={() => setPwMode('user')} className="accent-blue-500 mt-0.5" />
-              <div>
-                <p className="text-xs font-medium text-gray-200">{t.toolbox.userTitle}</p>
-                <p className="text-sm text-gray-400 mt-0.5">{t.toolbox.userDesc}</p>
-              </div>
-            </label>
-          </div>
-
-          <div
-            onDragOver={e => { e.preventDefault(); setPwDragging(true) }}
-            onDragLeave={() => setPwDragging(false)}
-            onDrop={handlePwDrop}
-            onClick={() => pwFiles.length === 0 && pwInputRef.current?.click()}
-            className={`border-2 border-dashed rounded-xl p-5 text-center transition-all ${
-              pwDragging ? 'border-blue-500 bg-blue-500/10' : 'border-gray-700 hover:border-gray-500 hover:bg-gray-800/30'
-            } ${pwFiles.length === 0 ? 'cursor-pointer' : ''}`}
-          >
-            {pwFiles.length === 0 ? (
-              <p className="text-sm text-gray-400">{t.toolbox.dropEncrypted}</p>
-            ) : (
-              <div className="space-y-1.5 text-left">
-                {pwFiles.map(f => (
-                  <div key={f.id} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-800/60">
-                    <span className="text-sm">{f.status === 'done' ? '✅' : f.status === 'error' ? '❌' : '📄'}</span>
-                    <span className="text-xs text-gray-300 truncate flex-1">{f.name}</span>
-                    {f.status === 'error' && <span className="text-xs text-red-400">{f.error}</span>}
-                    <button onClick={() => setPwFiles(prev => prev.filter(x => x.id !== f.id))}
-                      className="text-gray-400 hover:text-red-400 text-xs cursor-pointer">✕</button>
-                  </div>
-                ))}
-                <button onClick={() => pwInputRef.current?.click()}
-                  className="w-full py-1.5 text-xs text-gray-400 hover:text-gray-300 cursor-pointer">{t.toolbox.addMore}</button>
-              </div>
-            )}
-          </div>
-          <input ref={pwInputRef} type="file" accept=".pdf" multiple onChange={handlePwFileSelect} className="hidden" />
-
-          {pwFiles.length > 0 && (
-            <button onClick={handlePwProcess} disabled={pwProcessing || pwFiles.every(f => f.status === 'done')}
-              className="w-full mt-3 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 text-white text-sm font-semibold transition-colors cursor-pointer shadow-lg shadow-emerald-600/20">
-              {pwProcessing ? t.toolbox.processing : pwMode === 'owner' ? t.toolbox.unlockOwner : t.toolbox.unlockUser}
-            </button>
-          )}
-        </div>
         <ToolGuide copy={t.guides.toolbox} />
       </div>
-
-      {/* Password prompt overlay */}
-      {pwPrompt && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-          <div className="bg-gray-900 border border-gray-700 rounded-2xl p-6 w-80 space-y-4">
-            <p className="text-sm text-gray-200">{t.toolbox.detected(pwPrompt.fileName)}</p>
-            <p className="text-xs text-gray-400">{t.toolbox.enterPassword}</p>
-            <input type="password" value={pwInput} onChange={e => setPwInput(e.target.value)}
-              placeholder={t.toolbox.passwordPlaceholder}
-              className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-sm text-gray-200 placeholder-gray-500 focus:border-blue-500 focus:outline-none"
-              onKeyDown={e => e.key === 'Enter' && handlePwConfirm()} autoFocus />
-            {pwError && <p className="text-xs text-red-400">{pwError}</p>}
-            <div className="flex gap-2">
-              <button onClick={() => { setPwPrompt(null); setPwInput(''); setPwError('') }}
-                className="flex-1 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-xs text-gray-300 cursor-pointer">{t.toolbox.cancel}</button>
-              <button onClick={handlePwConfirm}
-                className="flex-1 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-xs text-white font-medium cursor-pointer">{t.toolbox.confirm}</button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   )
 }
