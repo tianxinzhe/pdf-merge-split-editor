@@ -8,7 +8,7 @@
     "prepare:pdfjs": "node scripts/copy-pdfjs-assets.mjs",
     "predev": "npm run prepare:pdfjs",
     "dev": "vite",
-    "prebuild": "npm run prepare:pdfjs && npm run sitemap",
+    "prebuild": "npm run prepare:pdfjs",
     "build": "tsc -b && vite build",
     "sitemap": "node scripts/generate-sitemap.mjs",
     "preview": "vite preview",

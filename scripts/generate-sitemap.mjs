@@ -1,11 +1,6 @@
 import { writeFileSync } from 'node:fs'
 
-const siteUrl = (process.env.SITE_URL || process.env.VITE_SITE_URL || '').replace(/\/+$/, '')
-
-if (!siteUrl) {
-  console.warn('[sitemap] SITE_URL is not set. Skipping sitemap generation; set it before deploying.')
-  process.exit(0)
-}
+const siteUrl = (process.env.SITE_URL || process.env.VITE_SITE_URL || 'https://pdf.soulscop.com').replace(/\/+$/, '')
 
 const pages = [
   { path: '/', priority: '1.0', changefreq: 'weekly' },

@@ -1,5 +1,4 @@
 User-agent: *
 Allow: /
 
-# The sitemap is generated at build time when SITE_URL is set.
-# Set SITE_URL to your production origin and run `npm run sitemap`.
+Sitemap: https://pdf.soulscop.com/sitemap.xml
