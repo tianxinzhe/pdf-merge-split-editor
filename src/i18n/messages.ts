@@ -25,6 +25,7 @@ const zh: HomeMessages = {
       privacy: '隐私政策',
       terms: '服务条款',
       help: '帮助中心',
+      guides: '使用指南',
     },
   },
   home: {
@@ -183,6 +184,7 @@ const en: HomeMessages = {
       privacy: 'Privacy',
       terms: 'Terms',
       help: 'Help',
+      guides: 'Guides',
     },
   },
   home: {
@@ -341,6 +343,7 @@ const ko: HomeMessages = {
       privacy: '개인정보',
       terms: '이용약관',
       help: '도움말',
+      guides: '가이드',
     },
   },
   home: {
@@ -499,6 +502,7 @@ const ja: HomeMessages = {
       privacy: 'プライバシー',
       terms: '利用規約',
       help: 'ヘルプ',
+      guides: 'ガイド',
     },
   },
   home: {
@@ -657,6 +661,7 @@ const de: HomeMessages = {
       privacy: 'Datenschutz',
       terms: 'Nutzungsbedingungen',
       help: 'Hilfe',
+      guides: 'Ratgeber',
     },
   },
   home: {

@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#030712" />
+    <meta name="description" content="如何合并多个 PDF 和图片：文件排序、混合格式、页面尺寸、文件体积和常见错误。浏览器本地合并，支持把结果直接送入编辑精修。" />
+    <link rel="canonical" href="/guides/merge-pdf/" />
+    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="Lemon PDF Studio" />
+    <meta property="og:title" content="如何合并 PDF 和图片：顺序、页面尺寸与文件体积" />
+    <meta property="og:description" content="按列表顺序拼接 PDF 与图片，控制页面方向和导出体积。" />
+    <meta property="og:url" content="https://pdf.soulscop.com/guides/merge-pdf/" />
+    <meta property="article:published_time" content="2026-11-10" />
+    <meta property="article:modified_time" content="2026-11-10" />
+    <meta name="twitter:card" content="summary" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="stylesheet" href="/site-pages.css?v=3" />
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('consent', 'default', { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: 'denied' });
+    </script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5015170324086200" crossorigin="anonymous"></script>
+    <meta name="google-adsense-account" content="ca-pub-5015170324086200" />
+    <script src="/consent.js" defer></script>
+    <title>如何合并 PDF 和图片：顺序、页面尺寸与文件体积 · Lemon PDF Studio</title>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": "如何合并 PDF 和图片：顺序、页面尺寸与文件体积",
+        "description": "文件排序、混合格式、页面尺寸、导出体积和合并后的编辑。",
+        "datePublished": "2026-11-10",
+        "dateModified": "2026-11-10",
+        "inLanguage": "zh-CN",
+        "author": { "@type": "Organization", "name": "Lemon PDF Studio" },
+        "publisher": { "@type": "Organization", "name": "Lemon PDF Studio" },
+        "mainEntityOfPage": { "@type": "WebPage", "@id": "https://pdf.soulscop.com/guides/merge-pdf/" }
+      }
+    </script>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="wrap">
+        <a class="brand" href="/"><span class="brand-mark" aria-hidden="true">🍋</span><span>Lemon PDF Studio</span></a>
+        <nav class="site-nav" aria-label="站点导航">
+          <a href="/">工具</a>
+          <a href="/help/">帮助</a>
+          <a href="/guides/" aria-current="page">指南</a>
+          <a href="/privacy/">隐私</a>
+          <a href="/terms/">条款</a>
+          <a href="/about/">关于</a>
+          <a href="/contact/">联系</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="wrap article-body">
+      <h1>如何合并 PDF 和图片：顺序、页面尺寸与文件体积</h1>
+      <div class="article-meta">
+        <span>更新于 2026-11-10</span>
+        <span>约 5 分钟阅读</span>
+        <span>适用：多文件合并 / 图片转 PDF</span>
+      </div>
+      <p class="lede">合并看起来只是“把文件放在一起”，但真正影响结果的通常是三件事：列表顺序、页面尺寸是否统一、以及图片带来的体积增长。</p>
+
+      <div class="article-toc">
+        <strong>本文内容</strong>
+        <ol>
+          <li><a href="#order">先确定合并顺序</a></li>
+          <li><a href="#mix">PDF 与图片混合</a></li>
+          <li><a href="#size">页面尺寸和方向</a></li>
+          <li><a href="#weight">控制文件体积</a></li>
+          <li><a href="#faq">常见问题</a></li>
+        </ol>
+      </div>
+
+      <h2 id="order">先确定合并顺序</h2>
+      <p>合并按文件列表从上到下的顺序进行，而不是按添加时间或文件名自动排序。添加多个文件后，先看一遍列表：合同正文、附件、发票、盖章页是否在预期位置。</p>
+      <ol>
+        <li>打开 <a href="/merger/">多文件合并</a>。</li>
+        <li>把 PDF 或图片拖入页面，或点击选择文件。</li>
+        <li>拖动列表行调整顺序；列表会显示文件类型和体积。</li>
+        <li>确认顺序后点击合并，浏览器生成并下载新的 PDF。</li>
+      </ol>
+      <div class="callout">
+        <p><strong>小技巧：</strong> 如果材料很多，先按“正文 → 附件 → 证明文件”分组，再在每组内部排序。这样比反复拖动长列表更容易检查。</p>
+      </div>
+
+      <h2 id="mix">PDF 与图片混合</h2>
+      <p>多文件合并同时接受 PDF 和 JPG/PNG。图片会作为独立页面插入到列表所在位置，适合把扫描件、截图或签字页拼进主文档。</p>
+      <p>如果你只想把多张图片合成为 PDF，使用 <a href="/guides/images-to-pdf/">图片转 PDF</a> 或 <a href="/img2pdf/">图片转 PDF 页面</a> 更直接：它只接受图片，输出文件名和提示也更贴合图片场景。</p>
+
+      <h2 id="size">页面尺寸和方向</h2>
+      <p>合并不会自动把所有页面裁成同一尺寸。原始 PDF 的 A4、Letter、横向页面会保持各自比例；图片页面通常按图片自身尺寸生成。因此，混合不同来源的材料时，最终 PDF 可能出现页面大小不一。</p>
+      <ul>
+        <li>正式打印前，先确认所有页面都是 A4 或 Letter，避免打印时被缩放。</li>
+        <li>横向扫描件如果方向不对，合并后可在 <a href="/editor/">编辑精修</a> 中旋转。</li>
+        <li>需要统一页面尺寸时，导出后使用编辑器的页面处理功能，或先用图片工具把扫描件整理成一致比例。</li>
+      </ul>
+
+      <h2 id="weight">控制文件体积</h2>
+      <p>图片是体积增长的主要原因。手机拍摄的 JPG 往往比整份文字 PDF 还大。合并前可以先用图片查看器压缩到合理分辨率；如果只是屏幕阅读，长边 1600–2000 像素通常足够。</p>
+      <p>合并结果可以直接送入编辑精修，继续删除空白页、调整顺序、添加水印或遮罩。这样不需要先下载再重新上传。</p>
+
+      <h2 id="faq">常见问题</h2>
+      <div class="faq">
+        <details open>
+          <summary>合并后的顺序和添加顺序一样吗？</summary>
+          <p>不一定。合并只认列表从上到下的顺序。添加后请拖动列表确认，尤其是批量选择多个文件时。</p>
+        </details>
+        <details>
+          <summary>可以合并加密 PDF 吗？</summary>
+          <p>如果文件需要打开密码，合并通常会失败或无法正确读取。请先用 <a href="/unlock/">PDF 解密</a> 移除你有权处理的密码，再合并。只有权限限制、能正常打开的文件一般可以直接合并。</p>
+        </details>
+        <details>
+          <summary>合并会保留书签和表单吗？</summary>
+          <p>页面内容会保留，但书签、交互式表单、数字签名等结构不保证完整。需要保留这些特性的场景，请保留原文件并做业务确认。</p>
+        </details>
+        <details>
+          <summary>为什么合并后文件变大很多？</summary>
+          <p>每个文件都会带入自己的字体、图片和页面资源。图片越多、分辨率越高，增长越明显。可以在合并前压缩图片，或只保留必要页面。</p>
+        </details>
+        <details>
+          <summary>文件会上传吗？</summary>
+          <p>不会。合并和下载都在浏览器内完成，没有服务器接收文件。</p>
+        </details>
+      </div>
+
+      <div class="article-cta">
+        <p>把材料按顺序放好，合并成一个 PDF。</p>
+        <a href="/merger/">打开多文件合并 →</a>
+      </div>
+
+      <div class="related">
+        <h2>相关指南</h2>
+        <div class="grid">
+          <div class="card"><h3><a href="/guides/split-pdf/">拆分 PDF</a></h3><p>只保留需要的页面，再参与合并。</p></div>
+          <div class="card"><h3><a href="/guides/images-to-pdf/">图片转 PDF</a></h3><p>专门处理 JPG/PNG 扫描件的排序和归档。</p></div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="wrap">
+        <nav class="footer-nav" aria-label="页脚">
+          <a href="/about/">关于我们</a>
+          <a href="/contact/">联系我们</a>
+          <a href="/privacy/">隐私政策</a>
+          <a href="/terms/">服务条款</a>
+          <a href="/guides/">使用指南</a>
+          <a href="/help/">帮助中心</a>
+        </nav>
+        <span class="copyright">© Lemon PDF Studio</span>
+      </div>
+    </footer>
+  </body>
+</html>

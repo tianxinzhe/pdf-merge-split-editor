@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#030712" />
+    <meta name="description" content="给 PDF 加水印的完整指南：文字/图片水印、平铺与单点、字号、透明度、旋转、颜色、页范围，以及水印和遮罩的区别。导出自动包含当前预览。" />
+    <link rel="canonical" href="/guides/pdf-watermark/" />
+    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="Lemon PDF Studio" />
+    <meta property="og:title" content="给 PDF 加水印：文字、图片、平铺与透明度" />
+    <meta property="og:description" content="水印参数怎么调，水印和遮罩有什么区别，导出前检查什么。" />
+    <meta property="og:url" content="https://pdf.soulscop.com/guides/pdf-watermark/" />
+    <meta property="article:published_time" content="2026-11-10" />
+    <meta property="article:modified_time" content="2026-11-10" />
+    <meta name="twitter:card" content="summary" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="stylesheet" href="/site-pages.css?v=3" />
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('consent', 'default', { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: 'denied' });
+    </script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5015170324086200" crossorigin="anonymous"></script>
+    <meta name="google-adsense-account" content="ca-pub-5015170324086200" />
+    <script src="/consent.js" defer></script>
+    <title>给 PDF 加水印：文字、图片、平铺与透明度 · Lemon PDF Studio</title>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": "给 PDF 加水印：文字、图片、平铺与透明度",
+        "description": "文字和图片水印的参数、页范围、导出检查，以及水印与遮罩的区别。",
+        "datePublished": "2026-11-10",
+        "dateModified": "2026-11-10",
+        "inLanguage": "zh-CN",
+        "author": { "@type": "Organization", "name": "Lemon PDF Studio" },
+        "publisher": { "@type": "Organization", "name": "Lemon PDF Studio" },
+        "mainEntityOfPage": { "@type": "WebPage", "@id": "https://pdf.soulscop.com/guides/pdf-watermark/" }
+      }
+    </script>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="wrap">
+        <a class="brand" href="/"><span class="brand-mark" aria-hidden="true">🍋</span><span>Lemon PDF Studio</span></a>
+        <nav class="site-nav" aria-label="站点导航">
+          <a href="/">工具</a>
+          <a href="/help/">帮助</a>
+          <a href="/guides/" aria-current="page">指南</a>
+          <a href="/privacy/">隐私</a>
+          <a href="/terms/">条款</a>
+          <a href="/about/">关于</a>
+          <a href="/contact/">联系</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="wrap article-body">
+      <h1>给 PDF 加水印：文字、图片、平铺与透明度</h1>
+      <div class="article-meta">
+        <span>更新于 2026-11-10</span>
+        <span>约 6 分钟阅读</span>
+        <span>适用：编辑精修 / 水印</span>
+      </div>
+      <p class="lede">水印是“提醒阅读者”，不是“阻止复制”。如果目标是隐藏敏感内容，应该使用遮罩而不是水印。先分清目的，再调参数。</p>
+
+      <div class="article-toc">
+        <strong>本文内容</strong>
+        <ol>
+          <li><a href="#difference">水印和遮罩的区别</a></li>
+          <li><a href="#text">文字水印参数</a></li>
+          <li><a href="#image">图片水印</a></li>
+          <li><a href="#range">应用页范围</a></li>
+          <li><a href="#faq">常见问题</a></li>
+        </ol>
+      </div>
+
+      <h2 id="difference">水印和遮罩的区别</h2>
+      <p><strong>水印</strong>用于标识文件状态，例如「机密」「草稿」「仅供内部」「请勿外传」。它通常半透明，允许阅读正文。水印可以被截图、拍照或使用其他工具处理，因此不能当作访问控制。</p>
+      <p><strong>遮罩</strong>用于让某些文字或图片不可见。导出的 PDF 会写入黑色块，覆盖区域不能通过本工具恢复。处理身份证号、银行账号、签名等敏感信息时，应使用遮罩，并在导出后放大检查。</p>
+
+      <h2 id="text">文字水印参数</h2>
+      <p>在 <a href="/editor/">编辑精修</a> 中展开「水印」，选择「文字水印」，输入内容后画布会立即显示预览。常用参数：</p>
+      <ul>
+        <li><strong>字号：</strong> 28 适合 A4 平铺；内容较短时可以增大到 40–56，内容较长时降低到 20–24。</li>
+        <li><strong>透明度：</strong> 0.12 是默认值，既能看见又不遮挡正文；正式文件可降到 0.08，草稿可提高到 0.18。</li>
+        <li><strong>旋转：</strong> -30° 是常见的斜向水印；0° 适合页脚或页眉的单点标识。</li>
+        <li><strong>颜色：</strong> 默认黑色；深色背景的 PDF 可以改成白色或浅灰色。</li>
+        <li><strong>模式：</strong> 平铺覆盖整页，单点只在页面中央出现一次。</li>
+        <li><strong>文字间隔：</strong> 平铺模式下控制水印之间的留白，80 是默认值。</li>
+      </ul>
+      <div class="callout">
+        <p><strong>导出规则：</strong> 调整参数后水印会实时显示在画布上，并自动包含在导出的 PDF 中，不需要再点一次“添加水印”。导出前请确认页范围和预览效果。</p>
+      </div>
+
+      <h2 id="image">图片水印</h2>
+      <p>图片水印适合放公司 Logo、印章样式或自定义标识。建议使用透明背景的 PNG，避免出现白色方块。上传后可以调整：</p>
+      <ul>
+        <li><strong>大小：</strong> 默认占页面宽度的 30%；Logo 通常 15%–25%，整页底纹可以更大。</li>
+        <li><strong>透明度：</strong> 建议 0.08–0.2，保证正文可读。</li>
+        <li><strong>旋转：</strong> 与文字水印相同，-30° 适合斜向平铺。</li>
+        <li><strong>模式：</strong> 平铺或单点；单点适合角落标识，平铺适合防误用提醒。</li>
+      </ul>
+
+      <h2 id="range">应用页范围</h2>
+      <p>可以只给部分页面加水印：</p>
+      <ul>
+        <li><strong>全部页面：</strong> 适合整份文件统一标识。</li>
+        <li><strong>仅第 1 页：</strong> 适合封面或首页声明。</li>
+        <li><strong>自定义：</strong> 输入 <code>1-3,5</code> 这样的范围，支持逗号分隔和连续区间。</li>
+      </ul>
+      <p>水印会按页面坐标绘制，再随页面旋转一起输出。横向页面和旋转过的页面，建议逐页检查方向和位置。</p>
+
+      <h2 id="faq">常见问题</h2>
+      <div class="faq">
+        <details open>
+          <summary>为什么导出的水印和预览不完全一样？</summary>
+          <p>预览按屏幕尺寸缩放，导出按 PDF 实际页面尺寸绘制。请检查页范围、平铺间距、旋转角度和单点/平铺模式，并在导出后打开第一页确认。</p>
+        </details>
+        <details>
+          <summary>水印能防止别人复制内容吗？</summary>
+          <p>不能。水印只是视觉提醒，不能阻止截图、拍照或使用其他工具。需要限制访问时，应使用密码和权限设置，并理解 PDF 权限仍然是建议性约束。</p>
+        </details>
+        <details>
+          <summary>可以给部分页面加水印吗？</summary>
+          <p>可以。在「应用页范围」选择全部、仅第 1 页或自定义页码。</p>
+        </details>
+        <details>
+          <summary>图片水印有白底怎么办？</summary>
+          <p>使用透明背景的 PNG。JPG 不支持透明，白色背景会覆盖页面内容。</p>
+        </details>
+        <details>
+          <summary>水印会改变原文件吗？</summary>
+          <p>不会。导出的是新 PDF，原文件保持不变。</p>
+        </details>
+      </div>
+
+      <div class="article-cta">
+        <p>给合同、草稿或内部资料加上清晰的标识。</p>
+        <a href="/editor/">打开编辑精修 →</a>
+      </div>
+
+      <div class="related">
+        <h2>相关指南</h2>
+        <div class="grid">
+          <div class="card"><h3><a href="/guides/pdf-password/">PDF 密码与权限</a></h3><p>需要限制打开或复制时，了解密码和权限的边界。</p></div>
+          <div class="card"><h3><a href="/help/">帮助中心</a></h3><p>遮罩、撤销、页面排序等常见问题。</p></div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="wrap">
+        <nav class="footer-nav" aria-label="页脚">
+          <a href="/about/">关于我们</a>
+          <a href="/contact/">联系我们</a>
+          <a href="/privacy/">隐私政策</a>
+          <a href="/terms/">服务条款</a>
+          <a href="/guides/">使用指南</a>
+          <a href="/help/">帮助中心</a>
+        </nav>
+        <span class="copyright">© Lemon PDF Studio</span>
+      </div>
+    </footer>
+  </body>
+</html>

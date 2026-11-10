@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#030712" />
+    <meta name="description" content="手把手教你拆分 PDF：连续范围、离散页码、起止页预览、导出前检查，以及加密和扫描件 PDF 的处理顺序。全程浏览器本地完成，文件不上传。" />
+    <link rel="canonical" href="/guides/split-pdf/" />
+    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="Lemon PDF Studio" />
+    <meta property="og:title" content="如何拆分 PDF：按范围或指定页码提取页面" />
+    <meta property="og:description" content="连续范围、离散页码、起止页预览和导出检查，一次讲清楚。" />
+    <meta property="og:url" content="https://pdf.soulscop.com/guides/split-pdf/" />
+    <meta property="article:published_time" content="2026-11-10" />
+    <meta property="article:modified_time" content="2026-11-10" />
+    <meta name="twitter:card" content="summary" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="stylesheet" href="/site-pages.css?v=3" />
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('consent', 'default', { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: 'denied' });
+    </script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5015170324086200" crossorigin="anonymous"></script>
+    <meta name="google-adsense-account" content="ca-pub-5015170324086200" />
+    <script src="/consent.js" defer></script>
+    <title>如何拆分 PDF：按范围或指定页码提取页面 · Lemon PDF Studio</title>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": "如何拆分 PDF：按范围或指定页码提取页面",
+        "description": "连续范围、离散页码、起止页预览、导出前检查，以及加密 PDF 的处理顺序。",
+        "datePublished": "2026-11-10",
+        "dateModified": "2026-11-10",
+        "inLanguage": "zh-CN",
+        "author": { "@type": "Organization", "name": "Lemon PDF Studio" },
+        "publisher": { "@type": "Organization", "name": "Lemon PDF Studio" },
+        "mainEntityOfPage": { "@type": "WebPage", "@id": "https://pdf.soulscop.com/guides/split-pdf/" }
+      }
+    </script>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="wrap">
+        <a class="brand" href="/"><span class="brand-mark" aria-hidden="true">🍋</span><span>Lemon PDF Studio</span></a>
+        <nav class="site-nav" aria-label="站点导航">
+          <a href="/">工具</a>
+          <a href="/help/">帮助</a>
+          <a href="/guides/" aria-current="page">指南</a>
+          <a href="/privacy/">隐私</a>
+          <a href="/terms/">条款</a>
+          <a href="/about/">关于</a>
+          <a href="/contact/">联系</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="wrap article-body">
+      <h1>如何拆分 PDF：按范围或指定页码提取页面</h1>
+      <div class="article-meta">
+        <span>更新于 2026-11-10</span>
+        <span>约 6 分钟阅读</span>
+        <span>适用：页面拆分</span>
+      </div>
+      <p class="lede">拆分 PDF 的关键不是点哪个按钮，而是先确认三件事：要保留哪些页、页序会不会变、源文件是否加密。下面用一份 20 页的合同举例。</p>
+
+      <div class="article-toc">
+        <strong>本文内容</strong>
+        <ol>
+          <li><a href="#choose">先判断：切一段还是抽几页</a></li>
+          <li><a href="#range">方法一：连续范围</a></li>
+          <li><a href="#scatter">方法二：离散页码</a></li>
+          <li><a href="#check">导出前检查清单</a></li>
+          <li><a href="#faq">常见问题</a></li>
+        </ol>
+      </div>
+
+      <h2 id="choose">先判断：切一段还是抽几页</h2>
+      <p>如果目标是保留合同的主体部分、去掉封面和附件，通常使用<strong>连续范围</strong>。如果要从一份几十页的合集里挑出第 3、15、88 页，或者只保留若干张发票，使用<strong>离散页码</strong>更直接。</p>
+      <p>两种方式都不会修改源文件。导出的是一个新 PDF，原文件仍然保留在原位置。</p>
+
+      <h2 id="range">方法一：连续范围</h2>
+      <ol>
+        <li>打开 <a href="/splitter/">页面拆分</a>，拖入 PDF 或点击选择文件。</li>
+        <li>确认总页数，切换到「范围区间」。</li>
+        <li>填写起始页和终止页。起止页都会被包含，例如 2 到 5 会得到第 2、3、4、5 页。</li>
+        <li>查看右侧的起始页和终止页预览，确认没有跨过章节边界。</li>
+        <li>点击导出，浏览器会生成并下载新的 PDF。</li>
+      </ol>
+      <div class="callout">
+        <p><strong>页码不是文件页码？</strong> 有些 PDF 的封面、目录使用罗马数字，阅读器显示的“第 1 页”可能对应正文的第 5 页。拆分时以工具里显示的总页数为准，必要时先看缩略图。</p>
+      </div>
+
+      <h2 id="scatter">方法二：离散页码</h2>
+      <ol>
+        <li>在同一个页面切换到「离散多选」。</li>
+        <li>点击左侧缩略图选择页面，或在输入框中填写页码，例如 <code>3, 15, 88</code>。</li>
+        <li>检查“已选择 N 页”和缩略图高亮，确认没有漏页或重复。</li>
+        <li>点击导出。导出顺序通常按原 PDF 的页序排列，而不是输入顺序；如果顺序很重要，导出后可用 <a href="/editor/">编辑精修</a> 调整。</li>
+      </ol>
+      <p>离散模式适合发票、证书、成绩单、表单等“只需要其中几张”的场景。输入时使用英文逗号分隔，避免多余的空格和中文标点。</p>
+
+      <h2 id="check">导出前检查清单</h2>
+      <ul>
+        <li>起止页是否包含了你需要的第一页和最后一页。</li>
+        <li>是否误把封面、目录、空白页或附件包含进来。</li>
+        <li>扫描件的方向是否正确；横向页面是否需要旋转。</li>
+        <li>导出后打开第一页和最后一页，确认文字、签名和印章没有被裁切。</li>
+        <li>如果文件包含敏感信息，确认接收方确实需要这些页面。</li>
+      </ul>
+
+      <h2>加密 PDF 和扫描件</h2>
+      <p>如果源文件需要打开密码，先使用 <a href="/unlock/">PDF 解密</a> 移除你有权处理的密码，再回到拆分页。对于只有权限限制、但能正常打开的文件，也可以先移除权限限制再导出。</p>
+      <p>扫描件没有文本层，拆分后仍然可以正常查看，但不能直接搜索文字。如果需要在扫描件上添加页码、标识或隐藏内容，可以在 <a href="/editor/">编辑精修</a> 中处理。</p>
+
+      <h2 id="faq">常见问题</h2>
+      <div class="faq">
+        <details open>
+          <summary>拆分后页序会改变吗？</summary>
+          <p>范围模式保持原页序；离散模式通常也按原页序输出。若你需要自定义顺序，导出后到编辑精修里拖拽缩略图调整。</p>
+        </details>
+        <details>
+          <summary>可以一次拆成多个文件吗？</summary>
+          <p>当前页面一次生成一个结果。需要拆成多份时，可以重复操作，或先用离散模式选出第一组，再处理第二组。每次都会下载一个新的 PDF。</p>
+        </details>
+        <details>
+          <summary>为什么导出的文件比原文件小？</summary>
+          <p>因为你只保留了部分页面，未使用的页面对象不会写入新文件。若原文件包含大量嵌入字体或图片，减少页面后体积通常会明显下降。</p>
+        </details>
+        <details>
+          <summary>拆分会影响签名或表单吗？</summary>
+          <p>拆分只复制页面内容，不保证保留交互式表单、数字签名或书签。需要保留签名效力时，请先确认业务要求，必要时保留原文件。</p>
+        </details>
+        <details>
+          <summary>文件会上传吗？</summary>
+          <p>不会。解析和导出都在当前浏览器标签页内完成，没有文件上传接口。关闭页面后，本次会话的数据会从内存中释放。</p>
+        </details>
+      </div>
+
+      <div class="article-cta">
+        <p>准备好了？打开页面拆分，拖入 PDF 就能开始。</p>
+        <a href="/splitter/">打开页面拆分 →</a>
+      </div>
+
+      <div class="related">
+        <h2>相关指南</h2>
+        <div class="grid">
+          <div class="card"><h3><a href="/guides/merge-pdf/">合并 PDF 和图片</a></h3><p>把拆出来的页面和其他材料重新组合。</p></div>
+          <div class="card"><h3><a href="/guides/pdf-password/">PDF 密码与权限</a></h3><p>处理加密文件前需要了解的边界。</p></div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="wrap">
+        <nav class="footer-nav" aria-label="页脚">
+          <a href="/about/">关于我们</a>
+          <a href="/contact/">联系我们</a>
+          <a href="/privacy/">隐私政策</a>
+          <a href="/terms/">服务条款</a>
+          <a href="/guides/">使用指南</a>
+          <a href="/help/">帮助中心</a>
+        </nav>
+        <span class="copyright">© Lemon PDF Studio</span>
+      </div>
+    </footer>
+  </body>
+</html>

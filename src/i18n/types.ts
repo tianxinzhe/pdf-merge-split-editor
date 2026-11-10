@@ -46,6 +46,7 @@ export interface CommonCopy {
     privacy: string
     terms: string
     help: string
+    guides: string
   }
 }
 

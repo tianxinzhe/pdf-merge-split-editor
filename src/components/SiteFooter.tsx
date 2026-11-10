@@ -7,6 +7,7 @@ export function SiteFooter() {
     ['/contact/', t.common.footer.contact],
     ['/privacy/', t.common.footer.privacy],
     ['/terms/', t.common.footer.terms],
+    ['/guides/', t.common.footer.guides],
     ['/help/', t.common.footer.help],
   ] as const
 

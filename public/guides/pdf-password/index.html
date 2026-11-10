@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#030712" />
+    <meta name="description" content="PDF 打开密码和权限密码有什么区别？如何用 AES-256 加密、限制打印复制，以及在拥有授权的前提下移除已知密码或权限限制。包含合规边界和常见问题。" />
+    <link rel="canonical" href="/guides/pdf-password/" />
+    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="Lemon PDF Studio" />
+    <meta property="og:title" content="PDF 密码与权限：加密、打开密码和合规移除" />
+    <meta property="og:description" content="两种密码的区别、AES-256 加密建议，以及只处理有权文件的合规边界。" />
+    <meta property="og:url" content="https://pdf.soulscop.com/guides/pdf-password/" />
+    <meta property="article:published_time" content="2026-11-10" />
+    <meta property="article:modified_time" content="2026-11-10" />
+    <meta name="twitter:card" content="summary" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="stylesheet" href="/site-pages.css?v=3" />
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('consent', 'default', { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: 'denied' });
+    </script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5015170324086200" crossorigin="anonymous"></script>
+    <meta name="google-adsense-account" content="ca-pub-5015170324086200" />
+    <script src="/consent.js" defer></script>
+    <title>PDF 密码与权限：加密、打开密码和合规移除 · Lemon PDF Studio</title>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": "PDF 密码与权限：加密、打开密码和合规移除",
+        "description": "打开密码、权限密码、AES-256 加密和合规移除的前提。",
+        "datePublished": "2026-11-10",
+        "dateModified": "2026-11-10",
+        "inLanguage": "zh-CN",
+        "author": { "@type": "Organization", "name": "Lemon PDF Studio" },
+        "publisher": { "@type": "Organization", "name": "Lemon PDF Studio" },
+        "mainEntityOfPage": { "@type": "WebPage", "@id": "https://pdf.soulscop.com/guides/pdf-password/" }
+      }
+    </script>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="wrap">
+        <a class="brand" href="/"><span class="brand-mark" aria-hidden="true">🍋</span><span>Lemon PDF Studio</span></a>
+        <nav class="site-nav" aria-label="站点导航">
+          <a href="/">工具</a>
+          <a href="/help/">帮助</a>
+          <a href="/guides/" aria-current="page">指南</a>
+          <a href="/privacy/">隐私</a>
+          <a href="/terms/">条款</a>
+          <a href="/about/">关于</a>
+          <a href="/contact/">联系</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="wrap article-body">
+      <h1>PDF 密码与权限：加密、打开密码和合规移除</h1>
+      <div class="article-meta">
+        <span>更新于 2026-11-10</span>
+        <span>约 6 分钟阅读</span>
+        <span>适用：PDF 加密 / PDF 解密</span>
+      </div>
+      <p class="lede">PDF 里常见的“密码”其实有两种：打开文件时要输入的密码，以及限制打印、复制、编辑的权限密码。理解两者的区别，才能选对加密方式，也不会误用移除功能。</p>
+
+      <div class="article-toc">
+        <strong>本文内容</strong>
+        <ol>
+          <li><a href="#types">两种密码</a></li>
+          <li><a href="#encrypt">如何加密</a></li>
+          <li><a href="#remove">何时可以移除</a></li>
+          <li><a href="#lossless">无损与回退</a></li>
+          <li><a href="#faq">常见问题</a></li>
+        </ol>
+      </div>
+
+      <div class="callout">
+        <p><strong>合规前提：</strong> 只处理你拥有、自己创建，或已获得明确授权处理的文件。不要使用本工具绕过他人的访问控制、付费墙或保密要求。</p>
+      </div>
+
+      <h2 id="types">两种密码</h2>
+      <ul>
+        <li><strong>打开密码（User Password）：</strong> 每次打开 PDF 都需要输入。没有密码就无法查看内容。</li>
+        <li><strong>权限密码（Owner Password）：</strong> 文件可以直接打开，但限制打印、复制、编辑、批注、页面重组等操作。权限密码用于修改这些限制。</li>
+      </ul>
+      <p>一份 PDF 可以同时设置两种密码。把文件发给别人时，通常只提供打开密码，保留权限密码；但要注意，PDF 权限是阅读器层面的建议性约束，不是 DRM，不能阻止截图或拍照。</p>
+
+      <h2 id="encrypt">如何加密</h2>
+      <p>打开 <a href="/encrypt/">PDF 加密</a>，选择文件后设置：</p>
+      <ol>
+        <li><strong>打开密码：</strong> 必填。建议使用 12 位以上、包含大小写字母和数字的独立密码，不要复用邮箱或网盘密码。</li>
+        <li><strong>确认密码：</strong> 防止输入错误导致文件无法打开。</li>
+        <li><strong>权限密码：</strong> 可选。留空时由库生成随机权限密码。</li>
+        <li><strong>权限：</strong> 按需允许打印、复制、修改、批注、填写表单和页面重组。默认建议允许打印和批注，关闭复制、修改和重组。</li>
+        <li><strong>算法：</strong> 使用 AES-256。</li>
+      </ol>
+      <p>加密不会隐藏文件元数据，也不会阻止有权限的人截图。它适合减少误传播、提高打开门槛，不适合作为唯一的保密措施。</p>
+
+      <h2 id="remove">何时可以移除</h2>
+      <p>如果你拥有文件，或已获得权利人授权，可以在 <a href="/unlock/">PDF 解密</a> 中移除保护：</p>
+      <ul>
+        <li><strong>只有权限限制、能正常打开：</strong> 选择移除权限限制。适用于你自己设置后忘记权限密码，或权利人明确允许的情况。</li>
+        <li><strong>需要打开密码：</strong> 必须输入正确密码。工具不会猜测、暴力破解或绕过未知密码。</li>
+        <li><strong>旧版加密格式：</strong> 大多数标准格式可以无损移除，保留文字层；极少数旧格式会回退为逐页图像，文字将无法搜索。</li>
+      </ul>
+      <p>如果你不知道打开密码，正确做法是联系文件提供方，而不是尝试破解。</p>
+
+      <h2 id="lossless">无损与回退</h2>
+      <p>无损移除会保留文本层、矢量图形和大部分结构，文件通常更小，解密后仍可搜索和复制。回退方案会逐页渲染成图片再重建 PDF，兼容性更好，但文字会变成图片，文件也可能变大。</p>
+      <p>导出后建议检查：能否无密码打开、页数是否正确、文字是否可选中、签名和印章是否完整。涉及法律效力的文件，请保留原始加密版本和授权记录。</p>
+
+      <h2 id="faq">常见问题</h2>
+      <div class="faq">
+        <details open>
+          <summary>不知道密码能移除吗？</summary>
+          <p>不能。需要打开密码的 PDF 必须提供正确密码。本工具不提供破解、猜测或绕过未知密码的功能。</p>
+        </details>
+        <details>
+          <summary>移除权限限制合法吗？</summary>
+          <p>取决于文件归属和授权。请只处理你拥有或已获明确授权的文件，并遵守当地法律和合同约定。不要用于规避他人的访问控制。</p>
+        </details>
+        <details>
+          <summary>加密后还能打印吗？</summary>
+          <p>取决于加密时勾选的权限。权限是建议性约束，不同阅读器的行为可能不同。正式打印前请先测试。</p>
+        </details>
+        <details>
+          <summary>为什么解密后文字不能搜索？</summary>
+          <p>可能使用了回退的逐页图像方案，或原文件本身是扫描件。无损路径会保留文本层；回退路径不会。</p>
+        </details>
+        <details>
+          <summary>文件会上传吗？</summary>
+          <p>不会。加密和解密都在浏览器内完成，密码不会发送到服务器。</p>
+        </details>
+      </div>
+
+      <div class="article-cta">
+        <p>需要给文件加一道打开门槛？使用 AES-256 加密。</p>
+        <a href="/encrypt/">打开 PDF 加密 →</a>
+      </div>
+
+      <div class="related">
+        <h2>相关指南</h2>
+        <div class="grid">
+          <div class="card"><h3><a href="/guides/pdf-watermark/">给 PDF 加水印</a></h3><p>用可见标识提醒阅读者，而不是依赖权限。</p></div>
+          <div class="card"><h3><a href="/terms/">服务条款</a></h3><p>使用工具前请确认文件处理的权利边界。</p></div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="wrap">
+        <nav class="footer-nav" aria-label="页脚">
+          <a href="/about/">关于我们</a>
+          <a href="/contact/">联系我们</a>
+          <a href="/privacy/">隐私政策</a>
+          <a href="/terms/">服务条款</a>
+          <a href="/guides/">使用指南</a>
+          <a href="/help/">帮助中心</a>
+        </nav>
+        <span class="copyright">© Lemon PDF Studio</span>
+      </div>
+    </footer>
+  </body>
+</html>

@@ -228,6 +228,83 @@ li { margin: 5px 0; }
 .muted { color: var(--muted); }
 .small { font-size: 12px; }
 
+/* Guide / article pages */
+.article-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  margin: 0 0 22px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.article-toc {
+  border: 1px solid var(--line);
+  background: rgba(17, 24, 39, 0.45);
+  border-radius: 12px;
+  padding: 14px 18px;
+  margin: 20px 0 8px;
+}
+
+.article-toc strong { display: block; margin-bottom: 6px; font-size: 13px; color: #f3f4f6; }
+.article-toc ol { margin: 0; padding-left: 20px; columns: 2; column-gap: 28px; }
+.article-toc li { margin: 3px 0; font-size: 13px; }
+.article-toc a { color: #cbd5e1; }
+.article-toc a:hover { color: #93c5fd; }
+
+.article-body h2 { scroll-margin-top: 64px; }
+.article-body h3 { scroll-margin-top: 64px; }
+
+.callout {
+  border-left: 3px solid #3b82f6;
+  background: rgba(59, 130, 246, 0.08);
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin: 16px 0;
+  font-size: 14px;
+}
+
+.callout p { margin: 4px 0; }
+.callout strong { color: #dbeafe; }
+
+.article-cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.16), rgba(17, 24, 39, 0.5));
+  border-radius: 14px;
+  padding: 16px 18px;
+  margin: 28px 0 8px;
+}
+
+.article-cta p { margin: 0; color: #dbeafe; font-size: 14px; }
+
+.article-cta a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  background: #2563eb;
+  color: #fff;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.article-cta a:hover { background: #3b82f6; color: #fff; text-decoration: none; }
+
+.related { margin-top: 30px; }
+.related h2 { margin-top: 0; }
+
+@media (max-width: 640px) {
+  .article-toc ol { columns: 1; }
+  .article-cta { align-items: flex-start; flex-direction: column; }
+}
+
 @media (max-width: 640px) {
   h1 { font-size: 22px; }
   main { padding-top: 24px; }
