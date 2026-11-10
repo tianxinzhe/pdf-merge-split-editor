@@ -63,10 +63,6 @@ export default function App({ page }: AppProps) {
     window.location.assign(TAB_PATHS.editor)
   }, [t])
 
-  const handleNavigate = useCallback((tab: TabId) => {
-    window.location.assign(TAB_PATHS[tab])
-  }, [])
-
   return (
     <div className="h-dvh w-full flex flex-col bg-gray-950 text-white overflow-hidden font-sans">
       <TopBar activeTab={page} />
@@ -78,7 +74,7 @@ export default function App({ page }: AppProps) {
             </div>
           }
         >
-          {page === 'home' && <HomePage onNavigate={handleNavigate} />}
+          {page === 'home' && <HomePage />}
           {page === 'splitter' && <PageSplitter />}
           {page === 'editor' && (
             <EditorStudio

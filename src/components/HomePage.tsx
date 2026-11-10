@@ -1,9 +1,5 @@
-import type { TabId } from '../types'
 import { useI18n, type ModuleId } from '../i18n'
-
-interface HomePageProps {
-  onNavigate: (tab: TabId) => void
-}
+import { TAB_PATHS } from '../routes'
 
 interface ModuleMeta {
   id: ModuleId
@@ -65,7 +61,7 @@ const MODULE_META: ModuleMeta[] = [
   },
 ]
 
-export function HomePage({ onNavigate }: HomePageProps) {
+export function HomePage() {
   const { t } = useI18n()
   const home = t.home
   const modules = MODULE_META.map(meta => ({ ...meta, ...home.modules[meta.id] }))
@@ -105,14 +101,13 @@ export function HomePage({ onNavigate }: HomePageProps) {
           </p>
 
           <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
-            <button
-              type="button"
-              onClick={() => onNavigate('splitter')}
+            <a
+              href={TAB_PATHS.splitter}
               className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-950/30 transition-colors hover:bg-blue-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 cursor-pointer"
             >
               {home.ctaPrimary}
               <span aria-hidden>→</span>
-            </button>
+            </a>
             <button
               type="button"
               onClick={scrollToModules}
@@ -144,10 +139,9 @@ export function HomePage({ onNavigate }: HomePageProps) {
         </div>
 
         <div className="home-modules-grid">
-          <button
+          <a
             key={featured.id}
-            type="button"
-            onClick={() => onNavigate(featured.id)}
+            href={TAB_PATHS[featured.id]}
             className="group relative flex min-h-[210px] flex-col overflow-hidden rounded-2xl border border-blue-500/20 bg-gradient-to-br from-blue-500/10 via-gray-900/60 to-gray-900/40 p-5 text-left transition-all hover:-translate-y-1 hover:border-blue-400/40 hover:shadow-xl hover:shadow-blue-950/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 cursor-pointer sm:col-span-2"
           >
             <div
@@ -186,13 +180,12 @@ export function HomePage({ onNavigate }: HomePageProps) {
             <span className={`relative mt-auto pt-4 text-xs font-medium ${featured.linkClass}`}>
               {featured.cta}
             </span>
-          </button>
+          </a>
 
           {rest.map(module => (
-            <button
+            <a
               key={module.id}
-              type="button"
-              onClick={() => onNavigate(module.id)}
+              href={TAB_PATHS[module.id]}
               className="group flex min-h-[180px] flex-col rounded-2xl border border-gray-800 bg-gray-900/50 p-4 text-left transition-all hover:-translate-y-1 hover:border-gray-600 hover:bg-gray-900 hover:shadow-xl hover:shadow-black/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 cursor-pointer"
             >
               <span
@@ -209,7 +202,7 @@ export function HomePage({ onNavigate }: HomePageProps) {
               <span className={`mt-auto pt-3 text-[11px] font-medium ${module.linkClass}`}>
                 {module.cta}
               </span>
-            </button>
+            </a>
           ))}
         </div>
       </section>
