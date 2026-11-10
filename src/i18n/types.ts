@@ -163,6 +163,8 @@ export interface UnlockCopy {
   reprocess: string
   reprocessHint: string
   needsPassword: string
+  ownership: string
+  ownershipHint: string
   disclaimer: string
 }
 

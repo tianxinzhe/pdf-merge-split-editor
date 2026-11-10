@@ -13,7 +13,7 @@
 | 多文件合并 | PDF 与图片混合添加、拖拽排序、合并下载或送入编辑精修 |
 | 图片转 PDF | 多张 JPG/PNG 排序后合成一个 PDF |
 | PDF 转图片 | 72–600 DPI，PNG/JPEG，单张或拼接长图 |
-| PDF 解密 | 移除你有权处理的 PDF 的权限限制或打开密码，保留文本层 |
+| PDF 权限管理 | 移除你有权处理的 PDF 的权限限制或打开密码，保留文本层 |
 | PDF 加密 | 设置打开密码、权限密码与打印/复制/修改等权限（AES-256） |
 
 水印会实时显示在画布上，并自动包含在导出的 PDF 中；遮罩会作为黑色块烘焙进页面。
@@ -23,7 +23,7 @@
 - React 19 + TypeScript + Vite 8 + Tailwind CSS 4
 - `pdf-lib`：PDF 结构级编辑（拆分、合并、写回）
 - `pdfjs-dist`：渲染、缩略图、文本检索
-- `@libpdf/core`：PDF 加密与无损解密
+- `@libpdf/core`：PDF 加密与无损权限管理
 - `jszip`：PDF 转图片的批量 ZIP
 - 重计算放在 Web Worker（`src/workers/pdf.worker.ts`）中，避免阻塞界面
 
@@ -125,7 +125,7 @@ src/
   components/   首页、顶栏、页脚、7 个工具页、缩略图、密码弹窗
   hooks/        usePDFState（文档状态机）
   i18n/         5 语言文案、指南、Provider
-  utils/        pdfjs 配置、渲染、检索、解密、水印、handoff
+  utils/        pdfjs 配置、渲染、检索、权限管理、水印、handoff
   workers/      pdf.worker.ts（导出 / 合成等重活）
   types/        Tab 定义与共享类型
 public/
@@ -141,7 +141,7 @@ scripts/
 ## 已知限制
 
 - 大文件受浏览器内存限制（通常几百 MB 量级）
-- PDF 解密优先使用无损方式；极少数不支持的加密格式会回退到 pdfjs 逐页光栅重建，此时会丢失文本层
+- PDF 权限管理优先使用无损方式；极少数不支持的加密格式会回退到 pdfjs 逐页光栅重建，此时会丢失文本层
 - PDF 权限是阅读器层面的建议性限制，不是 DRM；请只处理你拥有或已获授权处理的文件
 - 页面布局按桌面设计，移动端可用但未做专门适配
 - Auto ads 的具体位置与数量由 Google 决定，代码无法精确控制

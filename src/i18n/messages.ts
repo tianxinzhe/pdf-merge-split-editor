@@ -10,7 +10,7 @@ const zh: HomeMessages = {
     merger: '多文件合并',
     img2pdf: '图片转 PDF',
     toolbox: 'PDF 转图片',
-    unlock: 'PDF 解密',
+    unlock: 'PDF 权限管理',
     encrypt: 'PDF 加密',
   },
   common: {
@@ -107,16 +107,16 @@ const zh: HomeMessages = {
         cta: '进入图片转 PDF →',
       },
       unlock: {
-        title: 'PDF 解密',
-        tagline: '移除权限限制或打开密码',
+        title: 'PDF 权限管理',
+        tagline: '管理你有权处理的 PDF 保护',
         description:
-          '适用于你能正常打开但被限制复制、打印的 PDF，或你知道密码、不想每次输入的文件。仅处理你拥有或已获授权处理的文件，全程本地完成。',
+          '适用于你能正常打开但限制复制、打印的 PDF，或你知道密码、不想每次输入的文件。仅处理你拥有或已获授权的文件，全程本地完成。',
         features: [
           '移除复制 / 打印 / 编辑限制',
           '移除已知的打开密码',
-          '保留文本层，本地处理',
+          '本地处理，不上传文件',
         ],
-        cta: '进入 PDF 解密 →',
+        cta: '进入 PDF 权限管理 →',
       },
       encrypt: {
         title: 'PDF 加密',
@@ -169,7 +169,7 @@ const en: HomeMessages = {
     merger: 'Merge Files',
     img2pdf: 'Images to PDF',
     toolbox: 'PDF to Images',
-    unlock: 'Unlock PDF',
+    unlock: 'PDF Permissions',
     encrypt: 'Encrypt PDF',
   },
   common: {
@@ -266,16 +266,16 @@ const en: HomeMessages = {
         cta: 'Open Images to PDF →',
       },
       unlock: {
-        title: 'Unlock PDF',
-        tagline: 'Remove permission limits or an open password',
+        title: 'PDF Permissions',
+        tagline: 'Manage protection on PDFs you are authorized to process',
         description:
           'For PDFs you can open but that restrict copying or printing, or files whose password you already know. Only process files you own or are authorized to modify. Everything runs locally.',
         features: [
           'Remove copy / print / edit restrictions',
           'Remove an open password you already know',
-          'Keeps the text layer; processed locally',
+          'Processed locally, nothing is uploaded',
         ],
-        cta: 'Open Unlock PDF →',
+        cta: 'Open PDF Permissions →',
       },
       encrypt: {
         title: 'Encrypt PDF',
@@ -328,7 +328,7 @@ const ko: HomeMessages = {
     merger: '파일 병합',
     img2pdf: '이미지 → PDF',
     toolbox: 'PDF → 이미지',
-    unlock: 'PDF 잠금 해제',
+    unlock: 'PDF 권한 관리',
     encrypt: 'PDF 암호화',
   },
   common: {
@@ -425,16 +425,16 @@ const ko: HomeMessages = {
         cta: '이미지 → PDF 열기 →',
       },
       unlock: {
-        title: 'PDF 잠금 해제',
-        tagline: '권한 제한 또는 열기 비밀번호 제거',
+        title: 'PDF 권한 관리',
+        tagline: '처리 권한이 있는 PDF 보호 관리',
         description:
           '열 수는 있지만 복사·인쇄가 제한된 PDF, 또는 비밀번호를 알고 있는 파일에 사용하세요. 소유하거나 처리 권한이 있는 파일에만 사용해야 하며, 모든 작업은 로컬에서 처리됩니다.',
         features: [
           '복사 / 인쇄 / 편집 제한 제거',
           '알고 있는 열기 비밀번호 제거',
-          '텍스트 레이어 유지, 로컬 처리',
+          '로컬 처리, 파일 업로드 없음',
         ],
-        cta: 'PDF 잠금 해제 열기 →',
+        cta: 'PDF 권한 관리 열기 →',
       },
       encrypt: {
         title: 'PDF 암호화',
@@ -487,7 +487,7 @@ const ja: HomeMessages = {
     merger: 'ファイル結合',
     img2pdf: '画像 → PDF',
     toolbox: 'PDF → 画像',
-    unlock: 'PDF ロック解除',
+    unlock: 'PDF 権限管理',
     encrypt: 'PDF 暗号化',
   },
   common: {
@@ -584,16 +584,16 @@ const ja: HomeMessages = {
         cta: '画像 → PDF を開く →',
       },
       unlock: {
-        title: 'PDF ロック解除',
-        tagline: '権限制限または開くパスワードを解除',
+        title: 'PDF 権限管理',
+        tagline: '処理権限のある PDF の保護を管理',
         description:
           '開けるもののコピー・印刷が制限された PDF、またはパスワードを把握しているファイル向けです。所有している、または処理を許可されているファイルにのみ使用してください。すべて端末内で処理されます。',
         features: [
           'コピー / 印刷 / 編集の制限を解除',
           '把握している開くパスワードを解除',
-          'テキスト層を保持、ローカル処理',
+          'ローカル処理、ファイルはアップロードされません',
         ],
-        cta: 'PDF ロック解除を開く →',
+        cta: 'PDF 権限管理を開く →',
       },
       encrypt: {
         title: 'PDF 暗号化',
@@ -646,7 +646,7 @@ const de: HomeMessages = {
     merger: 'Dateien zusammenführen',
     img2pdf: 'Bilder zu PDF',
     toolbox: 'PDF zu Bildern',
-    unlock: 'PDF entsperren',
+    unlock: 'PDF-Berechtigungen',
     encrypt: 'PDF verschlüsseln',
   },
   common: {
@@ -744,16 +744,16 @@ const de: HomeMessages = {
         cta: 'Bilder zu PDF öffnen →',
       },
       unlock: {
-        title: 'PDF entsperren',
-        tagline: 'Berechtigungsbeschränkungen oder Öffnungspasswort entfernen',
+        title: 'PDF-Berechtigungen',
+        tagline: 'Schutz von PDFs verwalten, für die du berechtigt bist',
         description:
-          'Für PDFs, die sich öffnen lassen, aber Kopieren oder Drucken sperren, oder für Dateien, deren Passwort du kennst. Nur für Dateien verwenden, für die du berechtigt bist. Alles läuft lokal.',
+          'Für PDFs, die sich öffnen lassen, aber Kopieren oder Drucken einschränken, oder für Dateien, deren Passwort du kennst. Nur für Dateien verwenden, für die du berechtigt bist. Alles läuft lokal.',
         features: [
           'Kopier-, Druck- und Bearbeitungsbeschränkungen entfernen',
           'Ein bekanntes Öffnungspasswort entfernen',
-          'Textebene bleibt erhalten, lokale Verarbeitung',
+          'Lokale Verarbeitung, keine Uploads',
         ],
-        cta: 'PDF entsperren →',
+        cta: 'PDF-Berechtigungen öffnen →',
       },
       encrypt: {
         title: 'PDF verschlüsseln',

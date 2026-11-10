@@ -7,7 +7,7 @@ const zh: Record<GuideModuleId, GuideCopy> = {
     tips: [
       '范围区间会包含起止页；需要不连续的页面时切换到「离散多选」。',
       '导出前可以预览起止页，确认内容无误再下载。',
-      '拆分会保留原页面方向；加密文件请先在「PDF 解密」中解锁。',
+      '拆分会保留原页面方向；加密文件请先在「PDF 权限管理」中处理。',
     ],
   },
   editor: {
@@ -47,12 +47,12 @@ const zh: Record<GuideModuleId, GuideCopy> = {
     ],
   },
   unlock: {
-    title: '关于 PDF 解密',
-    intro: '用于移除你有权处理的 PDF 的权限限制或打开密码。文件只在浏览器内处理，不会上传到服务器。',
+    title: '关于 PDF 权限管理',
+    intro: '用于管理你有权处理的 PDF 保护，包括权限限制和你已知的打开密码。文件只在浏览器内处理，不会上传到服务器。',
     tips: [
       '权限限制影响复制、打印和编辑；标准 PDF 会保留文本层，少数旧版加密文件会回退为逐页图像。',
-      '打开密码需要你知道当前密码，本工具不会破解未知密码。',
-      '请只处理你拥有或已获授权处理的文件，并遵守相关法律。',
+      '打开密码需要你知道当前密码；本工具不会破解或绕过未知密码。',
+      '请只处理你拥有或已获授权处理的文件，并遵守相关法律与合同。',
     ],
   },
   encrypt: {
@@ -73,7 +73,7 @@ const en: Record<GuideModuleId, GuideCopy> = {
     tips: [
       'A page range includes both the start and end page. Switch to "Pick pages" for non-consecutive pages.',
       'Preview the first and last page before exporting to make sure the range is right.',
-      'Page orientation is preserved. Unlock encrypted files in the Unlock PDF module first.',
+      'Page orientation is preserved. Remove protection in the PDF Permissions module first.',
     ],
   },
   editor: {
@@ -113,12 +113,12 @@ const en: Record<GuideModuleId, GuideCopy> = {
     ],
   },
   unlock: {
-    title: 'About unlocking PDFs',
-    intro: 'Remove permission restrictions or an open password from PDFs you are authorized to handle. Files stay in your browser and are never uploaded.',
+    title: 'About PDF permissions',
+    intro: 'Manage protection on PDFs you are authorized to handle, including permission restrictions and an open password you already know. Files stay in your browser and are never uploaded.',
     tips: [
       'Permission restrictions affect copying, printing and editing; standard PDFs keep their text layer, while a few legacy encrypted files fall back to page images.',
-      'An open password requires the current password. This tool does not crack unknown passwords.',
-      'Only process files you own or have permission to modify, and follow the applicable law.',
+      'An open password requires the current password. This tool does not crack or bypass unknown passwords.',
+      'Only process files you own or have permission to modify, and follow applicable law and contracts.',
     ],
   },
   encrypt: {
@@ -139,7 +139,7 @@ const ko: Record<GuideModuleId, GuideCopy> = {
     tips: [
       '범위 분할은 시작 페이지와 끝 페이지를 모두 포함합니다. 연속되지 않은 페이지는 "페이지 선택"으로 전환하세요.',
       '내보내기 전에 시작/끝 페이지를 미리 보고 범위를 확인하세요.',
-      '페이지 방향은 유지됩니다. 암호가 걸린 파일은 먼저 PDF 잠금 해제에서 잠금을 해제하세요.',
+      '페이지 방향은 유지됩니다. 암호가 걸린 파일은 먼저 PDF 권한 관리에서 보호를 제거하세요.',
     ],
   },
   editor: {
@@ -179,12 +179,12 @@ const ko: Record<GuideModuleId, GuideCopy> = {
     ],
   },
   unlock: {
-    title: 'PDF 잠금 해제 안내',
-    intro: '권한이 있는 PDF의 권한 제한이나 열기 암호를 제거합니다. 파일은 브라우저 안에서만 처리되고 업로드되지 않습니다.',
+    title: 'PDF 권한 관리 안내',
+    intro: '처리 권한이 있는 PDF의 보호(권한 제한 및 알고 있는 열기 암호)를 관리합니다. 파일은 브라우저 안에서만 처리되고 업로드되지 않습니다.',
     tips: [
       '권한 제한은 복사, 인쇄, 편집에 영향을 줍니다. 표준 PDF는 텍스트 레이어가 유지되지만, 일부 구형 암호화 파일은 페이지 이미지로 변환됩니다.',
-      '열기 암호는 현재 암호를 알고 있어야 합니다. 알 수 없는 암호를 해독하지 않습니다.',
-      '소유했거나 처리 권한이 있는 파일만 사용하고 관련 법규를 준수하세요.',
+      '열기 암호는 현재 암호를 알고 있어야 합니다. 알 수 없는 암호를 해독하거나 우회하지 않습니다.',
+      '소유했거나 처리 권한이 있는 파일만 사용하고 관련 법규와 계약을 준수하세요.',
     ],
   },
   encrypt: {
@@ -205,7 +205,7 @@ const ja: Record<GuideModuleId, GuideCopy> = {
     tips: [
       '範囲指定では開始ページと終了ページの両方が含まれます。連続しないページは「ページ選択」に切り替えてください。',
       '書き出す前に開始・終了ページをプレビューして範囲を確認できます。',
-      'ページの向きは保持されます。暗号化されたファイルは先に PDF ロック解除で解除してください。',
+      'ページの向きは保持されます。暗号化されたファイルは先に PDF 権限管理で処理してください。',
     ],
   },
   editor: {
@@ -245,12 +245,12 @@ const ja: Record<GuideModuleId, GuideCopy> = {
     ],
   },
   unlock: {
-    title: 'PDF ロック解除について',
-    intro: '権限のある PDF から権限制限や開くためのパスワードを解除します。ファイルはブラウザ内だけで処理され、アップロードされません。',
+    title: 'PDF 権限管理について',
+    intro: '処理権限のある PDF の保護（権限制限や既知の開くパスワード）を管理します。ファイルはブラウザ内だけで処理され、アップロードされません。',
     tips: [
       '権限制限はコピー、印刷、編集に影響します。標準的な PDF はテキスト層が保持されますが、一部の古い暗号化ファイルはページ画像に変換されます。',
-      '開くためのパスワードは現在のパスワードが必要です。不明なパスワードの解析は行いません。',
-      '所有している、または処理権限のあるファイルのみを対象とし、関連法規を守ってください。',
+      '開くためのパスワードは現在のパスワードが必要です。不明なパスワードの解析や回避は行いません。',
+      '所有している、または処理権限のあるファイルのみを対象とし、関連法規と契約を守ってください。',
     ],
   },
   encrypt: {
@@ -271,7 +271,7 @@ const de: Record<GuideModuleId, GuideCopy> = {
     tips: [
       'Ein Seitenbereich enthält Start- und Endseite. Für nicht zusammenhängende Seiten zu „Seiten auswählen“ wechseln.',
       'Vor dem Export die Start- und Endseite in der Vorschau prüfen.',
-      'Die Seitenausrichtung bleibt erhalten. Verschlüsselte Dateien zuerst im Modul „PDF entsperren“ entsperren.',
+      'Die Seitenausrichtung bleibt erhalten. Verschlüsselte Dateien zuerst im Modul „PDF-Berechtigungen“ behandeln.',
     ],
   },
   editor: {
@@ -311,12 +311,12 @@ const de: Record<GuideModuleId, GuideCopy> = {
     ],
   },
   unlock: {
-    title: 'Über das Entsperren von PDFs',
-    intro: 'Entfernt Berechtigungsbeschränkungen oder ein Öffnungskennwort aus PDFs, für die du berechtigt bist. Dateien bleiben im Browser und werden nicht hochgeladen.',
+    title: 'Über PDF-Berechtigungen',
+    intro: 'Verwaltet den Schutz von PDFs, für die du berechtigt bist – einschließlich Berechtigungsbeschränkungen und eines bekannten Öffnungskennworts. Dateien bleiben im Browser und werden nicht hochgeladen.',
     tips: [
       'Berechtigungen betreffen Kopieren, Drucken und Bearbeiten; bei Standard-PDFs bleibt die Textebene erhalten, bei einigen älteren verschlüsselten Dateien wird seitenweise gerastert.',
-      'Für ein Öffnungskennwort wird das aktuelle Kennwort benötigt. Unbekannte Kennwörter werden nicht geknackt.',
-      'Nur Dateien verarbeiten, die dir gehören oder für die du eine Berechtigung hast, und geltendes Recht beachten.',
+      'Für ein Öffnungskennwort wird das aktuelle Kennwort benötigt. Unbekannte Kennwörter werden nicht geknackt oder umgangen.',
+      'Nur Dateien verarbeiten, die dir gehören oder für die du eine Berechtigung hast, und geltendes Recht sowie Verträge beachten.',
     ],
   },
   encrypt: {

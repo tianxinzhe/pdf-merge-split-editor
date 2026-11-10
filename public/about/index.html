@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="color-scheme" content="dark" />
     <meta name="theme-color" content="#030712" />
-    <meta name="description" content="关于 Lemon PDF Studio：一个纯本地运行的 PDF 工具箱，支持拆分、合并、编辑、水印、格式转换、加密与解密。" />
+    <meta name="description" content="关于 Lemon PDF Studio：一个纯本地运行的 PDF 工具箱，支持拆分、合并、编辑、水印、格式转换、加密与权限管理。" />
     <link rel="canonical" href="/about/" />
     <meta name="robots" content="index,follow" />
     <meta property="og:type" content="website" />
@@ -42,7 +42,7 @@
       </div>
 
       <h2>为什么做这个工具</h2>
-      <p>很多在线 PDF 工具要求先上传文件，再等待服务器处理。对于合同、发票、身份证扫描件和内部资料，这往往不是理想选择。Lemon PDF Studio 使用浏览器自带的渲染与 PDF 处理能力，把拆分、合并、编辑、加水印、遮挡、转换、加密和解密放到本地完成。</p>
+      <p>很多在线 PDF 工具要求先上传文件，再等待服务器处理。对于合同、发票、身份证扫描件和内部资料，这往往不是理想选择。Lemon PDF Studio 使用浏览器自带的渲染与 PDF 处理能力，把拆分、合并、编辑、加水印、遮挡、转换、加密和权限管理放到本地完成。</p>
 
       <h2>包含哪些模块</h2>
       <div class="grid">
@@ -51,11 +51,11 @@
         <div class="card"><h3>多文件合并</h3><p>PDF 与图片混合添加，拖拽排序后合并，或送入编辑器。</p></div>
         <div class="card"><h3>PDF 转图片</h3><p>72–600 DPI，PNG/JPEG，单张或拼接长图。</p></div>
         <div class="card"><h3>图片转 PDF</h3><p>多张 JPG/PNG 按顺序合成为 PDF，适合扫描件归档。</p></div>
-        <div class="card"><h3>PDF 解密 / 加密</h3><p>移除你有权访问文件的权限限制，或添加 AES-256 密码与权限。</p></div>
+        <div class="card"><h3>PDF 权限管理 / 加密</h3><p>移除你有权访问文件的权限限制，或添加 AES-256 密码与权限。</p></div>
       </div>
 
       <h2>技术实现</h2>
-      <p>界面使用 React、TypeScript、Vite 和 Tailwind CSS。PDF 渲染与解析使用 pdf.js 与 pdf-lib，加密/解密使用 LibPDF。PDF.js 的字体、CMap 和 WASM 资源随站点一起部署，因此中文字体和扫描件解码可以离线工作。</p>
+      <p>界面使用 React、TypeScript、Vite 和 Tailwind CSS。PDF 渲染与解析使用 pdf.js 与 pdf-lib，加密与权限管理使用 LibPDF。PDF.js 的字体、CMap 和 WASM 资源随站点一起部署，因此中文字体和扫描件解码可以离线工作。</p>
 
       <h2>开源</h2>
       <p>项目代码托管在 <a href="https://github.com/tianxinzhe/pdf-merge-split-editor" target="_blank" rel="noopener noreferrer">GitHub</a>。欢迎提交问题、建议或改进。站点通过广告支持托管成本，广告不会改变文件的本地处理方式。</p>

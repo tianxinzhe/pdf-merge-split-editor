@@ -5,13 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="color-scheme" content="dark" />
     <meta name="theme-color" content="#030712" />
-    <meta name="description" content="Lemon PDF Studio 帮助中心：拆分、合并、编辑、水印、遮罩、PDF 与图片互转、加密解密的常见问题与操作指南。" />
+    <meta name="description" content="Lemon PDF Studio 帮助中心：拆分、合并、编辑、水印、遮罩、PDF 与图片互转、加密与权限管理的常见问题与操作指南。" />
     <link rel="canonical" href="/help/" />
     <meta name="robots" content="index,follow" />
     <meta property="og:type" content="article" />
     <meta property="og:site_name" content="Lemon PDF Studio" />
     <meta property="og:title" content="帮助中心 · Lemon PDF Studio" />
-    <meta property="og:description" content="PDF 拆分、合并、编辑、水印、遮罩、格式转换、加密解密的常见问题与操作指南。" />
+    <meta property="og:description" content="PDF 拆分、合并、编辑、水印、遮罩、格式转换、加密与权限管理的常见问题与操作指南。" />
     <meta name="twitter:card" content="summary" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="stylesheet" href="/site-pages.css?v=2" />
@@ -55,7 +55,7 @@
         <div class="card"><h3><a href="/merger/">多文件合并</a></h3><p>PDF 与图片混合添加，按列表顺序合并。</p></div>
         <div class="card"><h3><a href="/toolbox/">PDF 转图片</a></h3><p>选择 DPI、PNG/JPEG，导出单张或拼接长图。</p></div>
         <div class="card"><h3><a href="/img2pdf/">图片转 PDF</a></h3><p>多张 JPG/PNG 排序后合成为一份 PDF。</p></div>
-        <div class="card"><h3><a href="/unlock/">PDF 解密</a></h3><p>移除你有权访问文件的权限限制或已知打开密码。</p></div>
+        <div class="card"><h3><a href="/unlock/">PDF 权限管理</a></h3><p>移除你有权访问文件的权限限制或已知打开密码。</p></div>
         <div class="card"><h3><a href="/encrypt/">PDF 加密</a></h3><p>添加打开密码、权限密码和打印/复制限制。</p></div>
       </div>
 
@@ -73,11 +73,11 @@
       <div class="faq">
         <details open>
           <summary>我的文件会被上传吗？</summary>
-          <p>不会。PDF 解析、渲染、水印、合并、转换、加密和解密都在当前浏览器标签页内完成。我们没有接收文件的服务器接口。页面关闭或刷新后，当前会话的数据会从内存中释放。</p>
+          <p>不会。PDF 解析、渲染、水印、合并、转换、加密和权限管理都在当前浏览器标签页内完成。我们没有接收文件的服务器接口。页面关闭或刷新后，当前会话的数据会从内存中释放。</p>
         </details>
         <details>
           <summary>支持哪些文件格式？</summary>
-          <p>输入支持 PDF、PNG、JPG/JPEG。输出支持 PDF、PNG、JPEG 和 ZIP（多页图片）。加密功能使用 AES-256；解密支持常见的 PDF 标准加密，极少数特殊格式会回退到逐页渲染。</p>
+          <p>输入支持 PDF、PNG、JPG/JPEG。输出支持 PDF、PNG、JPEG 和 ZIP（多页图片）。加密功能使用 AES-256；权限管理支持常见的 PDF 标准加密，极少数特殊格式会回退到逐页渲染。</p>
         </details>
         <details>
           <summary>如何拆分不连续的页面？</summary>
@@ -108,12 +108,12 @@
           <p>不能。PDF 权限是阅读器层面的建议性约束，不是 DRM。它可以减少误操作和普通复制，但不能阻止截图、拍照或使用专门工具处理。加密也不会隐藏文件元数据。</p>
         </details>
         <details>
-          <summary>没有密码也能解密吗？</summary>
+          <summary>没有密码也能移除保护吗？</summary>
           <p>不能。对于需要打开密码的 PDF，必须输入正确密码。本工具不会猜测、暴力破解或绕过未知密码。对于只限制复制/打印、但能正常打开的 PDF，可以移除权限限制。请只处理你拥有或已获授权处理的文件。</p>
         </details>
         <details>
-          <summary>解密后文字还能搜索和复制吗？</summary>
-          <p>现在的解密使用无损移除加密，通常会保留文本层、矢量图形和书签，因此可以继续搜索和复制。极少数不支持的加密格式会回退到逐页渲染，那种情况下文字会变成图片。</p>
+          <summary>移除保护后文字还能搜索和复制吗？</summary>
+          <p>现在的权限管理使用无损移除加密，通常会保留文本层、矢量图形和书签，因此可以继续搜索和复制。极少数不支持的加密格式会回退到逐页渲染，那种情况下文字会变成图片。</p>
         </details>
         <details>
           <summary>支持哪些浏览器？</summary>
@@ -130,7 +130,7 @@
         <li>查看右侧的起止页预览，确认没有选错章节。</li>
         <li>点击导出，浏览器会直接生成并下载新的 PDF。</li>
       </ol>
-      <p>整个过程不上传文件。如果源文件有打开密码，先用「PDF 解密」移除密码，再回到拆分页。</p>
+      <p>整个过程不上传文件。如果源文件有打开密码，先用「PDF 权限管理」移除密码，再回到拆分页。</p>
 
       <h3>水印和遮罩有什么区别？</h3>
       <p>水印用于标识文件，例如「机密」「草稿」「仅供内部」，可以平铺或单点，并调整字号、透明度、旋转和颜色。遮罩用于隐藏敏感内容，会在导出的 PDF 中写入不可恢复的黑色块。</p>
@@ -138,7 +138,7 @@
 
       <h3>PDF 的权限密码和打开密码</h3>
       <p>打开密码（User Lock）要求每次打开文件时输入密码；权限密码（Owner Lock）不阻止打开，但限制打印、复制、编辑等操作。加密页面可以同时设置两者，并逐项选择允许的权限。</p>
-      <p>解密页面可以移除你能打开文件的权限限制，或在你已知密码的情况下移除打开密码。请只处理你拥有或已获授权处理的文件。</p>
+      <p>PDF 权限管理页面可以移除你能打开文件的权限限制，或在你已知密码的情况下移除打开密码。请只处理你拥有或已获授权处理的文件。</p>
 
       <h2>还有问题？</h2>
       <p>请到 <a href="/contact/">联系页面</a> 或 <a href="https://github.com/tianxinzhe/pdf-merge-split-editor/issues" target="_blank" rel="noopener noreferrer">GitHub Issues</a> 提交问题。附上浏览器版本、操作步骤和脱敏后的测试文件，会更容易定位。</p>

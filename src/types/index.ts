@@ -13,7 +13,7 @@ export const TABS: TabDef[] = [
   { id: 'merger', label: '多文件合并', icon: '📂' },
   { id: 'img2pdf', label: '图片转 PDF', icon: '🖼️' },
   { id: 'toolbox', label: 'PDF 转图片', icon: '🧰' },
-  { id: 'unlock', label: 'PDF 解密', icon: '🔐' },
+  { id: 'unlock', label: 'PDF 权限管理', icon: '🔐' },
   { id: 'encrypt', label: 'PDF 加密', icon: '🔒' },
 ]
 

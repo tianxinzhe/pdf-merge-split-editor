@@ -17,6 +17,7 @@ export function PdfUnlock() {
   const [pwInput, setPwInput] = useState('')
   const [pwError, setPwError] = useState('')
   const [pwProcessing, setPwProcessing] = useState(false)
+  const [ownershipConfirmed, setOwnershipConfirmed] = useState(false)
   const pwInputRef = useRef<HTMLInputElement>(null)
 
   const addPwFiles = useCallback(async (inputFiles: File[]) => {
@@ -178,14 +179,34 @@ export function PdfUnlock() {
           <input ref={pwInputRef} type="file" accept=".pdf" multiple onChange={handlePwFileSelect} className="hidden" />
 
           {pwFiles.length > 0 && (
-            <button onClick={handleMainAction} disabled={pwProcessing}
-              className="w-full mt-3 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 text-white text-sm font-semibold transition-colors cursor-pointer shadow-lg shadow-emerald-600/20">
-              {pwProcessing
-                ? t.unlock.processing
-                : allDone
-                  ? t.unlock.reprocess
-                  : pwMode === 'owner' ? t.unlock.unlockOwner : t.unlock.unlockUser}
-            </button>
+            <>
+              <label className="mt-3 flex items-start gap-2 text-[11px] leading-relaxed text-gray-400 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={ownershipConfirmed}
+                  disabled={pwProcessing}
+                  onChange={e => setOwnershipConfirmed(e.target.checked)}
+                  className="mt-0.5 shrink-0 accent-emerald-500"
+                />
+                <span>
+                  {t.unlock.ownership}{' '}
+                  <a href="/terms/" target="_blank" rel="noreferrer"
+                    onClick={e => e.stopPropagation()}
+                    className="text-blue-400 hover:text-blue-300 hover:underline">
+                    {t.common.footer.terms}
+                  </a>
+                </span>
+              </label>
+              <p className="mt-1 text-[11px] leading-relaxed text-gray-500">{t.unlock.ownershipHint}</p>
+              <button onClick={handleMainAction} disabled={pwProcessing || !ownershipConfirmed}
+                className="w-full mt-3 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-semibold transition-colors cursor-pointer shadow-lg shadow-emerald-600/20">
+                {pwProcessing
+                  ? t.unlock.processing
+                  : allDone
+                    ? t.unlock.reprocess
+                    : pwMode === 'owner' ? t.unlock.unlockOwner : t.unlock.unlockUser}
+              </button>
+            </>
           )}
           {pwFiles.length > 0 && !hasPending && (
             <p className="mt-2 text-[11px] text-gray-400">{t.unlock.reprocessHint}</p>
